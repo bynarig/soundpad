@@ -38,7 +38,7 @@ ACTUAL=$(swift scripts/update_tool.swift public-key "$KEY")
 [[ "$EXPECTED" == "$ACTUAL" ]] || { echo "Signing key doesn't match publicKey in $CONFIG" >&2; exit 1; }
 
 VERSION=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
-scripts/bundle.sh "${UNIVERSAL[@]}"
+scripts/bundle.sh ${UNIVERSAL[@]+"${UNIVERSAL[@]}"}
 
 OUT=dist/release
 rm -rf "$OUT"; mkdir -p "$OUT"
