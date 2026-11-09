@@ -35,10 +35,11 @@ Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 1. [Download **Soundpad-x.y.z.zip**](https://github.com/bynarig/soundpad/releases/latest)
    from the latest release.
 2. Double-click the zip to unzip it, then drag **Soundpad** into your **Applications** folder.
-3. **The first time only:** right-click (or Control-click) Soundpad and choose **Open**, then
-   click **Open** again.
-   macOS asks this because Soundpad is a free app that isn't registered with Apple.
-   After the first time, it opens normally.
+3. **The first time only:** open Soundpad. macOS says *"Soundpad" Not Opened* because
+   Soundpad is a free app that isn't registered with Apple. Click **Done** (not Move to Trash),
+   then open **System Settings → Privacy & Security**, scroll down to
+   *"Soundpad" was blocked to protect your Mac*, click **Open Anyway** and confirm with your
+   password. After the first time, it opens normally.
 
 ## Get started in 2 minutes
 
@@ -132,8 +133,10 @@ instead of to your speakers. Click **Choose Speakers…** and pick your speakers
 **A hotkey doesn't work.**
 Another app might already use that key combination. Pick a different one.
 
-**"Soundpad can't be opened because Apple cannot check it for malicious software."**
-Right-click Soundpad → **Open** → **Open**. You only need to do this once.
+**"Soundpad" Not Opened: "Apple could not verify Soundpad is free of malware…"**
+Click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**
+next to *"Soundpad" was blocked*. You only need to do this once.
+(Comfortable with Terminal? `xattr -dr com.apple.quarantine /Applications/Soundpad.app` does the same.)
 
 **Where are my sounds stored?**
 Soundpad doesn't copy your files. It remembers where they are on your Mac. If you move or
