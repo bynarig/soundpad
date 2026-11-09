@@ -8,7 +8,7 @@ hear the sounds *and* your voice.
 
 [**⬇ Download the latest version**](https://github.com/bynarig/soundpad/releases/latest)
 
-Requires a Mac with Apple silicon (M1 or newer) running macOS 26 or later.
+Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 
 ---
 
@@ -118,6 +118,16 @@ slider in Soundpad isn't at zero or muted.
 **My friends hear the sounds but not my voice.**
 In Soundpad's Settings, set **Mix in my microphone** to your real microphone, and allow
 microphone access in System Settings → Privacy & Security → Microphone.
+
+**I already use BlackHole (or Loopback).**
+That's fine, they work side by side. Soundpad never takes over BlackHole by itself, so it
+won't leak sounds into OBS or other apps that use it. If you'd rather send Soundpad into
+BlackHole instead of installing Soundpad Virtual Mic, click **Use BlackHole 2ch instead** in
+the banner, or choose it in Settings → **Virtual microphone**.
+
+**Soundpad says "you may not hear your sounds".**
+Your Mac's sound output is set to a virtual device such as BlackHole, so the sounds go there
+instead of to your speakers. Click **Choose Speakers…** and pick your speakers or headphones.
 
 **A hotkey doesn't work.**
 Another app might already use that key combination. Pick a different one.
