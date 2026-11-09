@@ -147,5 +147,6 @@
   "use_other": "Använd %@ i stället",
   "speaker_virtual": "Datorns ljudutgång är ”%@”, så du kanske inte hör dina ljud.",
   "choose_speakers": "Välj högtalare…",
-  "no_mic": "Ingen mikrofon hittades"
+  "no_mic": "Ingen mikrofon hittades",
+  "driver_update_banner": "Uppdatera Soundpad Virtual Mic så slutar Soundpad be om åtkomst till mikrofonen."
 }

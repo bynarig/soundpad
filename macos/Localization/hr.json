@@ -147,5 +147,6 @@
   "use_other": "Koristi %@",
   "speaker_virtual": "Zvučni izlaz vašeg Maca je „%@”, pa možda nećete čuti svoje zvukove.",
   "choose_speakers": "Odaberi zvučnike…",
-  "no_mic": "Mikrofon nije pronađen"
+  "no_mic": "Mikrofon nije pronađen",
+  "driver_update_banner": "Ažurirajte Soundpad Virtual Mic kako Soundpad više ne bi tražio pristup mikrofonu."
 }

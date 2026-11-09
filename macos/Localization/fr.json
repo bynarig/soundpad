@@ -147,5 +147,6 @@
   "use_other": "Utiliser %@ à la place",
   "speaker_virtual": "La sortie audio de votre Mac est « %@ » : vous risquez de ne pas entendre vos sons.",
   "choose_speakers": "Choisir les haut-parleurs…",
-  "no_mic": "Aucun micro trouvé"
+  "no_mic": "Aucun micro trouvé",
+  "driver_update_banner": "Mettez à jour Soundpad Virtual Mic pour que Soundpad cesse de demander l’accès au micro."
 }

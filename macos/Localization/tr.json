@@ -147,5 +147,6 @@
   "use_other": "Bunun yerine %@ kullan",
   "speaker_virtual": "Mac’inizin ses çıkışı “%@”, bu yüzden seslerinizi duymayabilirsiniz.",
   "choose_speakers": "Hoparlör seç…",
-  "no_mic": "Mikrofon bulunamadı"
+  "no_mic": "Mikrofon bulunamadı",
+  "driver_update_banner": "Soundpad’in mikrofon erişimi istemeyi bırakması için Soundpad Virtual Mic’i güncelleyin."
 }

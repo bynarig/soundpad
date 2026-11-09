@@ -147,5 +147,6 @@
   "use_other": "Use %@ instead",
   "speaker_virtual": "Your Mac's sound output is “%@”, so you may not hear your sounds.",
   "choose_speakers": "Choose Speakers…",
-  "no_mic": "No microphone found"
+  "no_mic": "No microphone found",
+  "driver_update_banner": "Update Soundpad Virtual Mic so Soundpad stops asking for microphone access."
 }

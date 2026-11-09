@@ -147,5 +147,6 @@
   "use_other": "Izmantot %@",
   "speaker_virtual": "Jūsu Mac skaņas izvade ir “%@”, tāpēc jūs varat nedzirdēt savas skaņas.",
   "choose_speakers": "Izvēlēties skaļruņus…",
-  "no_mic": "Mikrofons nav atrasts"
+  "no_mic": "Mikrofons nav atrasts",
+  "driver_update_banner": "Atjauniniet Soundpad Virtual Mic, lai Soundpad vairs neprasītu piekļuvi mikrofonam."
 }

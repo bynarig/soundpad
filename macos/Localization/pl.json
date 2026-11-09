@@ -147,5 +147,6 @@
   "use_other": "Użyj %@",
   "speaker_virtual": "Wyjście dźwięku Twojego Maca to „%@”, więc możesz nie słyszeć swoich dźwięków.",
   "choose_speakers": "Wybierz głośniki…",
-  "no_mic": "Nie znaleziono mikrofonu"
+  "no_mic": "Nie znaleziono mikrofonu",
+  "driver_update_banner": "Uaktualnij Soundpad Virtual Mic, aby Soundpad przestał prosić o dostęp do mikrofonu."
 }

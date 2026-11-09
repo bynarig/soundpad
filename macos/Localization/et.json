@@ -147,5 +147,6 @@
   "use_other": "Kasuta selle asemel: %@",
   "speaker_virtual": "Sinu Maci heliväljund on „%@”, seega ei pruugi sa oma helisid kuulda.",
   "choose_speakers": "Vali kõlarid…",
-  "no_mic": "Mikrofoni ei leitud"
+  "no_mic": "Mikrofoni ei leitud",
+  "driver_update_banner": "Uuenda Soundpad Virtual Mic, et Soundpad lõpetaks mikrofoni juurdepääsu küsimise."
 }

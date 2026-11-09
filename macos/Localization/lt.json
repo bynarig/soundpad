@@ -147,5 +147,6 @@
   "use_other": "Naudoti %@",
   "speaker_virtual": "Jūsų „Mac“ garso išvestis yra „%@“, todėl galite negirdėti savo garsų.",
   "choose_speakers": "Pasirinkti garsiakalbius…",
-  "no_mic": "Mikrofonas nerastas"
+  "no_mic": "Mikrofonas nerastas",
+  "driver_update_banner": "Atnaujinkite Soundpad Virtual Mic, kad Soundpad nustotų prašyti prieigos prie mikrofono."
 }

@@ -147,5 +147,6 @@
   "use_other": "Brug %@ i stedet",
   "speaker_virtual": "Din Macs lydudgang er “%@”, så du hører måske ikke dine lyde.",
   "choose_speakers": "Vælg højttalere…",
-  "no_mic": "Ingen mikrofon fundet"
+  "no_mic": "Ingen mikrofon fundet",
+  "driver_update_banner": "Opdater Soundpad Virtual Mic, så Soundpad holder op med at bede om adgang til mikrofonen."
 }

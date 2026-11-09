@@ -147,5 +147,6 @@
   "use_other": "استخدام %@ بدلاً من ذلك",
   "speaker_virtual": "مخرج الصوت في جهاز Mac هو ”%@“، لذا قد لا تسمع أصواتك.",
   "choose_speakers": "اختيار مكبرات الصوت…",
-  "no_mic": "لم يُعثر على ميكروفون"
+  "no_mic": "لم يُعثر على ميكروفون",
+  "driver_update_banner": "حدّث Soundpad Virtual Mic حتى يتوقف Soundpad عن طلب الوصول إلى الميكروفون."
 }

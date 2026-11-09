@@ -147,5 +147,6 @@
   "use_other": "Käytä sen sijaan: %@",
   "speaker_virtual": "Macin äänilähtö on ”%@”, joten et ehkä kuule ääniäsi.",
   "choose_speakers": "Valitse kaiuttimet…",
-  "no_mic": "Mikrofonia ei löytynyt"
+  "no_mic": "Mikrofonia ei löytynyt",
+  "driver_update_banner": "Päivitä Soundpad Virtual Mic, niin Soundpad lakkaa pyytämästä mikrofonin käyttöoikeutta."
 }

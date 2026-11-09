@@ -156,7 +156,8 @@ impl From<&DeviceInfo> for DeviceView {
     fn from(d: &DeviceInfo) -> Self {
         Self {
             id: d.id.clone(),
-            name: d.name.clone(),
+            // In Soundpad, the Feed is simply "Soundpad Virtual Mic".
+            name: if d.name == virtual_mic::FEED_NAME { virtual_mic::DEVICE_NAME.to_string() } else { d.name.clone() },
             is_virtual: d.looks_virtual(),
             is_soundpad: virtual_mic::is_virtual_mic(d),
         }
@@ -458,6 +459,7 @@ impl Core {
             C::SetInputDevice { id } => {
                 self.settings.input_device = id.clone();
                 self.mark_dirty();
+                self.refresh_device_lists();
                 self.engine.set_input(id.as_deref())?;
             }
             C::RefreshDevices => self.refresh_device_lists(),
@@ -483,8 +485,12 @@ impl Core {
         let virtual_selected = self.settings.mic_device.as_ref().is_some_and(|id| {
             self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d))
         });
-        let default_input_name = engine::pick_default_input(engine::default_input_id().as_deref(), &self.in_devices)
-            .and_then(|id| self.in_devices.iter().find(|d| d.id == id).map(|d| d.name.clone()));
+        let default_input_name = if self.in_devices.is_empty() {
+            None
+        } else {
+            engine::pick_default_input(engine::default_input_id().as_deref(), &self.in_devices)
+                .and_then(|id| self.in_devices.iter().find(|d| d.id == id).map(|d| d.name.clone()))
+        };
         let speaker = self.engine.output(OutputKind::Speakers).map(|o| &o.device);
         StateView {
             playlists: self
@@ -777,6 +783,16 @@ impl Core {
     }
 
     fn open_devices(&mut self) {
+        // After the driver update, a saved choice of the old two-way device moves
+        // to the Feed (same driver, playback side).
+        if let Some(id) = &self.settings.mic_device
+            && id.contains(virtual_mic::DEVICE_NAME)
+            && !self.out_devices.iter().any(|d| &d.id == id)
+            && let Some(feed) = virtual_mic::auto_mic_device(&self.out_devices)
+        {
+            self.settings.mic_device = Some(feed);
+            self.mark_dirty();
+        }
         if !self.settings.mic_device_chosen {
             // Never keep a loopback the user didn't pick (older versions auto-selected
             // BlackHole & co., which leaks sounds into apps like OBS).
@@ -805,7 +821,9 @@ impl Core {
 
     fn refresh_device_lists(&mut self) {
         self.out_devices = engine::output_devices();
-        self.in_devices = engine::input_devices();
+        // Looking at microphones can make macOS ask for microphone permission, so
+        // only do it once the user has turned on "Mix in my microphone".
+        self.in_devices = if self.settings.input_device.is_some() { engine::input_devices() } else { Vec::new() };
     }
 
     fn start_driver_job(&mut self, install: bool) {

@@ -7,7 +7,12 @@ use std::process::Command;
 
 use crate::audio::engine::DeviceInfo;
 
+/// The record-only device other apps (Discord, Zoom…) use as their microphone.
 pub const DEVICE_NAME: &str = "Soundpad Virtual Mic";
+/// The play-only device Soundpad plays into; it feeds `DEVICE_NAME`. Older
+/// drivers had a single two-way device, and playing into a device that also has
+/// a microphone side makes macOS ask for microphone permission.
+pub const FEED_NAME: &str = "Soundpad Virtual Mic Feed";
 pub const DRIVER_BUNDLE: &str = "SoundpadVirtualMic.driver";
 pub const HAL_DIR: &str = "/Library/Audio/Plug-Ins/HAL";
 
@@ -47,12 +52,20 @@ pub fn update_available() -> bool {
     }
 }
 
-pub fn find_device(devices: &[DeviceInfo]) -> Option<&DeviceInfo> {
-    devices.iter().find(|d| is_virtual_mic(d))
+/// The output Soundpad plays into: the Feed device, or the two-way device of
+/// an older driver until it is updated.
+pub fn find_device(outputs: &[DeviceInfo]) -> Option<&DeviceInfo> {
+    outputs.iter().find(|d| d.name == FEED_NAME).or_else(|| outputs.iter().find(|d| d.name == DEVICE_NAME))
 }
 
+/// Either side of Soundpad's own virtual mic.
 pub fn is_virtual_mic(d: &DeviceInfo) -> bool {
-    d.name == DEVICE_NAME
+    d.name == DEVICE_NAME || d.name == FEED_NAME
+}
+
+/// Name of the device to record from to hear what was played into `output`.
+pub fn recording_side(output: &str) -> &str {
+    if output == FEED_NAME { DEVICE_NAME } else { output }
 }
 
 /// The virtual-mic output to use while the user hasn't picked one: Soundpad
@@ -136,6 +149,13 @@ mod tests {
         let outs = [blackhole.clone(), speakers.clone(), ours.clone()];
         assert_eq!(auto_mic_device(&outs).as_deref(), Some("sp"));
         assert_eq!(other_loopback(&outs).map(|d| d.id.as_str()), Some("bh"));
+        // New driver: Soundpad plays into the Feed, never the two-way device.
+        let outs = [dev("old", DEVICE_NAME), dev("feed", FEED_NAME)];
+        assert_eq!(auto_mic_device(&outs).as_deref(), Some("feed"));
+        assert_eq!(auto_mic_device(&outs[..1]).as_deref(), Some("old"), "older driver still works");
+        assert!(other_loopback(&outs).is_none(), "the Feed isn't offered as a foreign loopback");
+        assert_eq!(recording_side(FEED_NAME), DEVICE_NAME);
+        assert_eq!(recording_side("BlackHole 2ch"), "BlackHole 2ch");
         // Neither: nothing.
         assert_eq!(auto_mic_device(std::slice::from_ref(&speakers)), None);
         assert!(other_loopback(&[speakers, ours]).is_none());

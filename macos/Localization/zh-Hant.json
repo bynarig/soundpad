@@ -147,5 +147,6 @@
   "use_other": "改用 %@",
   "speaker_virtual": "你的 Mac 聲音輸出為「%@」，因此你可能聽不到聲音。",
   "choose_speakers": "選擇揚聲器⋯",
-  "no_mic": "找不到麥克風"
+  "no_mic": "找不到麥克風",
+  "driver_update_banner": "更新 Soundpad Virtual Mic，Soundpad 就不會再要求麥克風取用權限。"
 }

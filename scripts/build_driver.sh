@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Build the "Soundpad Virtual Mic" CoreAudio HAL plug-in from the vendored
 # BlackHole source (GPL-3.0) into target/driver/SoundpadVirtualMic.driver.
+#
+# Two devices sharing one buffer (BlackHole's "mirror" mode):
+#   "Soundpad Virtual Mic"       record-only: what Discord/Zoom pick as their microphone
+#   "Soundpad Virtual Mic Feed"  play-only:   what Soundpad plays into
+# Soundpad never opens a device with a microphone side, so macOS never asks it
+# for microphone permission (unless you turn on "Mix in my microphone").
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,7 +17,10 @@ SRC="vendor/blackhole-driver"
 OUT="target/driver/$EXE.driver"
 # A factory UUID of our own so it can coexist with a real BlackHole install.
 FACTORY_UUID="7C1F3B0E-5A2D-4F43-9E6B-0D5A1C8B2F61"
-VERSION="$(tr -d '[:space:]' < "$SRC/VERSION")"
+# Upstream version + our build revision (bump DRIVER_REVISION whenever the
+# build changes, so installed copies are offered the update).
+DRIVER_REVISION=2
+VERSION="$(tr -d '[:space:]' < "$SRC/VERSION").$DRIVER_REVISION"
 
 rm -rf "$OUT"
 mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources"
@@ -31,7 +40,9 @@ clang -arch arm64 -arch x86_64 -mmacosx-version-min=11.0 -O2 -bundle \
   -DkPlugIn_Icon="\"$EXE.icns\"" \
   -DkHas_Driver_Name_Format=false \
   -DkDevice_Name="\"$NAME\"" \
-  -DkDevice2_Name="\"$NAME (mirror)\"" \
+  -DkDevice2_Name="\"$NAME Feed\"" \
+  -DkDevice_HasInput=true -DkDevice_HasOutput=false \
+  -DkDevice2_HasInput=false -DkDevice2_HasOutput=true -DkDevice2_IsHidden=false \
   -DkManufacturer_Name="\"Soundpad (based on BlackHole by Existential Audio)\"" \
   -DkCanBeDefaultSystemDevice=false \
   -DkNumber_Of_Channels=2 \

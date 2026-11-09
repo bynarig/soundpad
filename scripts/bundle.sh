@@ -104,8 +104,20 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-# Ad-hoc signature (needed for the microphone permission prompt on Apple Silicon).
-codesign --force --deep --sign - "$APP"
+# Code signature. macOS remembers privacy permissions (microphone) per signing
+# identity, so use the permanent one from scripts/setup_codesign.sh when present;
+# ad-hoc signatures change every build and make macOS ask again after each update.
+# (The virtual mic driver in Resources keeps its own ad-hoc signature.)
+SIGN_KC="${SOUNDPAD_CONFIG_DIR:-$HOME/.config/soundpad}/codesign.keychain-db"
+SIGN_ID="Soundpad Code Signing"
+if [[ -f "$SIGN_KC" ]]; then
+  security unlock-keychain -p "$(cat "${SIGN_KC%.keychain-db}.keychain-password")" "$SIGN_KC"
+  codesign --force --keychain "$SIGN_KC" --sign "$SIGN_ID" "$APP"
+else
+  echo "note: no signing identity (run scripts/setup_codesign.sh); signing ad-hoc" >&2
+  codesign --force --sign - "$APP"
+fi
+codesign --verify --deep --strict "$APP"
 
 echo "Built $APP"
 if [[ $INSTALL == 1 ]]; then

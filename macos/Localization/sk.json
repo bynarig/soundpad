@@ -147,5 +147,6 @@
   "use_other": "Použiť %@",
   "speaker_virtual": "Zvukový výstup vášho Macu je „%@“, takže svoje zvuky možno nebudete počuť.",
   "choose_speakers": "Vybrať reproduktory…",
-  "no_mic": "Mikrofón sa nenašiel"
+  "no_mic": "Mikrofón sa nenašiel",
+  "driver_update_banner": "Aktualizujte Soundpad Virtual Mic, aby Soundpad prestal žiadať o prístup k mikrofónu."
 }

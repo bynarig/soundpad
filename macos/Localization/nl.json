@@ -147,5 +147,6 @@
   "use_other": "Gebruik in plaats daarvan %@",
   "speaker_virtual": "De geluidsuitvoer van je Mac is ‘%@’, dus je hoort je geluiden misschien niet.",
   "choose_speakers": "Kies luidsprekers…",
-  "no_mic": "Geen microfoon gevonden"
+  "no_mic": "Geen microfoon gevonden",
+  "driver_update_banner": "Werk Soundpad Virtual Mic bij zodat Soundpad niet meer om toegang tot de microfoon vraagt."
 }

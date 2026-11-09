@@ -147,5 +147,6 @@
   "use_other": "Gunakan %@",
   "speaker_virtual": "Output suara Mac Anda adalah “%@”, jadi Anda mungkin tidak mendengar suara Anda.",
   "choose_speakers": "Pilih speaker…",
-  "no_mic": "Mikrofon tidak ditemukan"
+  "no_mic": "Mikrofon tidak ditemukan",
+  "driver_update_banner": "Perbarui Soundpad Virtual Mic agar Soundpad berhenti meminta akses mikrofon."
 }

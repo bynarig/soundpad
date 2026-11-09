@@ -147,5 +147,6 @@
   "use_other": "代わりに %@ を使用",
   "speaker_virtual": "Mac のサウンド出力が “%@” になっているため、サウンドが聞こえない可能性があります。",
   "choose_speakers": "スピーカーを選択…",
-  "no_mic": "マイクが見つかりません"
+  "no_mic": "マイクが見つかりません",
+  "driver_update_banner": "Soundpad Virtual Mic をアップデートすると、Soundpad がマイクへのアクセスを求めなくなります。"
 }

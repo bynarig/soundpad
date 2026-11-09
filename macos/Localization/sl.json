@@ -147,5 +147,6 @@
   "use_other": "Uporabi %@",
   "speaker_virtual": "Zvočni izhod vašega Maca je »%@«, zato morda ne boste slišali svojih zvokov.",
   "choose_speakers": "Izberi zvočnike …",
-  "no_mic": "Mikrofona ni mogoče najti"
+  "no_mic": "Mikrofona ni mogoče najti",
+  "driver_update_banner": "Posodobite Soundpad Virtual Mic, da Soundpad ne bo več prosil za dostop do mikrofona."
 }

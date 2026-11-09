@@ -64,10 +64,21 @@ static void io(UInt32 op, Float64 t, UInt32 frames, float *buf) {
     c.mCurrentTime.mSampleTime = t;
     c.mInputTime.mSampleTime = t;
     c.mOutputTime.mSampleTime = t;
-    AudioObjectID stream = op == kAudioServerPlugInIOOperationReadInput ? kStreamIn : kStreamOut;
-    (*drv)->BeginIOOperation(drv, kDevice, 1, op, frames, &c);
-    (*drv)->DoIOOperation(drv, kDevice, stream, 1, op, frames, &c, buf, NULL);
-    (*drv)->EndIOOperation(drv, kDevice, 1, op, frames, &c);
+    // Apps record from the Mic device; Soundpad plays into the Feed device.
+    int reading = op == kAudioServerPlugInIOOperationReadInput;
+    AudioObjectID stream = reading ? kStreamIn : kStreamOut;
+    AudioObjectID dev = reading ? kDevice : kDevice2;
+    (*drv)->BeginIOOperation(drv, dev, 1, op, frames, &c);
+    (*drv)->DoIOOperation(drv, dev, stream, 1, op, frames, &c, buf, NULL);
+    (*drv)->EndIOOperation(drv, dev, 1, op, frames, &c);
+}
+
+/// Number of streams a device has in `scope` (input or output).
+static UInt32 stream_count(AudioObjectID dev, AudioObjectPropertyScope scope) {
+    AudioObjectPropertyAddress a = {kAudioDevicePropertyStreams, scope, kAudioObjectPropertyElementMain};
+    UInt32 size = 0;
+    (*drv)->GetPropertyDataSize(drv, dev, 0, &a, 0, NULL, &size);
+    return size / sizeof(AudioObjectID);
 }
 
 int main(int argc, char **argv) {
@@ -101,10 +112,20 @@ int main(int argc, char **argv) {
     CHECK(strstr(s, "BlackHole") == NULL, "box name: \"%s\"", s);
     get_string(kBox, kAudioObjectPropertyModelName, s, sizeof s);
     CHECK(strstr(s, "BlackHole") == NULL, "box model: \"%s\"", s);
-    CHECK(get_u32(kDevice, kAudioDevicePropertyDeviceCanBeDefaultSystemDevice, kAudioObjectPropertyScopeOutput) == 0,
+    get_string(kDevice2, kAudioObjectPropertyName, s, sizeof s);
+    CHECK(strcmp(s, "Soundpad Virtual Mic Feed") == 0, "feed device name: \"%s\"", s);
+    CHECK(get_u32(kDevice2, kAudioDevicePropertyDeviceCanBeDefaultSystemDevice, kAudioObjectPropertyScopeOutput) == 0,
           "never becomes the system alert-sound device");
-    CHECK(get_u32(kDevice, kAudioDevicePropertyIsHidden, kAudioObjectPropertyScopeGlobal) == 0, "main device visible");
-    CHECK(get_u32(kDevice2, kAudioDevicePropertyIsHidden, kAudioObjectPropertyScopeGlobal) == 1, "mirror device hidden");
+    CHECK(get_u32(kDevice, kAudioDevicePropertyIsHidden, kAudioObjectPropertyScopeGlobal) == 0, "mic device visible");
+    CHECK(get_u32(kDevice2, kAudioDevicePropertyIsHidden, kAudioObjectPropertyScopeGlobal) == 0, "feed device visible");
+
+    printf("\n[no microphone side on what Soundpad opens]\n");
+    CHECK(stream_count(kDevice, kAudioObjectPropertyScopeInput) == 1 && stream_count(kDevice, kAudioObjectPropertyScopeOutput) == 0,
+          "Soundpad Virtual Mic is record-only (in %u, out %u)", stream_count(kDevice, kAudioObjectPropertyScopeInput),
+          stream_count(kDevice, kAudioObjectPropertyScopeOutput));
+    CHECK(stream_count(kDevice2, kAudioObjectPropertyScopeInput) == 0 && stream_count(kDevice2, kAudioObjectPropertyScopeOutput) == 1,
+          "Soundpad Virtual Mic Feed is play-only (in %u, out %u)", stream_count(kDevice2, kAudioObjectPropertyScopeInput),
+          stream_count(kDevice2, kAudioObjectPropertyScopeOutput));
 
     AudioObjectPropertyAddress ra = {kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
     Float64 rate = 0;
@@ -118,8 +139,8 @@ int main(int argc, char **argv) {
     CHECK(f.mChannelsPerFrame == 2 && (f.mFormatFlags & kAudioFormatFlagIsFloat), "stream format: %u ch float32",
           (unsigned)f.mChannelsPerFrame);
 
-    printf("\n[audio path: app output -> driver -> app input]\n");
-    CHECK((*drv)->StartIO(drv, kDevice, 1) == 0, "StartIO");
+    printf("\n[audio path: Soundpad -> Feed -> driver -> Mic -> Discord]\n");
+    CHECK((*drv)->StartIO(drv, kDevice, 1) == 0 && (*drv)->StartIO(drv, kDevice2, 1) == 0, "StartIO on both devices");
 
     enum { N = 512 };
     float out[N * 2], in[N * 2];
@@ -146,7 +167,7 @@ int main(int argc, char **argv) {
     CHECK(mismatches == 0, "%ld cycles of 1 kHz stereo audio round-trip bit-exact (%ld mismatched samples)", cycles,
           mismatches);
 
-    CHECK((*drv)->StopIO(drv, kDevice, 1) == 0, "StopIO");
+    CHECK((*drv)->StopIO(drv, kDevice, 1) == 0 && (*drv)->StopIO(drv, kDevice2, 1) == 0, "StopIO");
 
     printf("\n%s (%d failure%s)\n", failures ? "DRIVER TEST FAILED" : "DRIVER TEST PASSED", failures,
            failures == 1 ? "" : "s");

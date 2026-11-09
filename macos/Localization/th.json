@@ -147,5 +147,6 @@
   "use_other": "ใช้ %@ แทน",
   "speaker_virtual": "เอาต์พุตเสียงของ Mac คือ “%@” คุณจึงอาจไม่ได้ยินเสียงของคุณ",
   "choose_speakers": "เลือกลำโพง…",
-  "no_mic": "ไม่พบไมโครโฟน"
+  "no_mic": "ไม่พบไมโครโฟน",
+  "driver_update_banner": "อัปเดต Soundpad Virtual Mic เพื่อให้ Soundpad หยุดขอสิทธิ์เข้าถึงไมโครโฟน"
 }

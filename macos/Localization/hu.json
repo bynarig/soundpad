@@ -147,5 +147,6 @@
   "use_other": "A(z) %@ használata",
   "speaker_virtual": "A Mac hangkimenete: „%@”, ezért lehet, hogy nem hallja a hangjait.",
   "choose_speakers": "Hangszórók kiválasztása…",
-  "no_mic": "Nem található mikrofon"
+  "no_mic": "Nem található mikrofon",
+  "driver_update_banner": "Frissítse a Soundpad Virtual Micet, hogy a Soundpad ne kérjen többé hozzáférést a mikrofonhoz."
 }

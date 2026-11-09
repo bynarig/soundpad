@@ -199,6 +199,7 @@ struct SoundList: View {
             .toolbar { toolbar }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(spacing: 0) {
+                    DriverUpdateBanner()
                     SpeakerWarningBanner()
                     SetupBanner()
                 }
@@ -488,6 +489,35 @@ struct SetupBanner: View {
     }
 }
 
+/// Older drivers had one two-way device; playing into it made macOS ask for
+/// microphone permission. Offer the update (one password prompt).
+struct DriverUpdateBanner: View {
+    @Environment(Store.self) private var store
+
+    var body: some View {
+        let d = store.state.driver
+        if d.installed && d.updateAvailable {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.down.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.tint)
+                Text("Update Soundpad Virtual Mic so Soundpad stops asking for microphone access.")
+                    .font(.callout)
+                Spacer(minLength: 8)
+                if d.busy {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Button("Update") { store.send("install_driver") }
+                        .buttonStyle(.glassProminent)
+                }
+            }
+            .padding(12)
+            .glassEffect(.regular.tint(.accentColor.opacity(0.15)), in: .rect(cornerRadius: 18))
+            .padding([.horizontal, .top], 12)
+        }
+    }
+}
+
 /// Shown when "your" output is a loopback device (e.g. the Mac's sound output is
 /// set to BlackHole for OBS): Soundpad's sounds then go there and you hear nothing.
 struct SpeakerWarningBanner: View {
@@ -502,7 +532,6 @@ struct SpeakerWarningBanner: View {
                     .foregroundStyle(.yellow)
                 Text("Your Mac's sound output is “\(name)”, so you may not hear your sounds.")
                     .font(.callout)
-                    .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 8)
                 SettingsLink { Text("Choose Speakers…") }
                     .buttonStyle(.glass)

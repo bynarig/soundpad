@@ -147,5 +147,6 @@
   "use_other": "Dùng %@ thay thế",
   "speaker_virtual": "Đầu ra âm thanh của máy Mac là “%@”, nên có thể bạn sẽ không nghe thấy âm thanh của mình.",
   "choose_speakers": "Chọn loa…",
-  "no_mic": "Không tìm thấy micrô"
+  "no_mic": "Không tìm thấy micrô",
+  "driver_update_banner": "Hãy cập nhật Soundpad Virtual Mic để Soundpad không còn xin quyền truy cập micrô."
 }

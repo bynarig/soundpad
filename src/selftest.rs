@@ -208,7 +208,7 @@ fn loopback_test(player: &Arc<Player>, eng: &mut AudioEngine, dev: &crate::audio
             return false;
         }
     }
-    let rec = match record(&dev.name) {
+    let rec = match record(crate::virtual_mic::recording_side(&dev.name)) {
         Ok(r) => r,
         Err(e) => {
             println!("  FAIL: {e}");

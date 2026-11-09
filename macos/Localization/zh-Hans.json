@@ -147,5 +147,6 @@
   "use_other": "改用 %@",
   "speaker_virtual": "你的 Mac 声音输出为“%@”，因此你可能听不到声音。",
   "choose_speakers": "选择扬声器…",
-  "no_mic": "未找到麦克风"
+  "no_mic": "未找到麦克风",
+  "driver_update_banner": "更新 Soundpad Virtual Mic，Soundpad 将不再请求麦克风访问权限。"
 }

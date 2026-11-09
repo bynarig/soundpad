@@ -147,5 +147,6 @@
   "use_other": "Folosiți %@",
   "speaker_virtual": "Ieșirea audio a Mac-ului este „%@”, deci s-ar putea să nu vă auziți sunetele.",
   "choose_speakers": "Alegeți difuzoarele…",
-  "no_mic": "Nu s-a găsit niciun microfon"
+  "no_mic": "Nu s-a găsit niciun microfon",
+  "driver_update_banner": "Actualizați Soundpad Virtual Mic ca Soundpad să nu mai ceară acces la microfon."
 }

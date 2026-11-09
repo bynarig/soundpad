@@ -147,5 +147,6 @@
   "use_other": "Úsáid %@ ina ionad",
   "speaker_virtual": "Is é “%@” aschur fuaime do Mac, mar sin b’fhéidir nach gcloisfidh tú d’fhuaimeanna.",
   "choose_speakers": "Roghnaigh callairí…",
-  "no_mic": "Níor aimsíodh micreafón"
+  "no_mic": "Níor aimsíodh micreafón",
+  "driver_update_banner": "Nuashonraigh Soundpad Virtual Mic ionas nach n-iarrfaidh Soundpad rochtain ar an micreafón a thuilleadh."
 }

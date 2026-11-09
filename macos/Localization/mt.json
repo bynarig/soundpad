@@ -147,5 +147,6 @@
   "use_other": "Uża %@ minflok",
   "speaker_virtual": "L-output tal-ħoss tal-Mac tiegħek huwa “%@”, għalhekk forsi ma tismax il-ħsejjes tiegħek.",
   "choose_speakers": "Agħżel l-ispikers…",
-  "no_mic": "Ma nstab l-ebda mikrofonu"
+  "no_mic": "Ma nstab l-ebda mikrofonu",
+  "driver_update_banner": "Aġġorna Soundpad Virtual Mic biex Soundpad ma jibqax jitlob aċċess għall-mikrofonu."
 }
