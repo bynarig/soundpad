@@ -143,5 +143,9 @@
   "install_failed": "Kan de update niet installeren: %@",
   "bad_signature": "De download is niet ondertekend door de ontwikkelaar.",
   "damaged": "De gedownloade update is beschadigd.",
-  "move_to_apps": "Zet Soundpad in de map Apps om updates te installeren."
+  "move_to_apps": "Zet Soundpad in de map Apps om updates te installeren.",
+  "use_other": "Gebruik in plaats daarvan %@",
+  "speaker_virtual": "De geluidsuitvoer van je Mac is ‘%@’, dus je hoort je geluiden misschien niet.",
+  "choose_speakers": "Kies luidsprekers…",
+  "no_mic": "Geen microfoon gevonden"
 }

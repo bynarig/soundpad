@@ -143,5 +143,9 @@
   "install_failed": "Aktualizáciu nemožno nainštalovať: %@",
   "bad_signature": "Stiahnutý súbor nie je podpísaný vývojárom.",
   "damaged": "Stiahnutá aktualizácia je poškodená.",
-  "move_to_apps": "Presuňte Soundpad do priečinka Aplikácie, aby ste mohli inštalovať aktualizácie."
+  "move_to_apps": "Presuňte Soundpad do priečinka Aplikácie, aby ste mohli inštalovať aktualizácie.",
+  "use_other": "Použiť %@",
+  "speaker_virtual": "Zvukový výstup vášho Macu je „%@“, takže svoje zvuky možno nebudete počuť.",
+  "choose_speakers": "Vybrať reproduktory…",
+  "no_mic": "Mikrofón sa nenašiel"
 }

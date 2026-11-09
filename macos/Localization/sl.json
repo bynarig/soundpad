@@ -143,5 +143,9 @@
   "install_failed": "Posodobitve ni bilo mogoče namestiti: %@",
   "bad_signature": "Prenos ni podpisan s strani razvijalca.",
   "damaged": "Prenesena posodobitev je poškodovana.",
-  "move_to_apps": "Za nameščanje posodobitev premaknite Soundpad v mapo Aplikacije."
+  "move_to_apps": "Za nameščanje posodobitev premaknite Soundpad v mapo Aplikacije.",
+  "use_other": "Uporabi %@",
+  "speaker_virtual": "Zvočni izhod vašega Maca je »%@«, zato morda ne boste slišali svojih zvokov.",
+  "choose_speakers": "Izberi zvočnike …",
+  "no_mic": "Mikrofona ni mogoče najti"
 }

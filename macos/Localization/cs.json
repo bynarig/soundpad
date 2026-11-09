@@ -143,5 +143,9 @@
   "install_failed": "Aktualizaci nelze nainstalovat: %@",
   "bad_signature": "Stažený soubor není podepsán vývojářem.",
   "damaged": "Stažená aktualizace je poškozená.",
-  "move_to_apps": "Přesuňte Soundpad do složky Aplikace, abyste mohli instalovat aktualizace."
+  "move_to_apps": "Přesuňte Soundpad do složky Aplikace, abyste mohli instalovat aktualizace.",
+  "use_other": "Použít %@",
+  "speaker_virtual": "Zvukový výstup vašeho Macu je „%@“, takže své zvuky možná neuslyšíte.",
+  "choose_speakers": "Vybrat reproduktory…",
+  "no_mic": "Mikrofon nebyl nalezen"
 }

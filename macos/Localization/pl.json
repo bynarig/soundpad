@@ -143,5 +143,9 @@
   "install_failed": "Nie można zainstalować uaktualnienia: %@",
   "bad_signature": "Pobrany plik nie jest podpisany przez twórcę.",
   "damaged": "Pobrane uaktualnienie jest uszkodzone.",
-  "move_to_apps": "Przenieś Soundpad do folderu Aplikacje, aby instalować uaktualnienia."
+  "move_to_apps": "Przenieś Soundpad do folderu Aplikacje, aby instalować uaktualnienia.",
+  "use_other": "Użyj %@",
+  "speaker_virtual": "Wyjście dźwięku Twojego Maca to „%@”, więc możesz nie słyszeć swoich dźwięków.",
+  "choose_speakers": "Wybierz głośniki…",
+  "no_mic": "Nie znaleziono mikrofonu"
 }

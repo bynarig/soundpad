@@ -26,6 +26,7 @@ let coreFixedMessages: [String.LocalizationValue] = [
     "Driver installed, but the device didn't appear. Try restarting your Mac.",
     "Soundpad Virtual Mic removed",
     "Add a modifier (⌃ ⌥ ⇧ ⌘) — a bare key would block typing everywhere",
+    "No microphone found",
 ]
 
 private let compiledTemplates: [(String, NSRegularExpression)] = coreTemplates.compactMap { t in

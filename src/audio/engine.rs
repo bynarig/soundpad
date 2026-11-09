@@ -52,6 +52,19 @@ pub fn default_output_id() -> Option<String> {
     cpal::default_host().default_output_device().and_then(|d| d.id().ok()).map(|i| i.to_string())
 }
 
+/// The microphone used for "System default": the system's default input,
+/// unless that is a virtual loopback device (BlackHole, Soundpad Virtual Mic…).
+/// Mixing one of those into the virtual mic could feed audio back into itself,
+/// so then the first real microphone is used instead.
+pub fn pick_default_input(default_id: Option<&str>, inputs: &[DeviceInfo]) -> Option<String> {
+    let real = |d: &&DeviceInfo| !d.looks_virtual();
+    default_id
+        .and_then(|id| inputs.iter().find(|d| d.id == id))
+        .filter(real)
+        .or_else(|| inputs.iter().find(real))
+        .map(|d| d.id.clone())
+}
+
 pub fn default_input_id() -> Option<String> {
     cpal::default_host().default_input_device().and_then(|d| d.id().ok()).map(|i| i.to_string())
 }
@@ -164,9 +177,13 @@ impl AudioEngine {
         let (Some(id), Some(out)) = (device_id, self.mic_out.as_ref()) else {
             return Ok(());
         };
-        let dev = if id.is_empty() { cpal::default_host().default_input_device() } else { find_device(id) };
+        let dev = if id.is_empty() {
+            pick_default_input(default_input_id().as_deref(), &input_devices()).and_then(|id| find_device(&id))
+        } else {
+            find_device(id)
+        };
         let Some(dev) = dev else {
-            let e = format!("Input device not found: {id}");
+            let e = if id.is_empty() { "No microphone found".to_string() } else { format!("Input device not found: {id}") };
             self.last_error = Some(e.clone());
             return Err(e);
         };

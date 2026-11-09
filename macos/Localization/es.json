@@ -143,5 +143,9 @@
   "install_failed": "No se pudo instalar la actualización: %@",
   "bad_signature": "La descarga no está firmada por el desarrollador.",
   "damaged": "La actualización descargada está dañada.",
-  "move_to_apps": "Mueve Soundpad a la carpeta Aplicaciones para instalar actualizaciones."
+  "move_to_apps": "Mueve Soundpad a la carpeta Aplicaciones para instalar actualizaciones.",
+  "use_other": "Usar %@ en su lugar",
+  "speaker_virtual": "La salida de sonido de tu Mac es «%@», así que puede que no oigas tus sonidos.",
+  "choose_speakers": "Elegir altavoces…",
+  "no_mic": "No se encontró ningún micrófono"
 }

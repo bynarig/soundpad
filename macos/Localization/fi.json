@@ -143,5 +143,9 @@
   "install_failed": "Päivityksen asennus epäonnistui: %@",
   "bad_signature": "Latausta ei ole allekirjoittanut kehittäjä.",
   "damaged": "Ladattu päivitys on vahingoittunut.",
-  "move_to_apps": "Siirrä Soundpad Ohjelmat-kansioon, jotta voit asentaa päivityksiä."
+  "move_to_apps": "Siirrä Soundpad Ohjelmat-kansioon, jotta voit asentaa päivityksiä.",
+  "use_other": "Käytä sen sijaan: %@",
+  "speaker_virtual": "Macin äänilähtö on ”%@”, joten et ehkä kuule ääniäsi.",
+  "choose_speakers": "Valitse kaiuttimet…",
+  "no_mic": "Mikrofonia ei löytynyt"
 }

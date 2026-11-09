@@ -143,5 +143,9 @@
   "install_failed": "Instalacija ažuriranja nije uspjela: %@",
   "bad_signature": "Preuzimanje nije potpisao razvojni programer.",
   "damaged": "Preuzeto ažuriranje je oštećeno.",
-  "move_to_apps": "Premjestite Soundpad u mapu Aplikacije da biste instalirali ažuriranja."
+  "move_to_apps": "Premjestite Soundpad u mapu Aplikacije da biste instalirali ažuriranja.",
+  "use_other": "Koristi %@",
+  "speaker_virtual": "Zvučni izlaz vašeg Maca je „%@”, pa možda nećete čuti svoje zvukove.",
+  "choose_speakers": "Odaberi zvučnike…",
+  "no_mic": "Mikrofon nije pronađen"
 }

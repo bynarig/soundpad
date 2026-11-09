@@ -143,5 +143,9 @@
   "install_failed": "Güncelleme kurulamadı: %@",
   "bad_signature": "İndirilen dosya geliştirici tarafından imzalanmamış.",
   "damaged": "İndirilen güncelleme bozuk.",
-  "move_to_apps": "Güncellemeleri kurmak için Soundpad’i Uygulamalar klasörüne taşıyın."
+  "move_to_apps": "Güncellemeleri kurmak için Soundpad’i Uygulamalar klasörüne taşıyın.",
+  "use_other": "Bunun yerine %@ kullan",
+  "speaker_virtual": "Mac’inizin ses çıkışı “%@”, bu yüzden seslerinizi duymayabilirsiniz.",
+  "choose_speakers": "Hoparlör seç…",
+  "no_mic": "Mikrofon bulunamadı"
 }

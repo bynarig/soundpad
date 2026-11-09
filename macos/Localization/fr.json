@@ -143,5 +143,9 @@
   "install_failed": "Impossible d’installer la mise à jour : %@",
   "bad_signature": "Le téléchargement n’est pas signé par le développeur.",
   "damaged": "La mise à jour téléchargée est endommagée.",
-  "move_to_apps": "Placez Soundpad dans le dossier Applications pour installer les mises à jour."
+  "move_to_apps": "Placez Soundpad dans le dossier Applications pour installer les mises à jour.",
+  "use_other": "Utiliser %@ à la place",
+  "speaker_virtual": "La sortie audio de votre Mac est « %@ » : vous risquez de ne pas entendre vos sons.",
+  "choose_speakers": "Choisir les haut-parleurs…",
+  "no_mic": "Aucun micro trouvé"
 }

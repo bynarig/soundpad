@@ -143,5 +143,9 @@
   "install_failed": "Uuenduse paigaldamine ebaõnnestus: %@",
   "bad_signature": "Allalaadimine pole arendaja allkirjastatud.",
   "damaged": "Allalaaditud uuendus on vigane.",
-  "move_to_apps": "Uuenduste paigaldamiseks teisalda Soundpad kausta Rakendused."
+  "move_to_apps": "Uuenduste paigaldamiseks teisalda Soundpad kausta Rakendused.",
+  "use_other": "Kasuta selle asemel: %@",
+  "speaker_virtual": "Sinu Maci heliväljund on „%@”, seega ei pruugi sa oma helisid kuulda.",
+  "choose_speakers": "Vali kõlarid…",
+  "no_mic": "Mikrofoni ei leitud"
 }

@@ -109,6 +109,9 @@ struct AppState: Decodable {
     var outputs: [Device] = []
     var inputs: [Device] = []
     var defaultInputName: String?
+    var otherLoopback: Device?
+    var speakerDeviceName: String?
+    var speakerIsVirtual = false
     var driver = DriverInfo(bundled: false, installed: false, updateAvailable: false, busy: false, selected: false)
     var diagnostics: [Diagnostic] = []
     var inputDeviceName: String?

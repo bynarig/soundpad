@@ -143,5 +143,9 @@
   "install_failed": "Nem sikerült telepíteni a frissítést: %@",
   "bad_signature": "A letöltést nem a fejlesztő írta alá.",
   "damaged": "A letöltött frissítés sérült.",
-  "move_to_apps": "A frissítések telepítéséhez helyezze a Soundpadet az Alkalmazások mappába."
+  "move_to_apps": "A frissítések telepítéséhez helyezze a Soundpadet az Alkalmazások mappába.",
+  "use_other": "A(z) %@ használata",
+  "speaker_virtual": "A Mac hangkimenete: „%@”, ezért lehet, hogy nem hallja a hangjait.",
+  "choose_speakers": "Hangszórók kiválasztása…",
+  "no_mic": "Nem található mikrofon"
 }

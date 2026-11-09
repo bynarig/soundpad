@@ -143,5 +143,9 @@
   "install_failed": "无法安装更新：%@",
   "bad_signature": "下载内容未经开发者签名。",
   "damaged": "下载的更新已损坏。",
-  "move_to_apps": "请将 Soundpad 移到“应用程序”文件夹以安装更新。"
+  "move_to_apps": "请将 Soundpad 移到“应用程序”文件夹以安装更新。",
+  "use_other": "改用 %@",
+  "speaker_virtual": "你的 Mac 声音输出为“%@”，因此你可能听不到声音。",
+  "choose_speakers": "选择扬声器…",
+  "no_mic": "未找到麦克风"
 }

@@ -143,5 +143,9 @@
   "install_failed": "Không thể cài đặt bản cập nhật: %@",
   "bad_signature": "Tệp tải xuống không được nhà phát triển ký.",
   "damaged": "Bản cập nhật đã tải xuống bị hỏng.",
-  "move_to_apps": "Hãy chuyển Soundpad vào thư mục Ứng dụng để cài đặt bản cập nhật."
+  "move_to_apps": "Hãy chuyển Soundpad vào thư mục Ứng dụng để cài đặt bản cập nhật.",
+  "use_other": "Dùng %@ thay thế",
+  "speaker_virtual": "Đầu ra âm thanh của máy Mac là “%@”, nên có thể bạn sẽ không nghe thấy âm thanh của mình.",
+  "choose_speakers": "Chọn loa…",
+  "no_mic": "Không tìm thấy micrô"
 }

@@ -143,5 +143,9 @@
   "install_failed": "Níorbh fhéidir an nuashonrú a shuiteáil: %@",
   "bad_signature": "Níl an íoslódáil sínithe ag an bhforbróir.",
   "damaged": "Tá an nuashonrú íoslódáilte damáistithe.",
-  "move_to_apps": "Bog Soundpad chuig an bhfillteán Feidhmchláir chun nuashonruithe a shuiteáil."
+  "move_to_apps": "Bog Soundpad chuig an bhfillteán Feidhmchláir chun nuashonruithe a shuiteáil.",
+  "use_other": "Úsáid %@ ina ionad",
+  "speaker_virtual": "Is é “%@” aschur fuaime do Mac, mar sin b’fhéidir nach gcloisfidh tú d’fhuaimeanna.",
+  "choose_speakers": "Roghnaigh callairí…",
+  "no_mic": "Níor aimsíodh micreafón"
 }

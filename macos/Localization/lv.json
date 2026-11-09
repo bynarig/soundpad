@@ -143,5 +143,9 @@
   "install_failed": "Neizdevās instalēt atjauninājumu: %@",
   "bad_signature": "Lejupielādi nav parakstījis izstrādātājs.",
   "damaged": "Lejupielādētais atjauninājums ir bojāts.",
-  "move_to_apps": "Pārvietojiet Soundpad uz mapi Lietotnes, lai instalētu atjauninājumus."
+  "move_to_apps": "Pārvietojiet Soundpad uz mapi Lietotnes, lai instalētu atjauninājumus.",
+  "use_other": "Izmantot %@",
+  "speaker_virtual": "Jūsu Mac skaņas izvade ir “%@”, tāpēc jūs varat nedzirdēt savas skaņas.",
+  "choose_speakers": "Izvēlēties skaļruņus…",
+  "no_mic": "Mikrofons nav atrasts"
 }

@@ -143,5 +143,9 @@
   "install_failed": "Actualizarea nu a putut fi instalată: %@",
   "bad_signature": "Descărcarea nu este semnată de dezvoltator.",
   "damaged": "Actualizarea descărcată este deteriorată.",
-  "move_to_apps": "Mutați Soundpad în dosarul Aplicații pentru a instala actualizări."
+  "move_to_apps": "Mutați Soundpad în dosarul Aplicații pentru a instala actualizări.",
+  "use_other": "Folosiți %@",
+  "speaker_virtual": "Ieșirea audio a Mac-ului este „%@”, deci s-ar putea să nu vă auziți sunetele.",
+  "choose_speakers": "Alegeți difuzoarele…",
+  "no_mic": "Nu s-a găsit niciun microfon"
 }

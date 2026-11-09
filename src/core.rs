@@ -195,6 +195,11 @@ pub struct StateView {
     pub outputs: Vec<DeviceView>,
     pub inputs: Vec<DeviceView>,
     pub default_input_name: Option<String>,
+    /// A loopback device such as BlackHole that could be used instead of ours.
+    pub other_loopback: Option<DeviceView>,
+    /// The output Soundpad plays to for "you" (may be a loopback, then you hear nothing).
+    pub speaker_device_name: Option<String>,
+    pub speaker_is_virtual: bool,
     pub driver: DriverView,
     pub diagnostics: Vec<OutputDiag>,
     pub input_device_name: Option<String>,
@@ -478,8 +483,9 @@ impl Core {
         let virtual_selected = self.settings.mic_device.as_ref().is_some_and(|id| {
             self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d))
         });
-        let default_input_name = engine::default_input_id()
+        let default_input_name = engine::pick_default_input(engine::default_input_id().as_deref(), &self.in_devices)
             .and_then(|id| self.in_devices.iter().find(|d| d.id == id).map(|d| d.name.clone()));
+        let speaker = self.engine.output(OutputKind::Speakers).map(|o| &o.device);
         StateView {
             playlists: self
                 .playlists
@@ -505,6 +511,9 @@ impl Core {
             outputs: self.out_devices.iter().map(DeviceView::from).collect(),
             inputs: self.in_devices.iter().map(DeviceView::from).collect(),
             default_input_name,
+            other_loopback: virtual_mic::other_loopback(&self.out_devices).map(DeviceView::from),
+            speaker_device_name: speaker.map(|d| d.name.clone()),
+            speaker_is_virtual: speaker.is_some_and(|d| d.looks_virtual()),
             driver: DriverView {
                 bundled: virtual_mic::bundled_driver().is_some(),
                 installed: virtual_mic::is_installed(),
@@ -768,12 +777,12 @@ impl Core {
     }
 
     fn open_devices(&mut self) {
-        if self.settings.mic_device.is_none() && !self.settings.mic_device_chosen {
-            let pick = virtual_mic::find_device(&self.out_devices)
-                .or_else(|| self.out_devices.iter().find(|d| d.looks_virtual()))
-                .map(|d| d.id.clone());
-            if let Some(id) = pick {
-                self.settings.mic_device = Some(id);
+        if !self.settings.mic_device_chosen {
+            // Never keep a loopback the user didn't pick (older versions auto-selected
+            // BlackHole & co., which leaks sounds into apps like OBS).
+            let pick = virtual_mic::auto_mic_device(&self.out_devices);
+            if self.settings.mic_device != pick {
+                self.settings.mic_device = pick;
                 self.mark_dirty();
             }
         }

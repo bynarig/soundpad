@@ -143,5 +143,9 @@
   "install_failed": "Nepavyko įdiegti naujinio: %@",
   "bad_signature": "Atsisiuntimas nepasirašytas kūrėjo.",
   "damaged": "Atsisiųstas naujinys sugadintas.",
-  "move_to_apps": "Perkelkite Soundpad į aplanką „Programos“, kad galėtumėte diegti naujinius."
+  "move_to_apps": "Perkelkite Soundpad į aplanką „Programos“, kad galėtumėte diegti naujinius.",
+  "use_other": "Naudoti %@",
+  "speaker_virtual": "Jūsų „Mac“ garso išvestis yra „%@“, todėl galite negirdėti savo garsų.",
+  "choose_speakers": "Pasirinkti garsiakalbius…",
+  "no_mic": "Mikrofonas nerastas"
 }

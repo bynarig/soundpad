@@ -143,5 +143,9 @@
   "install_failed": "Kunne ikke installere opdateringen: %@",
   "bad_signature": "Overførslen er ikke signeret af udvikleren.",
   "damaged": "Den hentede opdatering er beskadiget.",
-  "move_to_apps": "Flyt Soundpad til mappen Programmer for at installere opdateringer."
+  "move_to_apps": "Flyt Soundpad til mappen Programmer for at installere opdateringer.",
+  "use_other": "Brug %@ i stedet",
+  "speaker_virtual": "Din Macs lydudgang er “%@”, så du hører måske ikke dine lyde.",
+  "choose_speakers": "Vælg højttalere…",
+  "no_mic": "Ingen mikrofon fundet"
 }

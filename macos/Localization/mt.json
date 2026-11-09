@@ -143,5 +143,9 @@
   "install_failed": "Ma setax jinstalla l-aġġornament: %@",
   "bad_signature": "Id-download mhux iffirmat mill-iżviluppatur.",
   "damaged": "L-aġġornament imniżżel huwa bil-ħsara.",
-  "move_to_apps": "Ċaqlaq Soundpad fil-folder Applications biex tinstalla aġġornamenti."
+  "move_to_apps": "Ċaqlaq Soundpad fil-folder Applications biex tinstalla aġġornamenti.",
+  "use_other": "Uża %@ minflok",
+  "speaker_virtual": "L-output tal-ħoss tal-Mac tiegħek huwa “%@”, għalhekk forsi ma tismax il-ħsejjes tiegħek.",
+  "choose_speakers": "Agħżel l-ispikers…",
+  "no_mic": "Ma nstab l-ebda mikrofonu"
 }

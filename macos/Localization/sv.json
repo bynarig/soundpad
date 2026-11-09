@@ -143,5 +143,9 @@
   "install_failed": "Det gick inte att installera uppdateringen: %@",
   "bad_signature": "Hämtningen är inte signerad av utvecklaren.",
   "damaged": "Den hämtade uppdateringen är skadad.",
-  "move_to_apps": "Flytta Soundpad till mappen Program för att installera uppdateringar."
+  "move_to_apps": "Flytta Soundpad till mappen Program för att installera uppdateringar.",
+  "use_other": "Använd %@ i stället",
+  "speaker_virtual": "Datorns ljudutgång är ”%@”, så du kanske inte hör dina ljud.",
+  "choose_speakers": "Välj högtalare…",
+  "no_mic": "Ingen mikrofon hittades"
 }

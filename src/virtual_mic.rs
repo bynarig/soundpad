@@ -55,6 +55,19 @@ pub fn is_virtual_mic(d: &DeviceInfo) -> bool {
     d.name == DEVICE_NAME
 }
 
+/// The virtual-mic output to use while the user hasn't picked one: Soundpad
+/// Virtual Mic if installed, otherwise none. Other loopback devices (BlackHole,
+/// Loopback…) are never taken automatically: other apps such as OBS often use
+/// them, and Soundpad's sounds would leak into those recordings.
+pub fn auto_mic_device(outputs: &[DeviceInfo]) -> Option<String> {
+    find_device(outputs).map(|d| d.id.clone())
+}
+
+/// Another loopback device (e.g. BlackHole) the user could choose instead of ours.
+pub fn other_loopback(outputs: &[DeviceInfo]) -> Option<&DeviceInfo> {
+    outputs.iter().find(|d| d.looks_virtual() && !is_virtual_mic(d))
+}
+
 /// Run a shell command as root via the standard macOS password dialog.
 fn run_as_admin(shell: &str, prompt: &str, args: &[&str]) -> Result<(), String> {
     // Arguments are passed through argv and quoted by AppleScript itself.
@@ -105,6 +118,41 @@ pub fn uninstall() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn dev(id: &str, name: &str) -> DeviceInfo {
+        DeviceInfo { id: id.into(), name: name.into() }
+    }
+
+    #[test]
+    fn blackhole_is_never_picked_automatically() {
+        let speakers = dev("spk", "MacBook Pro Speakers");
+        let blackhole = dev("bh", "BlackHole 2ch");
+        let ours = dev("sp", DEVICE_NAME);
+        // Only BlackHole installed: nothing is taken, but it is offered.
+        let outs = [speakers.clone(), blackhole.clone()];
+        assert_eq!(auto_mic_device(&outs), None);
+        assert_eq!(other_loopback(&outs).map(|d| d.name.as_str()), Some("BlackHole 2ch"));
+        // Both installed: ours wins regardless of order.
+        let outs = [blackhole.clone(), speakers.clone(), ours.clone()];
+        assert_eq!(auto_mic_device(&outs).as_deref(), Some("sp"));
+        assert_eq!(other_loopback(&outs).map(|d| d.id.as_str()), Some("bh"));
+        // Neither: nothing.
+        assert_eq!(auto_mic_device(std::slice::from_ref(&speakers)), None);
+        assert!(other_loopback(&[speakers, ours]).is_none());
+    }
+
+    #[test]
+    fn system_default_mic_skips_loopback_devices() {
+        use crate::audio::engine::pick_default_input;
+        let inputs = [dev("bh", "BlackHole 2ch"), dev("sp", DEVICE_NAME), dev("mic", "MacBook Pro Microphone")];
+        // Default input is BlackHole (common with OBS setups): use the real mic instead.
+        assert_eq!(pick_default_input(Some("bh"), &inputs).as_deref(), Some("mic"));
+        assert_eq!(pick_default_input(Some("sp"), &inputs).as_deref(), Some("mic"));
+        assert_eq!(pick_default_input(Some("mic"), &inputs).as_deref(), Some("mic"));
+        assert_eq!(pick_default_input(None, &inputs).as_deref(), Some("mic"));
+        // Only loopbacks: no microphone rather than a feedback loop.
+        assert_eq!(pick_default_input(Some("bh"), &inputs[..2]), None);
+    }
 
     #[test]
     fn reads_bundle_version() {

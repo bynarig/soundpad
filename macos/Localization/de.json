@@ -143,5 +143,9 @@
   "install_failed": "Update konnte nicht installiert werden: %@",
   "bad_signature": "Der Download ist nicht vom Entwickler signiert.",
   "damaged": "Das geladene Update ist beschädigt.",
-  "move_to_apps": "Bewege Soundpad in den Ordner „Programme“, um Updates zu installieren."
+  "move_to_apps": "Bewege Soundpad in den Ordner „Programme“, um Updates zu installieren.",
+  "use_other": "Stattdessen %@ verwenden",
+  "speaker_virtual": "Die Tonausgabe deines Mac ist „%@“, daher hörst du deine Sounds möglicherweise nicht.",
+  "choose_speakers": "Lautsprecher wählen …",
+  "no_mic": "Kein Mikrofon gefunden"
 }

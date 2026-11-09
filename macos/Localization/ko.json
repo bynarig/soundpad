@@ -143,5 +143,9 @@
   "install_failed": "업데이트를 설치할 수 없음: %@",
   "bad_signature": "다운로드한 파일이 개발자 서명을 갖고 있지 않습니다.",
   "damaged": "다운로드한 업데이트가 손상되었습니다.",
-  "move_to_apps": "업데이트를 설치하려면 Soundpad를 응용 프로그램 폴더로 옮기세요."
+  "move_to_apps": "업데이트를 설치하려면 Soundpad를 응용 프로그램 폴더로 옮기세요.",
+  "use_other": "대신 %@ 사용",
+  "speaker_virtual": "Mac의 사운드 출력이 ‘%@’(으)로 되어 있어 사운드가 들리지 않을 수 있습니다.",
+  "choose_speakers": "스피커 선택…",
+  "no_mic": "마이크를 찾을 수 없음"
 }

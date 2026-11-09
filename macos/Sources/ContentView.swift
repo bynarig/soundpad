@@ -197,7 +197,12 @@ struct SoundList: View {
             .navigationSubtitle(subtitle)
             .searchable(text: $search, placement: .toolbar, prompt: "Search sounds")
             .toolbar { toolbar }
-            .safeAreaInset(edge: .top, spacing: 0) { SetupBanner() }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 0) {
+                    SpeakerWarningBanner()
+                    SetupBanner()
+                }
+            }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 PlayerBar().padding(.horizontal, 14).padding(.bottom, 14).padding(.top, 6)
             }
@@ -454,19 +459,57 @@ struct SetupBanner: View {
                 Spacer(minLength: 8)
                 if d.busy {
                     ProgressView().controlSize(.small)
-                } else if d.installed {
-                    Button("Use Virtual Mic") { store.send("use_virtual_mic") }
-                        .buttonStyle(.glassProminent)
                 } else {
-                    Button("Install") { store.send("install_driver") }
-                        .buttonStyle(.glassProminent)
-                        .disabled(!d.bundled)
+                    VStack(alignment: .trailing, spacing: 6) {
+                        if d.installed {
+                            Button("Use Virtual Mic") { store.send("use_virtual_mic") }
+                                .buttonStyle(.glassProminent)
+                        } else {
+                            Button("Install") { store.send("install_driver") }
+                                .buttonStyle(.glassProminent)
+                                .disabled(!d.bundled)
+                        }
+                        // Already have BlackHole (or similar)? Offer it, but never take it silently.
+                        if let other = store.state.otherLoopback {
+                            Button("Use \(other.name) instead") {
+                                store.send("set_mic_device", ["id": other.id])
+                            }
+                            .buttonStyle(.link)
+                            .font(.caption)
+                        }
+                    }
                 }
             }
             .padding(14)
             .glassEffect(.regular.tint(.orange.opacity(0.18)), in: .rect(cornerRadius: 20))
             .padding([.horizontal, .top], 12)
             .transition(.move(edge: .top).combined(with: .opacity))
+        }
+    }
+}
+
+/// Shown when "your" output is a loopback device (e.g. the Mac's sound output is
+/// set to BlackHole for OBS): Soundpad's sounds then go there and you hear nothing.
+struct SpeakerWarningBanner: View {
+    @Environment(Store.self) private var store
+
+    var body: some View {
+        let st = store.state
+        if st.speakerIsVirtual, let name = st.speakerDeviceName {
+            HStack(spacing: 12) {
+                Image(systemName: "speaker.slash.fill")
+                    .font(.title2)
+                    .foregroundStyle(.yellow)
+                Text("Your Mac's sound output is “\(name)”, so you may not hear your sounds.")
+                    .font(.callout)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 8)
+                SettingsLink { Text("Choose Speakers…") }
+                    .buttonStyle(.glass)
+            }
+            .padding(12)
+            .glassEffect(.regular.tint(.yellow.opacity(0.15)), in: .rect(cornerRadius: 18))
+            .padding([.horizontal, .top], 12)
         }
     }
 }
