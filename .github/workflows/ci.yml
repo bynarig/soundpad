@@ -20,7 +20,7 @@ jobs:
     name: Rust (format, lint, tests)
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Rust toolchain
         run: |
           rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
@@ -37,7 +37,7 @@ jobs:
     name: Swift (unit tests)
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Rust toolchain
         run: |
           rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
@@ -52,7 +52,7 @@ jobs:
     name: Build app
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Rust toolchain
         run: |
           rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
@@ -66,7 +66,7 @@ jobs:
         run: scripts/test_driver.sh
       - name: Package
         run: ditto -c -k --keepParent dist/Soundpad.app Soundpad-ci.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Soundpad-${{ github.sha }}
           path: Soundpad-ci.zip
