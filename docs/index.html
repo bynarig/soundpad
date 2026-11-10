@@ -3,12 +3,151 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soundpad for macOS</title>
-<meta name="description" content="A free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with one key press.">
-<meta property="og:title" content="Soundpad for macOS">
-<meta property="og:description" content="A free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with one key press.">
-<meta property="og:image" content="https://bynarig.github.io/soundpad/icon.png">
-<link rel="icon" href="favicon.png">
+<title>Soundpad for Mac – Free Soundboard for Discord, Zoom &amp; Games</title>
+<meta name="description" content="Soundpad is a free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with hotkeys through a built-in virtual mic.">
+<meta name="keywords" content="soundboard for mac, mac soundboard, soundpad mac, discord soundboard mac, virtual microphone mac, sound effects, hotkeys">
+<link rel="canonical" href="https://bynarig.github.io/soundpad/">
+<meta name="robots" content="index, follow">
+<meta name="author" content="bynarig">
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Soundpad for macOS">
+<meta property="og:url" content="https://bynarig.github.io/soundpad/">
+<meta property="og:title" content="Soundpad for Mac – Free Soundboard for Discord, Zoom &amp; Games">
+<meta property="og:description" content="Soundpad is a free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with hotkeys through a built-in virtual mic.">
+<meta property="og:image" content="https://bynarig.github.io/soundpad/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Soundpad for Mac: free soundboard for Discord, Zoom, Teams and games">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Soundpad for Mac – Free Soundboard for Discord, Zoom &amp; Games">
+<meta name="twitter:description" content="Soundpad is a free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with hotkeys through a built-in virtual mic.">
+<meta name="twitter:image" content="https://bynarig.github.io/soundpad/og-image.png">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Soundpad for macOS",
+ "alternateName": "Soundpad",
+ "description": "Free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Microsoft Teams and games with global hotkeys, through a built-in virtual microphone, and hear them yourself.",
+ "applicationCategory": "MultimediaApplication",
+ "applicationSubCategory": "Soundboard",
+ "operatingSystem": "macOS 26 or later",
+ "url": "https://bynarig.github.io/soundpad/",
+ "downloadUrl": "https://github.com/bynarig/soundpad/releases/latest",
+ "image": "https://bynarig.github.io/soundpad/og-image.png",
+ "screenshot": "https://bynarig.github.io/soundpad/og-image.png",
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "USD"
+ },
+ "isAccessibleForFree": true,
+ "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+ "codeRepository": "https://github.com/bynarig/soundpad",
+ "author": {
+  "@type": "Person",
+  "name": "bynarig",
+  "url": "https://github.com/bynarig"
+ },
+ "featureList": [
+  "Global hotkeys for every sound",
+  "Built-in virtual microphone for Discord, Zoom, Teams and games",
+  "Mixes in your real microphone",
+  "Separate volume for you and for others",
+  "Playlists",
+  "Icon view with album art, or a list",
+  "Sort and filter by name, length and date added",
+  "MP3, WAV, FLAC, OGG, AAC/M4A, AIFF and CAF",
+  "40 languages",
+  "Automatic updates in the background"
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "My friends don't hear the sounds.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Check that your chat app's microphone is set to Soundpad Virtual Mic, and that the 🎙 slider in Soundpad isn't at zero or muted."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "They hear the sounds but not my voice.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "In Settings, set Mix in my microphone to your real microphone, and allow microphone access in System Settings → Privacy & Security → Microphone."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "I already use BlackHole or Loopback.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "They work side by side. Soundpad never takes over BlackHole by itself. If you'd rather route into BlackHole, choose it in Settings → Virtual microphone."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Where does the cover art come from?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "From the picture stored in the music file, or a cover.jpg or folder.jpg in the same folder. Sounds without one get a colored tile."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "A hotkey doesn't work.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Another app might already use that combination. Pick a different one."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it collect any data?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. No accounts, no ads, no analytics. It only goes online to check for updates, and you can turn that off."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do updates work?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Each time Soundpad starts, it checks for a new version and downloads it in the background. A Restart to Update button appears when it's ready, and nothing changes until you click it. Offline? It simply tries again next time. You can turn this off in Settings → Updates."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do I uninstall it?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Open Settings → Soundpad Virtual Mic → Manage → Uninstall, then drag Soundpad from Applications to the Trash."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Prefer Terminal for the first launch?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "xattr -dr com.apple.quarantine /Applications/Soundpad.app"
+   }
+  }
+ ]
+}
+</script>
 <style>
   :root {
     --bg: #fbfbfa;
@@ -119,7 +258,7 @@
 <div class="wrap">
 
   <header class="top">
-    <a class="brand" href="./"><img src="favicon.png" alt="">Soundpad</a>
+    <a class="brand" href="./"><img src="favicon.png" alt="" width="22" height="22">Soundpad</a>
     <nav>
       <a href="#features">Features</a>
       <a href="#faq">FAQ</a>
@@ -129,8 +268,8 @@
 
   <main>
     <div class="hero">
-      <img src="icon.png" alt="Soundpad app icon">
-      <h1>Soundpad for macOS</h1>
+      <img src="icon.png" alt="Soundpad soundboard app icon for Mac" width="112" height="112">
+      <h1>Soundpad for Mac</h1>
       <p class="lead">A free soundboard for Mac. Play sounds into Discord, Zoom, Teams and games, and hear them yourself, with one key press.</p>
       <a class="btn" id="download" href="https://github.com/bynarig/soundpad/releases/latest">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7.5 8 11.5 12 7.5M3 14h10"/></svg>

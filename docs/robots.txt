@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bynarig.github.io/soundpad/sitemap.xml
