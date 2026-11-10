@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundpad for macOS</title>
+<meta name="description" content="A free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with one key press.">
+<meta property="og:title" content="Soundpad for macOS">
+<meta property="og:description" content="A free, open-source soundboard for Mac. Play sounds into Discord, Zoom, Teams and games with one key press.">
+<meta property="og:image" content="https://bynarig.github.io/soundpad/icon.png">
+<link rel="icon" href="favicon.png">
+<style>
+  :root {
+    --bg: #fbfbfa;
+    --fg: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #e6e6e3;
+    --card: #ffffff;
+    --accent: #1a1a1a;
+    --accent-fg: #ffffff;
+    --key: #f2f2f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111111;
+      --fg: #ececec;
+      --muted: #8f8f8f;
+      --line: #262626;
+      --card: #171717;
+      --accent: #ececec;
+      --accent-fg: #111111;
+      --key: #1f1f1f;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+
+  header.top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 0; font-size: 14px;
+  }
+  header.top .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; }
+  header.top .brand img { width: 22px; height: 22px; }
+  header.top nav a { color: var(--muted); text-decoration: none; margin-left: 20px; }
+  header.top nav a:hover { color: var(--fg); }
+
+  .hero { text-align: center; padding: 72px 0 64px; }
+  .hero img { width: 112px; height: 112px; }
+  .hero h1 { font-size: clamp(32px, 6vw, 44px); line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; font-weight: 700; }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 auto 32px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: var(--accent-fg);
+    padding: 12px 22px; border-radius: 999px; font-weight: 600; text-decoration: none;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn svg { width: 16px; height: 16px; }
+  .meta { margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .meta a { color: var(--muted); }
+
+  .keys { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 48px 0 0; color: var(--muted); font-size: 14px; flex-wrap: wrap; }
+  kbd {
+    font: 600 14px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 6px; padding: 6px 9px; color: var(--fg);
+  }
+
+  section { padding: 56px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin: 0 0 28px; }
+
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 40px; }
+  .features h3 { font-size: 16px; margin: 0 0 4px; font-weight: 600; }
+  .features p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  ol.steps li { counter-increment: s; position: relative; padding-left: 44px; margin-bottom: 22px; }
+  ol.steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 1px;
+    width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line);
+    font-size: 13px; font-weight: 600; display: grid; place-items: center; color: var(--muted);
+  }
+  ol.steps strong { font-weight: 600; }
+  ol.steps p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; font-size: 15px; color: var(--muted); margin-top: 8px; }
+  .note strong { color: var(--fg); }
+
+  details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "−"; }
+  details p { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+  code { font: 13px ui-monospace, "SF Mono", Menlo, monospace; background: var(--key); padding: 2px 5px; border-radius: 4px; word-break: break-all; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; font-size: 13px; color: var(--muted); }
+  footer p { margin: 4px 0; }
+
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; }
+    .hero { padding: 48px 0; }
+    header.top nav a { margin-left: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="brand" href="./"><img src="favicon.png" alt="">Soundpad</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/bynarig/soundpad">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <img src="icon.png" alt="Soundpad app icon">
+      <h1>Soundpad for macOS</h1>
+      <p class="lead">A free soundboard for Mac. Play sounds into Discord, Zoom, Teams and games, and hear them yourself, with one key press.</p>
+      <a class="btn" id="download" href="https://github.com/bynarig/soundpad/releases/latest">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7.5 8 11.5 12 7.5M3 14h10"/></svg>
+        <span id="download-label">Download for Mac</span>
+      </a>
+      <div class="meta">macOS 26 or later · Apple silicon &amp; Intel · <a href="https://github.com/bynarig/soundpad">Open source</a></div>
+
+      <div class="keys" aria-hidden="true">
+        <kbd>⌥</kbd><kbd>1</kbd><span>→ airhorn</span>
+        <span style="width:16px"></span>
+        <kbd>⌃</kbd><kbd>⇧</kbd><kbd>A</kbd><span>→ applause</span>
+      </div>
+    </div>
+
+    <section id="features">
+      <h2>Features</h2>
+      <div class="features">
+        <div><h3>Global hotkeys</h3><p>Give every sound a shortcut. Works in the background, even mid-game.</p></div>
+        <div><h3>Built-in virtual mic</h3><p>Other apps hear Soundpad directly. No extra software to install.</p></div>
+        <div><h3>Your voice, too</h3><p>Your real microphone is mixed in with the sounds.</p></div>
+        <div><h3>Two volumes</h3><p>Set separately how loud it is for you and for everyone else.</p></div>
+        <div><h3>Playlists</h3><p>Drag and drop files to organize sounds into lists.</p></div>
+        <div><h3>Player controls</h3><p>Pause, seek, skip ±10 s, repeat one sound or play a whole list.</p></div>
+        <div><h3>Almost any format</h3><p>MP3, WAV, FLAC, OGG, AAC/M4A, AIFF and CAF. Hour-long mixes stay light.</p></div>
+        <div><h3>40 languages</h3><p>Follows your Mac's language automatically. Updates itself.</p></div>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>Install</h2>
+      <ol class="steps">
+        <li><strong>Download and unzip</strong><p>Get the latest <a href="https://github.com/bynarig/soundpad/releases/latest">Soundpad zip</a> and drag Soundpad into Applications.</p></li>
+        <li><strong>Allow it once</strong><p>On first launch macOS says “Soundpad” Not Opened. Click Done, then go to System Settings → Privacy &amp; Security and click Open Anyway.</p></li>
+        <li><strong>Install the virtual mic</strong><p>Click Install in the orange banner inside Soundpad. macOS asks for your password once.</p></li>
+        <li><strong>Pick it in your chat app</strong><p>Choose <em>Soundpad Virtual Mic</em> as the microphone in Discord, Zoom, Teams or your game.</p></li>
+      </ol>
+      <div class="note"><strong>Tip:</strong> if sounds get cut off or sound quiet for others, turn off the chat app's noise suppression (in Discord it's called Krisp).</div>
+    </section>
+
+    <section id="faq">
+      <h2>Questions</h2>
+      <details><summary>My friends don't hear the sounds.</summary><p>Check that your chat app's microphone is set to Soundpad Virtual Mic, and that the 🎙 slider in Soundpad isn't at zero or muted.</p></details>
+      <details><summary>They hear the sounds but not my voice.</summary><p>In Settings, set Mix in my microphone to your real microphone, and allow microphone access in System Settings → Privacy &amp; Security → Microphone.</p></details>
+      <details><summary>I already use BlackHole or Loopback.</summary><p>They work side by side. Soundpad never takes over BlackHole by itself. If you'd rather route into BlackHole, choose it in Settings → Virtual microphone.</p></details>
+      <details><summary>A hotkey doesn't work.</summary><p>Another app might already use that combination. Pick a different one.</p></details>
+      <details><summary>Does it collect any data?</summary><p>No. No accounts, no ads, no analytics. It only goes online to check for updates, and you can turn that off.</p></details>
+      <details><summary>How do I uninstall it?</summary><p>Open Settings → Soundpad Virtual Mic → Manage → Uninstall, then drag Soundpad from Applications to the Trash.</p></details>
+      <details><summary>Prefer Terminal for the first launch?</summary><p><code>xattr -dr com.apple.quarantine /Applications/Soundpad.app</code></p></details>
+    </section>
+  </main>
+
+  <footer>
+    <p>Free and open source under the <a href="https://github.com/bynarig/soundpad/blob/main/LICENSE">GPL-3.0</a>. Created by bynarig and Claude.</p>
+    <p>Virtual microphone built from <a href="https://github.com/ExistentialAudio/BlackHole">BlackHole</a> by Existential Audio. · <a href="https://github.com/bynarig/soundpad/issues">Report an issue</a></p>
+  </footer>
+
+</div>
+<script>
+  // Show the latest version on the download button and link straight to the zip.
+  fetch("https://api.github.com/repos/bynarig/soundpad/releases/latest")
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(rel => {
+      const zip = (rel.assets || []).find(a => /\.zip$/i.test(a.name));
+      if (zip) document.getElementById("download").href = zip.browser_download_url;
+      if (rel.tag_name) document.getElementById("download-label").textContent =
+        "Download " + rel.tag_name;
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>

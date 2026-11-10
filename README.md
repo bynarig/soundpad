@@ -6,7 +6,7 @@ Soundpad is a free soundboard for Mac. Add your sound clips and music, give them
 shortcuts, and play them in voice chats as if they came from your microphone. Your friends
 hear the sounds *and* your voice.
 
-[**⬇ Download the latest version**](https://github.com/bynarig/soundpad/releases/latest)
+[**⬇ Download the latest version**](https://github.com/bynarig/soundpad/releases/latest) · [Website](https://bynarig.github.io/soundpad/)
 
 Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 
