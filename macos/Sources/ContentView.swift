@@ -182,13 +182,29 @@ struct SoundList: View {
     @State private var renaming: Sound?
     @State private var showImporter = false
     @State private var dropTargeted = false
+    @AppStorage("sortOrder") private var sort: SoundSort = .manual
+    @AppStorage("sortReversed") private var reversed = false
+    @AppStorage("showFilters") private var showFilters = true
+    @AppStorage("viewStyle") private var viewStyle: ViewStyle = .list
+    @AppStorage("iconSize") private var iconSize = IconSize.standard
+    @State private var lengthFilter: LengthFilter = .any
+    @State private var addedFilter: AddedFilter = .any
 
     private var playlist: Playlist? { store.activePlaylist }
 
+    private var filtersActive: Bool { lengthFilter != .any || addedFilter != .any }
+    /// Drag to reorder only makes sense when the list shows the real order.
+    private var canReorder: Bool { search.isEmpty && sort == .manual && !filtersActive }
+
     private var filtered: [Sound] {
         let q = search.trimmingCharacters(in: .whitespaces).lowercased()
-        let all = store.visibleSounds
-        return q.isEmpty ? all : all.filter { $0.name.lowercased().contains(q) }
+        let now = Date()
+        let shown = store.visibleSounds.filter { s in
+            (q.isEmpty || s.name.lowercased().contains(q))
+                && lengthFilter.matches(s.duration)
+                && addedFilter.matches(s.addedDate, now: now)
+        }
+        return sort.apply(shown, reversed: reversed)
     }
 
     var body: some View {
@@ -204,6 +220,10 @@ struct SoundList: View {
                     DriverUpdateBanner()
                     SpeakerWarningBanner()
                     SetupBanner()
+                    if showFilters && !store.visibleSounds.isEmpty {
+                        FilterBar(sort: $sort, reversed: $reversed, length: $lengthFilter, added: $addedFilter,
+                                  iconSize: viewStyle == .icons ? $iconSize : nil)
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -253,17 +273,33 @@ struct SoundList: View {
                     .buttonStyle(.glassProminent)
                     .controlSize(.large)
             }
+        } else if filtered.isEmpty && (filtersActive || !search.isEmpty) {
+            ContentUnavailableView {
+                Label("No Matching Sounds", systemImage: "line.3.horizontal.decrease.circle")
+            } actions: {
+                Button("Clear Filters") {
+                    search = ""
+                    lengthFilter = .any
+                    addedFilter = .any
+                }
+            }
+        } else if viewStyle == .icons {
+            SoundGrid(sounds: filtered, selection: $selection, iconSize: iconSize,
+                      dragIDs: dragIDs, onDelete: { removeSelection(selection) }) { ids in
+                contextMenu(ids)
+            }
         } else {
             List(selection: $selection) {
                 ForEach(Array(filtered.enumerated()), id: \.element.id) { index, sound in
                     SoundRow(sound: sound, number: index + 1)
                         .tag(sound.id)
+                        .listRowBackground(RowStripe(odd: !index.isMultiple(of: 2)))
+                        .listRowSeparator(.hidden)
                         .draggable(DroppedItem.payload(dragIDs(for: sound.id)))
                 }
-                .onMove(perform: search.isEmpty ? move : nil)
+                .onMove(perform: canReorder ? move : nil)
             }
             .listStyle(.inset)
-            .alternatingRowBackgrounds()
             .contextMenu(forSelectionType: UInt64.self) { ids in
                 contextMenu(ids)
             } primaryAction: { ids in
@@ -289,6 +325,26 @@ struct SoundList: View {
     }
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
+        if !store.visibleSounds.isEmpty {
+            ToolbarItem(placement: .primaryAction) {
+                Picker("View", selection: $viewStyle) {
+                    ForEach(ViewStyle.allCases) { style in
+                        Label(style.title, systemImage: style.symbol).tag(style)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelStyle(.iconOnly)
+                .help(viewStyle == .icons ? "as Icons" : "as List")
+            }
+            ToolbarItem(placement: .primaryAction) {
+                Button { withAnimation(.smooth(duration: 0.25)) { showFilters.toggle() } } label: {
+                    // Filled while filters narrow the list, so hidden filters aren't forgotten.
+                    Label(showFilters ? "Hide Filters" : "Show Filters",
+                          systemImage: filtersActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                }
+                .help(showFilters ? "Hide Filters" : "Show Filters")
+            }
+        }
         ToolbarItem(placement: .primaryAction) {
             Button { showImporter = true } label: { Label("Add Sounds", systemImage: "plus") }
                 .help(playlist.map { String(localized: "Add sounds to “\($0.name)” (⌘O)") } ?? String(localized: "Add sounds (⌘O)"))
@@ -359,7 +415,190 @@ struct SoundList: View {
     }
 }
 
+// MARK: - Sorting and filters
+
+enum SoundSort: String, CaseIterable, Identifiable {
+    case manual, name, length, added
+    var id: Self { self }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .manual: "Manual Order"
+        case .name: "Name"
+        case .length: "Length"
+        case .added: "Date Added"
+        }
+    }
+
+    /// Stable sort; sounds without a value (still loading, or added before
+    /// dates were recorded) go last, in list order.
+    func apply(_ sounds: [Sound], reversed: Bool) -> [Sound] {
+        if self == .manual { return reversed ? sounds.reversed() : sounds }
+        func key(_ s: Sound) -> Double? {
+            switch self {
+            case .length: s.duration
+            case .added: s.added
+            default: nil
+            }
+        }
+        return sounds.enumerated().sorted { a, b in
+            let order: ComparisonResult
+            if self == .name {
+                order = a.element.name.localizedStandardCompare(b.element.name)
+            } else {
+                switch (key(a.element), key(b.element)) {
+                case let (x?, y?): order = x < y ? .orderedAscending : x > y ? .orderedDescending : .orderedSame
+                case (nil, nil): order = .orderedSame
+                case (nil, _): return false
+                case (_, nil): return true
+                }
+            }
+            if order == .orderedSame { return a.offset < b.offset }
+            return (order == .orderedAscending) != reversed
+        }.map(\.element)
+    }
+}
+
+enum LengthFilter: String, CaseIterable, Identifiable {
+    case any, short, medium, long
+    var id: Self { self }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .any: "Any Length"
+        case .short: "Under 10 Seconds"
+        case .medium: "10 Seconds to 1 Minute"
+        case .long: "Over 1 Minute"
+        }
+    }
+
+    func matches(_ duration: Double?) -> Bool {
+        guard self != .any else { return true }
+        guard let d = duration else { return false }
+        switch self {
+        case .any: return true
+        case .short: return d < 10
+        case .medium: return d >= 10 && d <= 60
+        case .long: return d > 60
+        }
+    }
+}
+
+enum AddedFilter: String, CaseIterable, Identifiable {
+    case any, today, week, month
+    var id: Self { self }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .any: "Any Time"
+        case .today: "Today"
+        case .week: "Past 7 Days"
+        case .month: "Past 30 Days"
+        }
+    }
+
+    func matches(_ date: Date?, now: Date) -> Bool {
+        guard self != .any else { return true }
+        guard let date else { return false }
+        let cal = Calendar.current
+        switch self {
+        case .any: return true
+        case .today: return cal.isDate(date, inSameDayAs: now)
+        case .week: return date >= cal.date(byAdding: .day, value: -7, to: now)!
+        case .month: return date >= cal.date(byAdding: .day, value: -30, to: now)!
+        }
+    }
+}
+
+/// Sort and filter controls above the sound list. Searching by name is the
+/// toolbar search field.
+struct FilterBar: View {
+    @Binding var sort: SoundSort
+    @Binding var reversed: Bool
+    @Binding var length: LengthFilter
+    @Binding var added: AddedFilter
+    /// Shown in icon view, like Finder's icon size slider.
+    var iconSize: Binding<Double>?
+
+    var body: some View {
+        // Full labels when there's room; otherwise drop the labels rather
+        // than truncating the menus.
+        ViewThatFits(in: .horizontal) {
+            controls(labels: true)
+            controls(labels: false)
+        }
+        .pickerStyle(.menu)
+        .controlSize(.small)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .overlay(alignment: .bottom) { Divider() }
+    }
+
+    @ViewBuilder private func label(_ text: LocalizedStringKey, _ show: Bool) -> some View {
+        if show { Text(text).foregroundStyle(.secondary) }
+    }
+
+    private func controls(labels: Bool) -> some View {
+        HStack(spacing: 10) {
+            label("Sort By", labels)
+            HStack(spacing: 2) {
+                Picker("Sort By", selection: $sort) {
+                    ForEach(SoundSort.allCases) { Text($0.title).tag($0) }
+                }
+                .labelsHidden()
+                .fixedSize()
+                Button { reversed.toggle() } label: {
+                    Image(systemName: reversed ? "arrow.down" : "arrow.up")
+                        .frame(width: 18, height: 18)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .help("Reverse Order")
+            }
+            label("Length", labels).padding(.leading, 4)
+            Picker("Length", selection: $length) {
+                ForEach(LengthFilter.allCases) { Text($0.title).tag($0) }
+            }
+            .labelsHidden()
+            .fixedSize()
+            .help("Length")
+            label("Date Added", labels).padding(.leading, 4)
+            Picker("Date Added", selection: $added) {
+                ForEach(AddedFilter.allCases) { Text($0.title).tag($0) }
+            }
+            .labelsHidden()
+            .fixedSize()
+            .help("Date Added")
+            Spacer(minLength: 12)
+            if let iconSize {
+                HStack(spacing: 6) {
+                    Image(systemName: "photo").imageScale(.small)
+                    Slider(value: iconSize, in: IconSize.range)
+                        .frame(width: 80)
+                    Image(systemName: "photo").imageScale(.large)
+                }
+                .foregroundStyle(.secondary)
+                .fixedSize()
+                .help("Icon Size")
+                .accessibilityLabel("Icon Size")
+            }
+        }
+    }
+}
+
 // MARK: - Row
+
+/// Alternating row shading for real rows only. The built-in
+/// `.alternatingRowBackgrounds()` also stripes the empty space below the
+/// last row, which shows through the glass player bar.
+struct RowStripe: View {
+    let odd: Bool
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(odd ? AnyShapeStyle(.quaternary.opacity(0.5)) : AnyShapeStyle(.clear))
+            .padding(.horizontal, 10)
+    }
+}
 
 struct SoundRow: View {
     @Environment(Store.self) private var store
@@ -374,8 +613,17 @@ struct SoundRow: View {
                 .foregroundStyle(.tertiary)
                 .frame(width: 26, alignment: .trailing)
 
-            statusIcon(playing: playing)
-                .frame(width: 18)
+            // Small cover art, like Finder's list view; status icons sit on top.
+            ArtworkView(sound: sound, cornerRadius: 4)
+                .frame(width: 24, height: 24)
+                .overlay {
+                    if playing || sound.isLoading || sound.isFailed {
+                        statusIcon(playing: playing)
+                            .font(.caption)
+                            .frame(width: 24, height: 24)
+                            .background(.black.opacity(0.45), in: .rect(cornerRadius: 4))
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(sound.name)
@@ -408,8 +656,6 @@ struct SoundRow: View {
             ProgressView().controlSize(.mini)
         } else if sound.isFailed {
             Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-        } else {
-            Image(systemName: "waveform").foregroundStyle(.tertiary)
         }
     }
 }

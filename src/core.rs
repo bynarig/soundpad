@@ -40,6 +40,7 @@ struct SoundEntry {
     name: String,
     path: PathBuf,
     hotkey: Option<String>,
+    added: Option<u64>,
     state: LoadState,
 }
 
@@ -133,6 +134,8 @@ pub struct SoundView {
     pub path: String,
     pub hotkey: Option<String>,
     pub hotkey_label: Option<String>,
+    /// Seconds since 1970; absent for sounds added before dates were recorded.
+    pub added: Option<u64>,
     #[serde(flatten)]
     pub state: LoadState,
 }
@@ -269,7 +272,7 @@ impl Core {
             core.notify(e);
         }
         for s in state.sounds {
-            core.push_sound(s.path, s.name, s.hotkey);
+            core.push_sound(s.path, s.name, s.hotkey, s.added);
         }
         for pl in state.playlists {
             let sounds = pl.sounds.iter().filter_map(|p| core.sounds.iter().find(|s| &s.path == p)).map(|s| s.id).collect();
@@ -508,6 +511,7 @@ impl Core {
                     path: s.path.display().to_string(),
                     hotkey: s.hotkey.clone(),
                     hotkey_label: label(&s.hotkey),
+                    added: s.added,
                     state: s.state.clone(),
                 })
                 .collect(),
@@ -605,7 +609,7 @@ impl Core {
             sounds: self
                 .sounds
                 .iter()
-                .map(|s| SavedSound { path: s.path.clone(), name: s.name.clone(), hotkey: s.hotkey.clone() })
+                .map(|s| SavedSound { path: s.path.clone(), name: s.name.clone(), hotkey: s.hotkey.clone(), added: s.added })
                 .collect(),
             settings: self.settings.clone(),
             playlists: self
@@ -678,10 +682,10 @@ impl Core {
         self.player.set_queue(ids);
     }
 
-    fn push_sound(&mut self, path: PathBuf, name: String, hotkey: Option<String>) -> u64 {
+    fn push_sound(&mut self, path: PathBuf, name: String, hotkey: Option<String>, added: Option<u64>) -> u64 {
         let id = self.alloc_id();
         self.loader.load(id, path.clone());
-        self.sounds.push(SoundEntry { id, name, path, hotkey, state: LoadState::Loading });
+        self.sounds.push(SoundEntry { id, name, path, hotkey, added, state: LoadState::Loading });
         id
     }
 
@@ -710,7 +714,7 @@ impl Core {
                 Some(s) => ids.push(s.id),
                 None => {
                     let name = library::display_name(&f);
-                    ids.push(self.push_sound(f, name, None));
+                    ids.push(self.push_sound(f, name, None, Some(library::now_secs())));
                     added += 1;
                 }
             }
@@ -964,10 +968,12 @@ mod tests {
             path: "/a".into(),
             hotkey: None,
             hotkey_label: None,
+            added: Some(1_700_000_000),
             state: LoadState::Ready { duration: 1.5 },
         };
         let j = serde_json::to_value(&v).unwrap();
         assert_eq!(j["status"], "ready");
         assert_eq!(j["duration"], 1.5);
+        assert_eq!(j["added"], 1_700_000_000);
     }
 }

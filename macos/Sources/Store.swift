@@ -13,6 +13,10 @@ struct Sound: Decodable, Identifiable, Hashable {
     let status: String
     let duration: Double?
     let error: String?
+    /// Seconds since 1970; nil for sounds added before dates were recorded.
+    let added: Double?
+
+    var addedDate: Date? { added.map { Date(timeIntervalSince1970: $0) } }
 
     var isReady: Bool { status == "ready" }
     var isLoading: Bool { status == "loading" }

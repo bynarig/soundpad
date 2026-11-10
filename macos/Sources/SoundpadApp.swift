@@ -30,6 +30,7 @@ struct SoundpadApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = Store.shared
     @FocusedValue(\.addSoundsAction) private var addSounds
+    @AppStorage("viewStyle") private var viewStyle: ViewStyle = .list
 
     var body: some Scene {
         WindowGroup("Soundpad", id: "main") {
@@ -51,6 +52,16 @@ struct SoundpadApp: App {
                 Button("Add Sounds…") { addSounds?() }
                     .keyboardShortcut("o")
                     .disabled(addSounds == nil)
+            }
+            // View ▸ as Icons ⌘1 / as List ⌘2, like Finder.
+            CommandGroup(before: .toolbar) {
+                Picker("View", selection: $viewStyle) {
+                    Text("as Icons").tag(ViewStyle.icons).keyboardShortcut("1")
+                    Text("as List").tag(ViewStyle.list).keyboardShortcut("2")
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+                Divider()
             }
             CommandMenu("Playback") {
                 Button("Pause / Resume") { store.togglePause() }
