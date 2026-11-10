@@ -28,6 +28,7 @@
 <meta name="twitter:image" content="https://bynarig.github.io/soundpad/og-image.png">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://api.github.com" crossorigin>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -195,6 +196,8 @@
 
   .hero { text-align: center; padding: 72px 0 64px; }
   .hero img { width: 112px; height: 112px; }
+  /* <picture> only picks the image format; lay out the <img> as before. */
+  picture { display: contents; }
   .hero h1 { font-size: clamp(32px, 6vw, 44px); line-height: 1.15; letter-spacing: -0.02em; margin: 24px 0 12px; font-weight: 700; }
   .hero p.lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 auto 32px; }
 
@@ -259,7 +262,7 @@
 <div class="wrap">
 
   <header class="top">
-    <a class="brand" href="./"><img src="favicon.png" alt="" width="22" height="22">Soundpad</a>
+    <a class="brand" href="./"><picture><source type="image/webp" srcset="icon-22.webp 1x, icon-44.webp 2x"><img src="favicon.png" alt="" width="22" height="22"></picture>Soundpad</a>
     <nav>
       <a href="#features">Features</a>
       <a href="#faq">FAQ</a>
@@ -269,7 +272,7 @@
 
   <main>
     <div class="hero">
-      <img src="icon.png" alt="Soundpad soundboard app icon for Mac" width="112" height="112">
+      <picture><source type="image/webp" srcset="icon-112.webp 1x, icon-224.webp 2x"><img src="icon.png" alt="Soundpad soundboard app icon for Mac" width="112" height="112" fetchpriority="high"></picture>
       <h1>Soundpad for Mac</h1>
       <p class="lead">A free soundboard for Mac. Play sounds into Discord, Zoom, Teams and games, and hear them yourself, with one key press.</p>
       <a class="btn" id="download" href="https://github.com/bynarig/soundpad/releases/latest">
@@ -336,15 +339,22 @@
 </div>
 <script>
   // Show the latest version on the download button and link straight to the zip.
-  fetch("https://api.github.com/repos/bynarig/soundpad/releases/latest")
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(rel => {
-      const zip = (rel.assets || []).find(a => /\.zip$/i.test(a.name));
-      if (zip) document.getElementById("download").href = zip.browser_download_url;
-      if (rel.tag_name) document.getElementById("download-label").textContent =
-        "Download " + rel.tag_name;
-    })
-    .catch(() => {});
+  // Runs after the page has loaded, so it never delays the first paint; the
+  // button already works (it links to the latest release) until then.
+  function updateDownloadButton() {
+    fetch("https://api.github.com/repos/bynarig/soundpad/releases/latest")
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(rel => {
+        const zip = (rel.assets || []).find(a => /\.zip$/i.test(a.name));
+        if (zip) document.getElementById("download").href = zip.browser_download_url;
+        if (rel.tag_name) document.getElementById("download-label").textContent =
+          "Download " + rel.tag_name;
+      })
+      .catch(() => {});
+  }
+  const later = window.requestIdleCallback || (f => setTimeout(f, 1));
+  if (document.readyState === "complete") later(updateDownloadButton);
+  else window.addEventListener("load", () => later(updateDownloadButton));
 </script>
 </body>
 </html>
