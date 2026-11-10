@@ -195,8 +195,12 @@ struct UpdatesSection: View {
         LabeledContent("Version") {
             Text(verbatim: updater.currentVersion).monospacedDigit()
         }
-        Toggle("Check for updates automatically", isOn: $updater.automaticChecks)
-            .disabled(!updater.isConfigured)
+        VStack(alignment: .leading, spacing: 4) {
+            Toggle("Check for updates automatically", isOn: $updater.automaticChecks)
+            Text("Soundpad checks when it starts and downloads new versions in the background. You choose when to restart.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .disabled(!updater.isConfigured)
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             status
             Spacer(minLength: 8)
@@ -230,6 +234,13 @@ struct UpdatesSection: View {
                 Text("Downloading…").foregroundStyle(.secondary)
                 ProgressView(value: progress).frame(maxWidth: 220)
             }
+        case .ready(let info, _):
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Version \(info.version) is ready to install.").font(.headline)
+                if let notes = info.notes, !notes.isEmpty {
+                    Text(verbatim: notes).font(.caption).foregroundStyle(.secondary)
+                }
+            }
         case .installing:
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
@@ -243,14 +254,17 @@ struct UpdatesSection: View {
     }
 
     @ViewBuilder private var action: some View {
-        if let info = updater.availableUpdate {
+        if updater.readyUpdate != nil {
+            Button("Restart to Update") { updater.installReady() }
+                .buttonStyle(.glassProminent)
+        } else if let info = updater.availableUpdate {
             Button("Install and Relaunch") { Task { await updater.install(info) } }
                 .buttonStyle(.glassProminent)
         } else {
             Button("Check for Updates") { Task { await updater.check(userInitiated: true) } }
                 .disabled({
                     switch updater.phase {
-                    case .checking, .downloading, .installing: true
+                    case .checking, .downloading, .ready, .installing: true
                     default: false
                     }
                 }())

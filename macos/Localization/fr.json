@@ -180,5 +180,8 @@
   "turn_on": "Activer",
   "file_not_found": "Fichier introuvable : %@",
   "n_missing": "%@ fichier(s) son manquant(s)",
-  "is_missing": "« %@ » est introuvable. A-t-il été déplacé ou supprimé ?"
+  "is_missing": "« %@ » est introuvable. A-t-il été déplacé ou supprimé ?",
+  "restart_to_update": "Redémarrer pour mettre à jour",
+  "update_ready": "La version %@ est prête à être installée.",
+  "auto_update_desc": "Soundpad vérifie au démarrage et télécharge les nouvelles versions en arrière-plan. Vous choisissez quand redémarrer."
 }

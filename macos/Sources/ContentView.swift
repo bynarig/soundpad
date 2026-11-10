@@ -356,7 +356,17 @@ struct SoundList: View {
             SettingsLink { Label("Settings", systemImage: "gearshape") }
                 .help("Settings (⌘,)")
         }
-        if Updater.shared.availableUpdate != nil {
+        if let ready = Updater.shared.readyUpdate {
+            // Downloaded in the background; install only when the user says so.
+            ToolbarItem(placement: .primaryAction) {
+                Button { Updater.shared.installReady() } label: {
+                    Label("Restart to Update", systemImage: "arrow.down.circle.fill")
+                        .labelStyle(.titleAndIcon)
+                }
+                .buttonStyle(.glassProminent)
+                .help(String(localized: "Version \(ready.version) is ready to install."))
+            }
+        } else if Updater.shared.availableUpdate != nil {
             ToolbarItem(placement: .primaryAction) {
                 SettingsLink {
                     Label("Update Available", systemImage: "arrow.down.circle.fill")

@@ -180,5 +180,8 @@
   "turn_on": "Activează",
   "file_not_found": "Fișierul nu a fost găsit: %@",
   "n_missing": "Lipsesc %@ fișiere audio",
-  "is_missing": "„%@” lipsește. A fost mutat sau șters?"
+  "is_missing": "„%@” lipsește. A fost mutat sau șters?",
+  "restart_to_update": "Repornește pentru actualizare",
+  "update_ready": "Versiunea %@ este gata de instalare.",
+  "auto_update_desc": "Soundpad verifică la pornire și descarcă versiunile noi în fundal. Tu alegi când repornești."
 }

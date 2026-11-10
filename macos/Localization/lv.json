@@ -180,5 +180,8 @@
   "turn_on": "Ieslēgt",
   "file_not_found": "Fails nav atrasts: %@",
   "n_missing": "Trūkst %@ skaņas failu",
-  "is_missing": "“%@” trūkst. Vai tas tika pārvietots vai izdzēsts?"
+  "is_missing": "“%@” trūkst. Vai tas tika pārvietots vai izdzēsts?",
+  "restart_to_update": "Restartēt, lai atjauninātu",
+  "update_ready": "Versija %@ ir gatava instalēšanai.",
+  "auto_update_desc": "Soundpad pārbauda palaišanas laikā un lejupielādē jaunās versijas fonā. Jūs izvēlaties, kad restartēt."
 }

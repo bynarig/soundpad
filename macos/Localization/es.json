@@ -180,5 +180,8 @@
   "turn_on": "Activar",
   "file_not_found": "Archivo no encontrado: %@",
   "n_missing": "Faltan %@ archivos de sonido",
-  "is_missing": "Falta «%@». ¿Se ha movido o eliminado?"
+  "is_missing": "Falta «%@». ¿Se ha movido o eliminado?",
+  "restart_to_update": "Reiniciar para actualizar",
+  "update_ready": "La versión %@ está lista para instalarse.",
+  "auto_update_desc": "Soundpad comprueba al abrirse y descarga las nuevas versiones en segundo plano. Tú decides cuándo reiniciar."
 }

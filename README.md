@@ -132,10 +132,14 @@ You can also set system-wide hotkeys for **Stop** and **Pause** in Settings.
 
 ## Updates
 
-Soundpad checks for a new version once a day. When one is available, an **Update Available**
-button appears in the toolbar. You can also check yourself in **Settings → Updates** or from
-the **Soundpad** menu → **Check for Updates…**. Updates are digitally signed, so Soundpad
-only installs genuine ones.
+Soundpad checks for a new version every time it starts (and once a day while it stays open).
+When there is one, it downloads it in the background and shows a **Restart to Update** button
+in the toolbar. Nothing changes until you click it, so you can finish what you're doing first.
+If you're offline, Soundpad simply tries again next time.
+
+You can turn this off in **Settings → Updates → Check for updates automatically**, and check
+yourself there or from the **Soundpad** menu → **Check for Updates…**. Updates are digitally
+signed, so Soundpad only installs genuine ones.
 
 ## Questions and problems
 

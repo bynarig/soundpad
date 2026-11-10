@@ -180,5 +180,8 @@
   "turn_on": "Lülita sisse",
   "file_not_found": "Faili ei leitud: %@",
   "n_missing": "%@ helifaili puudub",
-  "is_missing": "„%@” puudub. Kas see teisaldati või kustutati?"
+  "is_missing": "„%@” puudub. Kas see teisaldati või kustutati?",
+  "restart_to_update": "Taaskäivita värskendamiseks",
+  "update_ready": "Versioon %@ on paigaldamiseks valmis.",
+  "auto_update_desc": "Soundpad kontrollib käivitumisel ja laadib uued versioonid taustal alla. Sina otsustad, millal taaskäivitada."
 }

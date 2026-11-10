@@ -180,5 +180,8 @@
   "turn_on": "Slå på",
   "file_not_found": "Filen hittades inte: %@",
   "n_missing": "%@ ljudfil(er) saknas",
-  "is_missing": "”%@” saknas. Har den flyttats eller raderats?"
+  "is_missing": "”%@” saknas. Har den flyttats eller raderats?",
+  "restart_to_update": "Starta om för att uppdatera",
+  "update_ready": "Version %@ är redo att installeras.",
+  "auto_update_desc": "Soundpad kontrollerar vid start och hämtar nya versioner i bakgrunden. Du väljer när den ska startas om."
 }

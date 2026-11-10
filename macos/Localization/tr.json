@@ -180,5 +180,8 @@
   "turn_on": "Aç",
   "file_not_found": "Dosya bulunamadı: %@",
   "n_missing": "%@ ses dosyası eksik",
-  "is_missing": "“%@” eksik. Taşındı ya da silindi mi?"
+  "is_missing": "“%@” eksik. Taşındı ya da silindi mi?",
+  "restart_to_update": "Güncellemek için Yeniden Başlat",
+  "update_ready": "%@ sürümü yüklenmeye hazır.",
+  "auto_update_desc": "Soundpad açılışta denetler ve yeni sürümleri arka planda indirir. Ne zaman yeniden başlatacağınızı siz seçersiniz."
 }

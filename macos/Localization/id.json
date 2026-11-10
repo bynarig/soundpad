@@ -180,5 +180,8 @@
   "turn_on": "Aktifkan",
   "file_not_found": "File tidak ditemukan: %@",
   "n_missing": "%@ file suara hilang",
-  "is_missing": "“%@” hilang. Apakah dipindahkan atau dihapus?"
+  "is_missing": "“%@” hilang. Apakah dipindahkan atau dihapus?",
+  "restart_to_update": "Mulai Ulang untuk Memperbarui",
+  "update_ready": "Versi %@ siap dipasang.",
+  "auto_update_desc": "Soundpad memeriksa saat dibuka dan mengunduh versi baru di latar belakang. Anda yang menentukan kapan memulai ulang."
 }

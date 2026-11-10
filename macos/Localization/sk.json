@@ -180,5 +180,8 @@
   "turn_on": "Zapnúť",
   "file_not_found": "Súbor sa nenašiel: %@",
   "n_missing": "Chýbajú zvukové súbory: %@",
-  "is_missing": "„%@“ chýba. Bol presunutý alebo vymazaný?"
+  "is_missing": "„%@“ chýba. Bol presunutý alebo vymazaný?",
+  "restart_to_update": "Reštartovať a aktualizovať",
+  "update_ready": "Verzia %@ je pripravená na inštaláciu.",
+  "auto_update_desc": "Soundpad kontroluje pri spustení a nové verzie sťahuje na pozadí. Kedy reštartovať, rozhodnete vy."
 }

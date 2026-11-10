@@ -180,5 +180,8 @@
   "turn_on": "Bekapcsolás",
   "file_not_found": "A fájl nem található: %@",
   "n_missing": "%@ hangfájl hiányzik",
-  "is_missing": "„%@” hiányzik. Áthelyezték vagy törölték?"
+  "is_missing": "„%@” hiányzik. Áthelyezték vagy törölték?",
+  "restart_to_update": "Újraindítás a frissítéshez",
+  "update_ready": "A(z) %@ verzió készen áll a telepítésre.",
+  "auto_update_desc": "A Soundpad indításkor ellenőriz, és a háttérben tölti le az új verziókat. Ön dönti el, mikor indítja újra."
 }

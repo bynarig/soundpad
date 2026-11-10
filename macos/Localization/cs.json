@@ -180,5 +180,8 @@
   "turn_on": "Zapnout",
   "file_not_found": "Soubor nenalezen: %@",
   "n_missing": "Chybí zvukové soubory: %@",
-  "is_missing": "„%@“ chybí. Byl přesunut nebo smazán?"
+  "is_missing": "„%@“ chybí. Byl přesunut nebo smazán?",
+  "restart_to_update": "Restartovat a aktualizovat",
+  "update_ready": "Verze %@ je připravena k instalaci.",
+  "auto_update_desc": "Soundpad kontroluje aktualizace při spuštění a nové verze stahuje na pozadí. Kdy restartovat, rozhodnete vy."
 }

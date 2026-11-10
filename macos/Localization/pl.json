@@ -180,5 +180,8 @@
   "turn_on": "Włącz",
   "file_not_found": "Nie znaleziono pliku: %@",
   "n_missing": "Brakuje plików dźwiękowych: %@",
-  "is_missing": "Brak „%@”. Czy plik został przeniesiony lub usunięty?"
+  "is_missing": "Brak „%@”. Czy plik został przeniesiony lub usunięty?",
+  "restart_to_update": "Uruchom ponownie, aby uaktualnić",
+  "update_ready": "Wersja %@ jest gotowa do instalacji.",
+  "auto_update_desc": "Soundpad sprawdza przy uruchomieniu i pobiera nowe wersje w tle. Ty decydujesz, kiedy uruchomić ponownie."
 }

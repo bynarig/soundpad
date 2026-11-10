@@ -180,5 +180,8 @@
   "turn_on": "Įjungti",
   "file_not_found": "Failas nerastas: %@",
   "n_missing": "Trūksta garso failų: %@",
-  "is_missing": "„%@“ nėra. Ar jis perkeltas ar ištrintas?"
+  "is_missing": "„%@“ nėra. Ar jis perkeltas ar ištrintas?",
+  "restart_to_update": "Paleisti iš naujo ir atnaujinti",
+  "update_ready": "%@ versija paruošta diegti.",
+  "auto_update_desc": "Soundpad tikrina paleidžiant ir naujas versijas atsisiunčia fone. Jūs pasirenkate, kada paleisti iš naujo."
 }

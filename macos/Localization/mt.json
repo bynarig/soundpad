@@ -180,5 +180,8 @@
   "turn_on": "Ixgħel",
   "file_not_found": "Il-fajl ma nstabx: %@",
   "n_missing": "Hemm %@ fajl(s) tal-ħoss nieqsa",
-  "is_missing": "“%@” huwa nieqes. Ġie mċaqlaq jew imħassar?"
+  "is_missing": "“%@” huwa nieqes. Ġie mċaqlaq jew imħassar?",
+  "restart_to_update": "Erġa’ ibda biex taġġorna",
+  "update_ready": "Il-verżjoni %@ lesta biex tiġi installata.",
+  "auto_update_desc": "Soundpad jiċċekkja meta jibda u jniżżel verżjonijiet ġodda fl-isfond. Int tagħżel meta terġa’ tibda."
 }

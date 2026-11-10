@@ -180,5 +180,8 @@
   "turn_on": "Zet aan",
   "file_not_found": "Bestand niet gevonden: %@",
   "n_missing": "%@ geluidsbestand(en) ontbreken",
-  "is_missing": "‘%@’ ontbreekt. Is het verplaatst of verwijderd?"
+  "is_missing": "‘%@’ ontbreekt. Is het verplaatst of verwijderd?",
+  "restart_to_update": "Herstart om bij te werken",
+  "update_ready": "Versie %@ is klaar om te installeren.",
+  "auto_update_desc": "Soundpad controleert bij het opstarten en downloadt nieuwe versies op de achtergrond. Jij kiest wanneer je herstart."
 }

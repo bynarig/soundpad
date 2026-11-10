@@ -180,5 +180,8 @@
   "turn_on": "Laita päälle",
   "file_not_found": "Tiedostoa ei löydy: %@",
   "n_missing": "%@ äänitiedosto(a) puuttuu",
-  "is_missing": "”%@” puuttuu. Onko se siirretty tai poistettu?"
+  "is_missing": "”%@” puuttuu. Onko se siirretty tai poistettu?",
+  "restart_to_update": "Käynnistä uudelleen ja päivitä",
+  "update_ready": "Versio %@ on valmis asennettavaksi.",
+  "auto_update_desc": "Soundpad tarkistaa käynnistyessään ja lataa uudet versiot taustalla. Sinä päätät, milloin käynnistetään uudelleen."
 }

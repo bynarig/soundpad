@@ -16,6 +16,11 @@ import Observation
 /// only whoever holds the private key can ship updates. Installing: download,
 /// verify, unzip next to the app, check it is really Soundpad at that version,
 /// then quit; a tiny script swaps the bundles and relaunches.
+///
+/// With automatic updates on, Soundpad checks at every launch (and daily while
+/// running), downloads and verifies a new version in the background, and only
+/// then offers "Restart to Update". Offline or failed background attempts are
+/// skipped silently.
 struct UpdateInfo: Decodable, Equatable {
     let version: String
     let url: URL
@@ -30,6 +35,8 @@ enum UpdatePhase: Equatable {
     case upToDate
     case available(UpdateInfo)
     case downloading(Double)
+    /// Downloaded, verified and unpacked next to the app; waiting for the user.
+    case ready(UpdateInfo, URL)
     case installing
     case failed(String)
 }
@@ -62,8 +69,15 @@ final class Updater {
         return nil
     }
 
+    /// A downloaded update waiting for "Restart to Update".
+    var readyUpdate: UpdateInfo? {
+        if case .ready(let info, _) = phase { return info }
+        return nil
+    }
+
     private static let autoKey = "SoundpadAutoCheckUpdates"
     private static let lastCheckKey = "SoundpadLastUpdateCheck"
+    @ObservationIgnored private var dailyTimer: Timer?
 
     init(bundle: Bundle = .main) {
         self.bundle = bundle
@@ -75,12 +89,34 @@ final class Updater {
 
     // MARK: Checking
 
-    /// Quiet daily check at launch (no errors shown).
+    /// Quiet check at every launch, then daily while running. Downloads a new
+    /// version in the background; nothing is shown if it fails (e.g. offline).
     func checkOnLaunch() {
-        guard isConfigured, automaticChecks else { return }
-        let last = UserDefaults.standard.object(forKey: Self.lastCheckKey) as? Date ?? .distantPast
-        guard Date().timeIntervalSince(last) > 24 * 3600 else { return }
-        Task { await check(userInitiated: false) }
+        guard isConfigured else { return }
+        Task { await automaticCheck() }
+        dailyTimer?.invalidate()
+        dailyTimer = Timer.scheduledTimer(withTimeInterval: 24 * 3600, repeats: true) { _ in
+            MainActor.assumeIsolated { Task { await Updater.shared.automaticCheck() } }
+        }
+    }
+
+    private func automaticCheck() async {
+        guard automaticChecks else { return }
+        if case .ready = phase { return }
+        await check(userInitiated: false)
+        if let info = availableUpdate { await prepareInBackground(info) }
+    }
+
+    /// Download, verify and unpack without bothering the user. On failure the
+    /// update stays "available" (the Settings button still works) and the next
+    /// launch tries again.
+    private func prepareInBackground(_ info: UpdateInfo) async {
+        do {
+            let app = try await prepare(info)
+            phase = .ready(info, app)
+        } catch {
+            phase = .available(info)
+        }
     }
 
     func check(userInitiated: Bool) async {
@@ -89,7 +125,7 @@ final class Updater {
             return
         }
         switch phase {
-        case .checking, .downloading, .installing: return
+        case .checking, .downloading, .ready, .installing: return
         default: break
         }
         phase = .checking
@@ -113,56 +149,92 @@ final class Updater {
 
     // MARK: Installing
 
+    /// Download, verify and install now (Settings button).
     func install(_ info: UpdateInfo) async {
-        guard let publicKey else { return }
-        let appURL = bundle.bundleURL
-        let parent = appURL.deletingLastPathComponent()
-        guard FileManager.default.isWritableFile(atPath: parent.path),
-              FileManager.default.isWritableFile(atPath: appURL.path)
-        else {
-            phase = .failed(String(localized: "Move Soundpad to your Applications folder to install updates."))
-            return
-        }
         do {
-            phase = .downloading(0)
-            let data = try await download(info.url)
-            guard let sig = Data(base64Encoded: info.signature), publicKey.isValidSignature(sig, for: data) else {
-                throw UpdateError.message(String(localized: "The download isn't signed by the developer."))
-            }
+            let newApp = try await prepare(info)
             phase = .installing
-            let newApp = try await Task.detached { [bundleID = bundle.bundleIdentifier] in
-                try Self.unpack(data, nextTo: appURL, version: info.version, bundleID: bundleID)
-            }.value
-            try Self.launchSwapScript(old: appURL, new: newApp)
-            terminate()
+            try relaunch(into: newApp)
         } catch {
             let msg = (error as? UpdateError)?.text ?? error.localizedDescription
             phase = .failed(String(localized: "Couldn't install the update: \(msg)"))
         }
     }
 
+    /// "Restart to Update": swap in the already downloaded version.
+    func installReady() {
+        guard case .ready(let info, let app) = phase else { return }
+        guard FileManager.default.fileExists(atPath: app.path) else {
+            // The staged copy was cleaned up; fetch it again.
+            Task { await install(info) }
+            return
+        }
+        phase = .installing
+        do {
+            try relaunch(into: app)
+        } catch {
+            phase = .failed(String(localized: "Couldn't install the update: \(error.localizedDescription)"))
+        }
+    }
+
+    /// Downloads the update, checks its signature and unpacks it next to the app.
+    private func prepare(_ info: UpdateInfo) async throws -> URL {
+        guard let publicKey else { throw UpdateError.message(String(localized: "Updates aren't set up for this build.")) }
+        let appURL = bundle.bundleURL
+        let parent = appURL.deletingLastPathComponent()
+        guard FileManager.default.isWritableFile(atPath: parent.path),
+              FileManager.default.isWritableFile(atPath: appURL.path)
+        else {
+            throw UpdateError.message(String(localized: "Move Soundpad to your Applications folder to install updates."))
+        }
+        phase = .downloading(0)
+        let data = try await download(info.url)
+        guard let sig = Data(base64Encoded: info.signature), publicKey.isValidSignature(sig, for: data) else {
+            throw UpdateError.message(String(localized: "The download isn't signed by the developer."))
+        }
+        return try await Task.detached { [bundleID = bundle.bundleIdentifier] in
+            try Self.unpack(data, nextTo: appURL, version: info.version, bundleID: bundleID)
+        }.value
+    }
+
+    private func relaunch(into newApp: URL) throws {
+        try Self.launchSwapScript(old: bundle.bundleURL, new: newApp)
+        terminate()
+    }
+
+    /// Downloads with a regular download task (reading byte by byte was very
+    /// slow), reporting progress from the task.
     private func download(_ url: URL) async throws -> Data {
-        let (bytes, response) = try await URLSession.shared.bytes(from: url)
+        var observation: NSKeyValueObservation?
+        defer { observation?.invalidate() }
+        let (file, response): (URL, URLResponse) = try await withCheckedThrowingContinuation { cont in
+            let task = URLSession.shared.downloadTask(with: url) { location, response, error in
+                guard let location, let response else {
+                    cont.resume(throwing: error ?? URLError(.badServerResponse))
+                    return
+                }
+                // The temporary file is deleted when this handler returns: keep it.
+                let kept = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".zip")
+                do {
+                    try FileManager.default.moveItem(at: location, to: kept)
+                    cont.resume(returning: (kept, response))
+                } catch {
+                    cont.resume(throwing: error)
+                }
+            }
+            observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+                let f = progress.fractionCompleted
+                Task { @MainActor in
+                    if case .downloading = Updater.shared.phase { Updater.shared.phase = .downloading(f) }
+                }
+            }
+            task.resume()
+        }
+        defer { try? FileManager.default.removeItem(at: file) }
         if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
             throw UpdateError.http(http.statusCode)
         }
-        let expected = max(response.expectedContentLength, 1)
-        var data = Data()
-        data.reserveCapacity(Int(max(response.expectedContentLength, 0)))
-        var chunk = [UInt8]()
-        chunk.reserveCapacity(1 << 16)
-        for try await byte in bytes {
-            chunk.append(byte)
-            if chunk.count == 1 << 16 {
-                data.append(contentsOf: chunk)
-                chunk.removeAll(keepingCapacity: true)
-                if response.expectedContentLength > 0 {
-                    phase = .downloading(min(Double(data.count) / Double(expected), 1))
-                }
-            }
-        }
-        data.append(contentsOf: chunk)
-        return data
+        return try Data(contentsOf: file)
     }
 
     /// Unzips into a staging folder on the same volume as the app and checks

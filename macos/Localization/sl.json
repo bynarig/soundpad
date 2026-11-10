@@ -180,5 +180,8 @@
   "turn_on": "Vklopi",
   "file_not_found": "Datoteke ni mogoče najti: %@",
   "n_missing": "Manjka zvočnih datotek: %@",
-  "is_missing": "»%@« manjka. Je bila premaknjena ali izbrisana?"
+  "is_missing": "»%@« manjka. Je bila premaknjena ali izbrisana?",
+  "restart_to_update": "Znova zaženi za posodobitev",
+  "update_ready": "Različica %@ je pripravljena za namestitev.",
+  "auto_update_desc": "Soundpad preveri ob zagonu in nove različice prenese v ozadju. Vi izberete, kdaj ga znova zaženete."
 }

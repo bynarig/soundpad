@@ -180,5 +180,8 @@
   "turn_on": "Bật",
   "file_not_found": "Không tìm thấy tệp: %@",
   "n_missing": "Thiếu %@ tệp âm thanh",
-  "is_missing": "Thiếu “%@”. Tệp đã bị di chuyển hay xóa?"
+  "is_missing": "Thiếu “%@”. Tệp đã bị di chuyển hay xóa?",
+  "restart_to_update": "Khởi động lại để cập nhật",
+  "update_ready": "Phiên bản %@ đã sẵn sàng để cài đặt.",
+  "auto_update_desc": "Soundpad kiểm tra khi khởi động và tải phiên bản mới trong nền. Bạn chọn khi nào khởi động lại."
 }

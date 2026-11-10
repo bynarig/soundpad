@@ -180,5 +180,8 @@
   "turn_on": "Cas air",
   "file_not_found": "Níor aimsíodh an comhad: %@",
   "n_missing": "Tá %@ comhad fuaime ar iarraidh",
-  "is_missing": "Tá “%@” ar iarraidh. Ar bogadh nó ar scriosadh é?"
+  "is_missing": "Tá “%@” ar iarraidh. Ar bogadh nó ar scriosadh é?",
+  "restart_to_update": "Atosaigh chun nuashonrú",
+  "update_ready": "Tá leagan %@ réidh le suiteáil.",
+  "auto_update_desc": "Seiceálann Soundpad nuair a thosaíonn sé agus íoslódálann sé leaganacha nua sa chúlra. Is tusa a roghnaíonn cathain atosú."
 }

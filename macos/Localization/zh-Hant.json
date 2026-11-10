@@ -180,5 +180,8 @@
   "turn_on": "開啟",
   "file_not_found": "找不到檔案:%@",
   "n_missing": "缺少 %@ 個聲音檔案",
-  "is_missing": "找不到「%@」。它是否已被移動或刪除?"
+  "is_missing": "找不到「%@」。它是否已被移動或刪除?",
+  "restart_to_update": "重新啟動以更新",
+  "update_ready": "版本 %@ 已可安裝。",
+  "auto_update_desc": "Soundpad 會在啟動時檢查,並在背景下載新版本。何時重新啟動由你決定。"
 }
