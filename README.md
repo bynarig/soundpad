@@ -20,6 +20,9 @@ Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 - 🗣 **Your voice goes through too.** Soundpad mixes your real microphone in with the sounds.
 - 🔊 **Separate volume** for what you hear and what others hear.
 - 📂 **Playlists.** Drag and drop files to sort your sounds into lists.
+- 🖼 **Icons or a list, like Finder.** See your sounds as big covers with their album art,
+  or as a compact list.
+- 🔎 **Sort and filter** by name, length or the date you added them.
 - ⏯ **Music player controls.** Play, pause, next, previous, jump ±10 seconds, click anywhere
   on the timeline, repeat one sound or play a whole list.
 - 🎵 **Plays almost any audio file:** MP3, WAV, FLAC, OGG, AAC/M4A, AIFF and CAF.
@@ -74,6 +77,24 @@ that side.
   All Sounds.
 - Drag sounds up and down to change their order.
 
+## Icons, list, sorting and filters
+
+- **Switch views** with the buttons in the toolbar, or **⌘1** (as Icons) and **⌘2** (as List),
+  just like in Finder.
+- **Icon view** shows each sound's cover art: the picture stored in the music file, or a
+  `cover.jpg` / `folder.jpg` in the same folder. Sounds without a picture get a colored tile.
+  Drag the slider at the right of the filter bar to make icons bigger or smaller.
+- In icon view, click to select, ⌘-click or ⇧-click to select several, and double-click to play.
+  The arrow keys move between sounds.
+- **The filter bar** above your sounds lets you sort by Manual Order (your own), name, length or date added
+  (click the arrow to reverse it), and show only sounds of a certain length or ones you added
+  today, in the past 7 days or in the past 30 days. Search by name with the search field.
+  Click the filter button in the toolbar to hide or show the bar.
+- Drag sounds to reorder them in list view when sorting by Manual Order with no filters on.
+
+> Soundpad remembers the date for sounds you add from version 0.3.0 on. Sounds added before
+> that have no date, so they come last when sorting by date.
+
 ## Playback modes
 
 Click the mode button next to the time in the player bar:
@@ -99,6 +120,7 @@ These work while the Soundpad window is active. Your own per-sound hotkeys work 
 | ⌫ | Remove the selected sound (from the playlist, when you are in one) |
 | ⌘O | Add sounds |
 | ⇧⌘N | New playlist |
+| ⌘1 / ⌘2 | View as icons / as list |
 | ⌘, | Settings |
 
 You can also set system-wide hotkeys for **Stop** and **Pause** in Settings.
