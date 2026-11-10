@@ -193,6 +193,8 @@ struct SoundList: View {
 
     var body: some View {
         list
+            // Empty states size to their content; fill the window so the player bar stays at the bottom.
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle(playlist?.name ?? String(localized: "All Sounds"))
             .navigationSubtitle(subtitle)
             .searchable(text: $search, placement: .toolbar, prompt: "Search sounds")

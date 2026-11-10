@@ -350,9 +350,10 @@ impl Player {
             h.params.mic_gain.set(0.0);
         }
         if let Some(h) = o.mic.as_mut() {
+            // Muting the virtual mic silences it completely: sounds and your voice.
             let on = self.mic_enabled.load(Relaxed);
             h.params.sound_gain.set(if on { gain_curve(self.mic_volume.get()) } else { 0.0 });
-            h.params.mic_gain.set(gain_curve(self.passthrough_volume.get()));
+            h.params.mic_gain.set(if on { gain_curve(self.passthrough_volume.get()) } else { 0.0 });
         }
     }
 
@@ -435,6 +436,27 @@ mod tests {
     fn render(m: &mut Mixer, frames: usize) {
         let mut out = vec![0.0; frames * 2];
         m.render(&mut out, 2);
+    }
+
+    #[test]
+    fn muting_an_output_silences_sounds_and_voice() {
+        let p = Player::new();
+        let (_sm, sh) = mixer(48_000);
+        let (_mm, mh) = mixer(48_000);
+        let (speakers, mic) = (sh.params.clone(), mh.params.clone());
+        p.install_output(OutputKind::Speakers, Some(sh));
+        p.install_output(OutputKind::VirtualMic, Some(mh));
+        assert!(mic.sound_gain.get() > 0.0 && mic.mic_gain.get() > 0.0);
+
+        p.set_output_enabled(OutputKind::VirtualMic, false);
+        assert_eq!((mic.sound_gain.get(), mic.mic_gain.get()), (0.0, 0.0), "virtual mic fully muted");
+        assert!(speakers.sound_gain.get() > 0.0, "speakers unaffected");
+
+        p.set_output_enabled(OutputKind::Speakers, false);
+        assert_eq!((speakers.sound_gain.get(), speakers.mic_gain.get()), (0.0, 0.0), "speakers fully muted");
+
+        p.set_output_enabled(OutputKind::VirtualMic, true);
+        assert!(mic.sound_gain.get() > 0.0 && mic.mic_gain.get() > 0.0, "unmute restores voice");
     }
 
     #[test]

@@ -14,9 +14,10 @@ struct PlayerBar: View {
                     transport
                     outputs
                 }
-                VStack(spacing: 10) {
-                    transport
+                // Narrow windows: volume controls sit above the transport, which stays at the bottom.
+                VStack(alignment: .trailing, spacing: 10) {
                     outputs
+                    transport
                 }
             }
         }
