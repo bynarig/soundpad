@@ -132,7 +132,7 @@ struct ArtworkView: View {
                     colors: [Color(hue: hue, saturation: 0.45, brightness: 0.62),
                              Color(hue: hue, saturation: 0.55, brightness: 0.38)],
                     startPoint: .topLeading, endPoint: .bottomTrailing)
-                Image(systemName: sound.isFailed ? "exclamationmark.triangle.fill" : "music.note")
+                Image(systemName: sound.isMissing ? "questionmark.folder.fill" : sound.isFailed ? "exclamationmark.triangle.fill" : "music.note")
                     .font(.system(size: geo.size.width * 0.34, weight: .medium))
                     .foregroundStyle(.white.opacity(0.85))
             }
@@ -160,9 +160,23 @@ struct SoundGrid<Menu: View>: View {
     private let spacing: CGFloat = 12
     private let padding: CGFloat = 20
     private var tileWidth: CGFloat { iconSize + 20 }
-    private var columns: Int { max(1, Int((width - padding * 2 + spacing) / (tileWidth + spacing))) }
+    private var columns: Int { columns(for: width) }
+    private func columns(for width: CGFloat) -> Int {
+        max(1, Int((width - padding * 2 + spacing) / (tileWidth + spacing)))
+    }
 
     var body: some View {
+        // Size the grid from the space we're offered, never from the grid itself:
+        // measuring the grid made a too-wide grid keep its columns and push the
+        // whole window layout sideways when the sidebar grew.
+        GeometryReader { geo in
+            grid(columns: columns(for: geo.size.width))
+                .onAppear { width = geo.size.width }
+                .onChange(of: geo.size.width) { _, w in width = w }
+        }
+    }
+
+    private func grid(columns: Int) -> some View {
         ScrollViewReader { proxy in
             ScrollView {
                 // A fixed number of fixed-width columns, pinned to the left like
@@ -195,7 +209,6 @@ struct SoundGrid<Menu: View>: View {
                         selection = []
                     }
             }
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             .focusable()
             .focused($focused)
             .focusEffectDisabled()
@@ -294,15 +307,23 @@ struct SoundTile: View {
                             .background(.black.opacity(0.35), in: .circle)
                     } else if sound.isLoading {
                         ProgressView().controlSize(.small)
+                    } else if sound.isMissing {
+                        // Cover art may still be cached; badge it so it's clear.
+                        Image(systemName: "questionmark.folder.fill")
+                            .font(.system(size: iconSize * 0.18, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(iconSize * 0.1)
+                            .background(.orange.opacity(0.85), in: .circle)
                     }
                 }
+                .opacity(sound.isMissing ? 0.6 : 1)
                 .padding(4)
                 .background(selected ? Color.primary.opacity(0.12) : .clear, in: .rect(cornerRadius: max(8, iconSize * 0.1)))
 
             VStack(spacing: 1) {
                 Text(sound.name)
                     .font(.callout.weight(playing ? .semibold : .regular))
-                    .foregroundStyle(selected ? AnyShapeStyle(.white) : sound.isFailed ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+                    .foregroundStyle(selected ? AnyShapeStyle(.white) : sound.isFailed ? AnyShapeStyle(.red) : sound.isMissing ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .truncationMode(.middle)
@@ -316,7 +337,7 @@ struct SoundTile: View {
                 }
             }
         }
-        .help(sound.error ?? sound.path)
+        .help(sound.tooltip)
         .animation(.smooth(duration: 0.2), value: playing)
     }
 }

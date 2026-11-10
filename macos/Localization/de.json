@@ -169,5 +169,16 @@
   "view": "Darstellung",
   "as_icons": "als Symbole",
   "as_list": "als Liste",
-  "icon_size": "Symbolgröße"
+  "icon_size": "Symbolgröße",
+  "mute": "Stumm",
+  "opt_click_mute": "%@ — ⌥-Klick zum Stummschalten",
+  "opt_click_unmute": "%@ — ⌥-Klick zum Aufheben der Stummschaltung",
+  "mic_boost": "Lautstärke bis 150 % für andere erlauben",
+  "mic_boost_desc": "Erlaubt eine 🎙-Lautstärke über 100 %. Standardmäßig aus.",
+  "mic_boost_alert": "Lautstärke bis 150 % erlauben?",
+  "mic_boost_alert_msg": "Über 100 % können Sounds verzerren und für Personen in deinem Anruf oder Stream deutlich lauter sein. Verringere die 🎙-Lautstärke, wenn andere sagen, dass es zu laut ist.",
+  "turn_on": "Einschalten",
+  "file_not_found": "Datei nicht gefunden: %@",
+  "n_missing": "%@ Sounddatei(en) fehlen",
+  "is_missing": "„%@“ fehlt. Wurde die Datei verschoben oder gelöscht?"
 }

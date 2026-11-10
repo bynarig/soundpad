@@ -169,5 +169,16 @@
   "view": "Pogled",
   "as_icons": "kot ikone",
   "as_list": "kot seznam",
-  "icon_size": "Velikost ikon"
+  "icon_size": "Velikost ikon",
+  "mute": "Utišaj",
+  "opt_click_mute": "%@ — ⌥-klik za utišanje",
+  "opt_click_unmute": "%@ — ⌥-klik za vklop zvoka",
+  "mic_boost": "Dovoli glasnost do 150 % za druge",
+  "mic_boost_desc": "Omogoča glasnost 🎙 nad 100 %. Privzeto izklopljeno.",
+  "mic_boost_alert": "Želite dovoliti glasnost do 150 %?",
+  "mic_boost_alert_msg": "Nad 100 % so lahko zvoki popačeni in veliko glasnejši za ljudi v vašem klicu ali prenosu. Zmanjšajte glasnost 🎙, če drugi pravijo, da je preglasno.",
+  "turn_on": "Vklopi",
+  "file_not_found": "Datoteke ni mogoče najti: %@",
+  "n_missing": "Manjka zvočnih datotek: %@",
+  "is_missing": "»%@« manjka. Je bila premaknjena ali izbrisana?"
 }

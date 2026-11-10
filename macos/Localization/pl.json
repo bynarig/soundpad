@@ -169,5 +169,16 @@
   "view": "Widok",
   "as_icons": "jako ikony",
   "as_list": "jako lista",
-  "icon_size": "Wielkość ikon"
+  "icon_size": "Wielkość ikon",
+  "mute": "Wycisz",
+  "opt_click_mute": "%@ — kliknij z ⌥, aby wyciszyć",
+  "opt_click_unmute": "%@ — kliknij z ⌥, aby wyłączyć wyciszenie",
+  "mic_boost": "Pozwól na głośność do 150% dla innych",
+  "mic_boost_desc": "Pozwala ustawić głośność 🎙 powyżej 100%. Domyślnie wyłączone.",
+  "mic_boost_alert": "Pozwolić na głośność do 150%?",
+  "mic_boost_alert_msg": "Powyżej 100% dźwięki mogą być zniekształcone i dużo głośniejsze dla osób w rozmowie lub na streamie. Zmniejsz głośność 🎙, jeśli inni mówią, że jest za głośno.",
+  "turn_on": "Włącz",
+  "file_not_found": "Nie znaleziono pliku: %@",
+  "n_missing": "Brakuje plików dźwiękowych: %@",
+  "is_missing": "Brak „%@”. Czy plik został przeniesiony lub usunięty?"
 }

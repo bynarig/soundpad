@@ -169,5 +169,16 @@
   "view": "Visa",
   "as_icons": "som symboler",
   "as_list": "som lista",
-  "icon_size": "Symbolstorlek"
+  "icon_size": "Symbolstorlek",
+  "mute": "Ljud av",
+  "opt_click_mute": "%@ — ⌥-klicka för att stänga av ljudet",
+  "opt_click_unmute": "%@ — ⌥-klicka för att slå på ljudet",
+  "mic_boost": "Tillåt volym upp till 150 % för andra",
+  "mic_boost_desc": "Låter 🎙-volymen gå över 100 %. Avstängt som standard.",
+  "mic_boost_alert": "Tillåta volym upp till 150 %?",
+  "mic_boost_alert_msg": "Över 100 % kan ljud förvrängas och bli mycket högre för personer i ditt samtal eller din stream. Sänk 🎙-volymen om andra säger att det är för högt.",
+  "turn_on": "Slå på",
+  "file_not_found": "Filen hittades inte: %@",
+  "n_missing": "%@ ljudfil(er) saknas",
+  "is_missing": "”%@” saknas. Har den flyttats eller raderats?"
 }

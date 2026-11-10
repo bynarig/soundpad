@@ -21,6 +21,13 @@ struct Sound: Decodable, Identifiable, Hashable {
     var isReady: Bool { status == "ready" }
     var isLoading: Bool { status == "loading" }
     var isFailed: Bool { status == "failed" }
+    /// The file was moved or deleted.
+    var isMissing: Bool { status == "missing" }
+    /// Tooltip: the file's path, or why it can't play.
+    var tooltip: String {
+        if isMissing { return String(localized: "File not found: \(path)") }
+        return error ?? path
+    }
 }
 
 struct CoreSettings: Decodable, Equatable {
@@ -32,6 +39,7 @@ struct CoreSettings: Decodable, Equatable {
     var speakerVolume: Double
     var micVolume: Double
     var passthroughVolume: Double
+    var micBoost: Bool
     var overlap: Bool
     var stopHotkey: String?
     var pauseHotkey: String?
@@ -106,7 +114,7 @@ struct AppState: Decodable {
     var activePlaylist: UInt64?
     var settings = CoreSettings(
         speakerDevice: nil, micDevice: nil, inputDevice: nil, speakersEnabled: true, micEnabled: true,
-        speakerVolume: 0.8, micVolume: 0.8, passthroughVolume: 1, overlap: false, stopHotkey: nil, pauseHotkey: nil,
+        speakerVolume: 0.8, micVolume: 0.8, passthroughVolume: 1, micBoost: false, overlap: false, stopHotkey: nil, pauseHotkey: nil,
         playbackMode: .once)
     var stopHotkeyLabel: String?
     var pauseHotkeyLabel: String?
@@ -166,13 +174,18 @@ final class PlaybackModel {
     var voices: UInt32 = 0
     /// Progress 0...1 in steps of 1/400.
     var fraction: Double = 0
-    /// Lit meter segments, 0...5.
-    var level: Int = 0
+    /// Output level 0...1 (-60…0 dBFS), with meter ballistics: instant rise,
+    /// smooth fall. Quantized so views redraw only on visible changes.
+    var level: Double = 0
+    /// Peak-hold mark 0...1: holds the recent maximum, then falls.
+    var peakHold: Double = 0
 
     var isPlaying: Bool { soundID != 0 }
 
-    static let meterSegments = 5
     static let progressSteps = 400.0
+    static let meterRange = 60.0        // dB shown, -60…0 dBFS
+    static let meterFallPerTick = 0.03  // ~0.9 of the scale per second at 30 Hz
+    static let peakHoldTicks = 30       // ~1 s
 }
 
 // MARK: - Store: owns the Rust core
@@ -258,6 +271,8 @@ final class Store {
         }
     }
 
+    @ObservationIgnored private var peakHoldLeft = 0
+
     /// Poll playback; runs at display rate only while something plays.
     private func updatePlayback() {
         guard let core else { return }
@@ -268,8 +283,18 @@ final class Store {
         let fraction = p.duration > 0
             ? (min(max(p.position / p.duration, 0), 1) * PlaybackModel.progressSteps).rounded() / PlaybackModel.progressSteps
             : 0
-        let db = 20 * log10(max(Double(p.peak), 1e-5))
-        let level = Int((min(max((db + 48) / 48, 0), 1) * Double(PlaybackModel.meterSegments)).rounded(.up))
+        let db = 20 * log10(max(Double(p.peak), 1e-6))
+        let target = min(max((db + PlaybackModel.meterRange) / PlaybackModel.meterRange, 0), 1)
+        let level = ((target >= pb.level ? target : max(target, pb.level - PlaybackModel.meterFallPerTick)) * 200).rounded() / 200
+        var hold = pb.peakHold
+        if level >= hold {
+            hold = level
+            peakHoldLeft = PlaybackModel.peakHoldTicks
+        } else if peakHoldLeft > 0 {
+            peakHoldLeft -= 1
+        } else {
+            hold = max(level, hold - PlaybackModel.meterFallPerTick)
+        }
         if pb.soundID != p.sound_id { pb.soundID = p.sound_id }
         if pb.elapsed != elapsed { pb.elapsed = elapsed }
         if pb.duration != p.duration { pb.duration = p.duration }
@@ -277,6 +302,7 @@ final class Store {
         if pb.voices != p.voices { pb.voices = p.voices }
         if pb.fraction != fraction { pb.fraction = fraction }
         if pb.level != level { pb.level = level }
+        if pb.peakHold != hold { pb.peakHold = hold }
 
         let animating = p.sound_id != 0 && !p.paused
         if animating, frameTimer == nil {
@@ -290,6 +316,7 @@ final class Store {
             t.invalidate()
             frameTimer = nil
             if pb.level != 0 { pb.level = 0 }
+            if pb.peakHold != 0 { pb.peakHold = 0 }
         }
     }
 

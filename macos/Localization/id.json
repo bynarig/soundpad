@@ -169,5 +169,16 @@
   "view": "Tampilan",
   "as_icons": "sebagai Ikon",
   "as_list": "sebagai Daftar",
-  "icon_size": "Ukuran Ikon"
+  "icon_size": "Ukuran Ikon",
+  "mute": "Bisukan",
+  "opt_click_mute": "%@ — ⌥-klik untuk membisukan",
+  "opt_click_unmute": "%@ — ⌥-klik untuk membunyikan",
+  "mic_boost": "Izinkan volume hingga 150% untuk orang lain",
+  "mic_boost_desc": "Membuat volume 🎙 bisa lebih dari 100%. Nonaktif secara default.",
+  "mic_boost_alert": "Izinkan volume hingga 150%?",
+  "mic_boost_alert_msg": "Di atas 100%, suara bisa pecah dan jauh lebih keras bagi orang di panggilan atau siaran Anda. Kecilkan volume 🎙 jika orang lain bilang terlalu keras.",
+  "turn_on": "Aktifkan",
+  "file_not_found": "File tidak ditemukan: %@",
+  "n_missing": "%@ file suara hilang",
+  "is_missing": "“%@” hilang. Apakah dipindahkan atau dihapus?"
 }

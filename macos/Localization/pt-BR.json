@@ -169,5 +169,16 @@
   "view": "Visualizar",
   "as_icons": "como Ícones",
   "as_list": "como Lista",
-  "icon_size": "Tamanho dos ícones"
+  "icon_size": "Tamanho dos ícones",
+  "mute": "Silenciar",
+  "opt_click_mute": "%@ — ⌥-clique para silenciar",
+  "opt_click_unmute": "%@ — ⌥-clique para reativar o som",
+  "mic_boost": "Permitir volume de até 150% para os outros",
+  "mic_boost_desc": "Permite que o volume do 🎙 passe de 100%. Desativado por padrão.",
+  "mic_boost_alert": "Permitir volume de até 150%?",
+  "mic_boost_alert_msg": "Acima de 100%, os sons podem distorcer e ficar muito mais altos para as pessoas na sua chamada ou live. Abaixe o volume do 🎙 se disserem que está alto demais.",
+  "turn_on": "Ativar",
+  "file_not_found": "Arquivo não encontrado: %@",
+  "n_missing": "%@ arquivo(s) de som estão faltando",
+  "is_missing": "“%@” está faltando. Foi movido ou apagado?"
 }

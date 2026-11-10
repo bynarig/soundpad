@@ -169,5 +169,16 @@
   "view": "Nézet",
   "as_icons": "ikonokként",
   "as_list": "listaként",
-  "icon_size": "Ikonméret"
+  "icon_size": "Ikonméret",
+  "mute": "Némítás",
+  "opt_click_mute": "%@ — ⌥-kattintás a némításhoz",
+  "opt_click_unmute": "%@ — ⌥-kattintás a némítás feloldásához",
+  "mic_boost": "Hangerő engedélyezése 150%-ig mások számára",
+  "mic_boost_desc": "Lehetővé teszi, hogy a 🎙 hangereje 100% fölé menjen. Alapértelmezés szerint ki van kapcsolva.",
+  "mic_boost_alert": "Engedélyezi a 150%-os hangerőt?",
+  "mic_boost_alert_msg": "100% fölött a hangok torzulhatnak, és sokkal hangosabbak lehetnek a hívásban vagy streamben résztvevőknek. Vegye lejjebb a 🎙 hangerejét, ha mások szerint túl hangos.",
+  "turn_on": "Bekapcsolás",
+  "file_not_found": "A fájl nem található: %@",
+  "n_missing": "%@ hangfájl hiányzik",
+  "is_missing": "„%@” hiányzik. Áthelyezték vagy törölték?"
 }

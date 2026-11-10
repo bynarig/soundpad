@@ -169,5 +169,16 @@
   "view": "Vista",
   "as_icons": "come icone",
   "as_list": "come elenco",
-  "icon_size": "Dimensioni icone"
+  "icon_size": "Dimensioni icone",
+  "mute": "Disattiva audio",
+  "opt_click_mute": "%@ — ⌥-clic per disattivare l’audio",
+  "opt_click_unmute": "%@ — ⌥-clic per riattivare l’audio",
+  "mic_boost": "Consenti volume fino al 150% per gli altri",
+  "mic_boost_desc": "Permette al volume 🎙 di superare il 100%. Disattivato di default.",
+  "mic_boost_alert": "Consentire volume fino al 150%?",
+  "mic_boost_alert_msg": "Oltre il 100% i suoni possono distorcere ed essere molto più forti per chi partecipa alla tua chiamata o diretta. Abbassa il volume 🎙 se gli altri dicono che è troppo alto.",
+  "turn_on": "Attiva",
+  "file_not_found": "File non trovato: %@",
+  "n_missing": "Mancano %@ file audio",
+  "is_missing": "“%@” manca. È stato spostato o eliminato?"
 }

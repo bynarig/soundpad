@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(Store.self) private var store
     @State private var recording: HotkeyTarget?
+    @State private var confirmBoost = false
 
     var body: some View {
         let st = store.state
@@ -35,6 +36,23 @@ struct SettingsView: View {
                     }), in: 0...2)
                 }
                 .disabled(s.inputDevice == nil)
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle("Allow sound volume up to 150% for others", isOn: Binding(
+                        get: { s.micBoost },
+                        set: { on in
+                            // Turning it on is risky for listeners: ask first.
+                            if on { confirmBoost = true } else { store.send("set_mic_boost", ["on": false]) }
+                        }))
+                    Text("Lets the 🎙 volume go above 100%. Off by default.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                .disabled(s.micDevice == nil)
+                .alert("Allow volume up to 150%?", isPresented: $confirmBoost) {
+                    Button("Turn On", role: .destructive) { store.send("set_mic_boost", ["on": true]) }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Above 100%, sounds can distort and be much louder for people in your call or stream. Turn the 🎙 volume down if others say it’s too loud.")
+                }
             } header: {
                 Text("Audio")
             } footer: {

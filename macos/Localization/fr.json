@@ -169,5 +169,16 @@
   "view": "Présentation",
   "as_icons": "par icônes",
   "as_list": "par liste",
-  "icon_size": "Taille des icônes"
+  "icon_size": "Taille des icônes",
+  "mute": "Muet",
+  "opt_click_mute": "%@ — ⌥-clic pour couper le son",
+  "opt_click_unmute": "%@ — ⌥-clic pour réactiver le son",
+  "mic_boost": "Autoriser un volume jusqu’à 150 % pour les autres",
+  "mic_boost_desc": "Permet au volume 🎙 de dépasser 100 %. Désactivé par défaut.",
+  "mic_boost_alert": "Autoriser un volume jusqu’à 150 % ?",
+  "mic_boost_alert_msg": "Au-delà de 100 %, les sons peuvent saturer et être beaucoup plus forts pour les personnes de votre appel ou stream. Baissez le volume 🎙 si on vous dit que c’est trop fort.",
+  "turn_on": "Activer",
+  "file_not_found": "Fichier introuvable : %@",
+  "n_missing": "%@ fichier(s) son manquant(s)",
+  "is_missing": "« %@ » est introuvable. A-t-il été déplacé ou supprimé ?"
 }

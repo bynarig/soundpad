@@ -169,5 +169,16 @@
   "view": "Zobrazení",
   "as_icons": "jako ikony",
   "as_list": "jako seznam",
-  "icon_size": "Velikost ikon"
+  "icon_size": "Velikost ikon",
+  "mute": "Ztlumit",
+  "opt_click_mute": "%@ — ⌥-kliknutím ztlumíte",
+  "opt_click_unmute": "%@ — ⌥-kliknutím zrušíte ztlumení",
+  "mic_boost": "Povolit hlasitost až 150 % pro ostatní",
+  "mic_boost_desc": "Umožní nastavit hlasitost 🎙 nad 100 %. Ve výchozím stavu vypnuto.",
+  "mic_boost_alert": "Povolit hlasitost až 150 %?",
+  "mic_boost_alert_msg": "Nad 100 % se zvuky mohou zkreslit a být pro lidi ve vašem hovoru nebo streamu mnohem hlasitější. Pokud ostatní říkají, že je to moc nahlas, snižte hlasitost 🎙.",
+  "turn_on": "Zapnout",
+  "file_not_found": "Soubor nenalezen: %@",
+  "n_missing": "Chybí zvukové soubory: %@",
+  "is_missing": "„%@“ chybí. Byl přesunut nebo smazán?"
 }

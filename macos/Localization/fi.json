@@ -169,5 +169,16 @@
   "view": "Näytä",
   "as_icons": "kuvakkeina",
   "as_list": "luettelona",
-  "icon_size": "Kuvakkeiden koko"
+  "icon_size": "Kuvakkeiden koko",
+  "mute": "Mykistä",
+  "opt_click_mute": "%@ — mykistä ⌥-osoittamalla",
+  "opt_click_unmute": "%@ — poista mykistys ⌥-osoittamalla",
+  "mic_boost": "Salli muille äänenvoimakkuus 150 %:iin asti",
+  "mic_boost_desc": "Sallii 🎙-äänenvoimakkuuden yli 100 %. Oletuksena pois.",
+  "mic_boost_alert": "Sallitaanko äänenvoimakkuus 150 %:iin asti?",
+  "mic_boost_alert_msg": "Yli 100 %:ssa äänet voivat säröytyä ja kuulostaa puhelun tai striimin osallistujille paljon kovemmilta. Laske 🎙-äänenvoimakkuutta, jos muut sanovat sen olevan liian kova.",
+  "turn_on": "Laita päälle",
+  "file_not_found": "Tiedostoa ei löydy: %@",
+  "n_missing": "%@ äänitiedosto(a) puuttuu",
+  "is_missing": "”%@” puuttuu. Onko se siirretty tai poistettu?"
 }

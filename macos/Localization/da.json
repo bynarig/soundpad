@@ -169,5 +169,16 @@
   "view": "Vis",
   "as_icons": "som symboler",
   "as_list": "som liste",
-  "icon_size": "Symbolstørrelse"
+  "icon_size": "Symbolstørrelse",
+  "mute": "Slå lyd fra",
+  "opt_click_mute": "%@ — ⌥-klik for at slå lyden fra",
+  "opt_click_unmute": "%@ — ⌥-klik for at slå lyden til",
+  "mic_boost": "Tillad lydstyrke op til 150 % for andre",
+  "mic_boost_desc": "Lader 🎙-lydstyrken gå over 100 %. Slået fra som standard.",
+  "mic_boost_alert": "Tillad lydstyrke op til 150 %?",
+  "mic_boost_alert_msg": "Over 100 % kan lyde blive forvrængede og meget højere for folk i dit opkald eller stream. Skru ned for 🎙-lydstyrken, hvis andre siger, at det er for højt.",
+  "turn_on": "Slå til",
+  "file_not_found": "Filen blev ikke fundet: %@",
+  "n_missing": "%@ lydfil(er) mangler",
+  "is_missing": "“%@” mangler. Er den flyttet eller slettet?"
 }

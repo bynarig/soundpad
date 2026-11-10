@@ -169,5 +169,16 @@
   "view": "Dehra",
   "as_icons": "bħala ikoni",
   "as_list": "bħala lista",
-  "icon_size": "Daqs tal-ikoni"
+  "icon_size": "Daqs tal-ikoni",
+  "mute": "Iskot",
+  "opt_click_mute": "%@ — ⌥-ikklikkja biex tiskot",
+  "opt_click_unmute": "%@ — ⌥-ikklikkja biex terġa’ tixgħel il-ħoss",
+  "mic_boost": "Ħalli volum sa 150% għall-oħrajn",
+  "mic_boost_desc": "Iħalli l-volum tal-🎙 jaqbeż il-100%. Mitfi b’mod awtomatiku.",
+  "mic_boost_alert": "Tħalli volum sa 150%?",
+  "mic_boost_alert_msg": "’Il fuq minn 100%, il-ħsejjes jistgħu jitgħawġu u jkunu ħafna aktar għolja għan-nies fis-sejħa jew l-istream tiegħek. Niżżel il-volum tal-🎙 jekk l-oħrajn jgħidu li huwa għoli wisq.",
+  "turn_on": "Ixgħel",
+  "file_not_found": "Il-fajl ma nstabx: %@",
+  "n_missing": "Hemm %@ fajl(s) tal-ħoss nieqsa",
+  "is_missing": "“%@” huwa nieqes. Ġie mċaqlaq jew imħassar?"
 }

@@ -169,5 +169,16 @@
   "view": "Vizualizare",
   "as_icons": "ca pictograme",
   "as_list": "ca listă",
-  "icon_size": "Dimensiune pictograme"
+  "icon_size": "Dimensiune pictograme",
+  "mute": "Dezactivează sunetul",
+  "opt_click_mute": "%@ — ⌥-clic pentru a dezactiva sunetul",
+  "opt_click_unmute": "%@ — ⌥-clic pentru a activa sunetul",
+  "mic_boost": "Permite volum de până la 150% pentru ceilalți",
+  "mic_boost_desc": "Permite ca volumul 🎙 să depășească 100%. Dezactivat implicit.",
+  "mic_boost_alert": "Permiți volum de până la 150%?",
+  "mic_boost_alert_msg": "Peste 100%, sunetele se pot distorsiona și pot fi mult mai puternice pentru cei din apel sau stream. Dă mai încet volumul 🎙 dacă ceilalți spun că e prea tare.",
+  "turn_on": "Activează",
+  "file_not_found": "Fișierul nu a fost găsit: %@",
+  "n_missing": "Lipsesc %@ fișiere audio",
+  "is_missing": "„%@” lipsește. A fost mutat sau șters?"
 }

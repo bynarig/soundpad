@@ -169,5 +169,16 @@
   "view": "View",
   "as_icons": "as Icons",
   "as_list": "as List",
-  "icon_size": "Icon Size"
+  "icon_size": "Icon Size",
+  "mute": "Mute",
+  "opt_click_mute": "%@ — ⌥-click to mute",
+  "opt_click_unmute": "%@ — ⌥-click to unmute",
+  "mic_boost": "Allow sound volume up to 150% for others",
+  "mic_boost_desc": "Lets the 🎙 volume go above 100%. Off by default.",
+  "mic_boost_alert": "Allow volume up to 150%?",
+  "mic_boost_alert_msg": "Above 100%, sounds can distort and be much louder for people in your call or stream. Turn the 🎙 volume down if others say it’s too loud.",
+  "turn_on": "Turn On",
+  "file_not_found": "File not found: %@",
+  "n_missing": "%@ sound file(s) are missing",
+  "is_missing": "“%@” is missing. Was it moved or deleted?"
 }

@@ -1,25 +1,16 @@
 import SwiftUI
 
-/// Floating Liquid Glass transport: play/stop, now playing, and the two output
-/// controls. The pieces sit in one GlassEffectContainer so they blend and
-/// morph together like system controls.
+/// Floating Liquid Glass player: transport, now playing and the two volume
+/// buttons on one piece of glass (related controls share one surface; no
+/// glass stacked on glass). Volume sliders open in popovers from their
+/// buttons, like Control Center's Sound module.
 struct PlayerBar: View {
     @Environment(Store.self) private var store
     @Namespace private var ns
 
     var body: some View {
-        GlassEffectContainer(spacing: 14) {
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 10) {
-                    transport
-                    outputs
-                }
-                // Narrow windows: volume controls sit above the transport, which stays at the bottom.
-                VStack(alignment: .trailing, spacing: 10) {
-                    outputs
-                    transport
-                }
-            }
+        GlassEffectContainer {
+            transport
         }
     }
 
@@ -74,10 +65,12 @@ struct PlayerBar: View {
                 }
                 ProgressTrack()
             }
-            .frame(minWidth: 240)
+            .frame(minWidth: 180)
+
+            outputs
         }
         .padding(.leading, 6)
-        .padding(.trailing, 16)
+        .padding(.trailing, 10)
         .padding(.vertical, 6)
         .glassEffect(.regular, in: .capsule)
         .glassEffectID("transport", in: ns)
@@ -86,22 +79,18 @@ struct PlayerBar: View {
 
     private var outputs: some View {
         let s = store.state.settings
-        return HStack(spacing: 14) {
-            OutputControl(
-                icon: "speaker.wave.2.fill", offIcon: "speaker.slash.fill", help: String(localized: "Speakers — what you hear"),
-                enabled: s.speakersEnabled, volume: s.speakerVolume,
-                onToggle: { store.setEnabled(.speakers, $0) }, onVolume: { store.setVolume(.speakers, $0) })
-            OutputControl(
-                icon: "mic.fill", offIcon: "mic.slash.fill", help: String(localized: "Microphone — what others hear"),
+        return HStack(spacing: 2) {
+            VolumeButton(
+                kind: .speakers, help: String(localized: "Speakers — what you hear"),
+                symbol: "speaker.wave.3.fill", mutedSymbol: "speaker.slash.fill",
+                enabled: s.speakersEnabled, volume: s.speakerVolume)
+            VolumeButton(
+                kind: .mic, help: String(localized: "Microphone — what others hear"),
+                symbol: "mic.fill", mutedSymbol: "mic.slash.fill",
                 enabled: s.micEnabled && s.micDevice != nil, volume: s.micVolume,
-                onToggle: { store.setEnabled(.mic, $0) }, onVolume: { store.setVolume(.mic, $0) })
+                maxVolume: s.micBoost ? 1.5 : 1)
                 .disabled(s.micDevice == nil)
-            LevelMeter()
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .glassEffect(.regular, in: .capsule)
-        .glassEffectID("outputs", in: ns)
     }
 }
 
@@ -229,58 +218,122 @@ struct ModeMenu: View {
     }
 }
 
-struct OutputControl: View {
-    let icon: String
-    let offIcon: String
+/// A volume button in the player bar. Click opens a popover with the slider
+/// and a Mute switch; ⌥-click mutes or unmutes straight away. The symbol shows
+/// the volume (speaker waves) and whether that side is muted.
+struct VolumeButton: View {
+    @Environment(Store.self) private var store
+    let kind: OutputKind
     let help: String
+    let symbol: String
+    let mutedSymbol: String
     let enabled: Bool
     let volume: Double
-    let onToggle: (Bool) -> Void
-    let onVolume: (Double) -> Void
+    /// 1 = 100%; the mic can go to 1.5 with the boost setting.
+    var maxVolume: Double = 1
+    @State private var open = false
     @State private var local: Double?
 
     var body: some View {
-        HStack(spacing: 6) {
-            Button { onToggle(!enabled) } label: {
-                Image(systemName: enabled ? icon : offIcon)
-                    .frame(width: 18, height: 18)
-                    .contentTransition(.symbolEffect(.replace))
-                    .foregroundStyle(enabled ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+        let v = local ?? volume
+        Button {
+            if NSEvent.modifierFlags.contains(.option) {
+                store.setEnabled(kind, !enabled)
+            } else {
+                open.toggle()
             }
-            .buttonStyle(.plain)
-            .help(enabled ? String(localized: "\(help) — click to mute") : String(localized: "\(help) — click to unmute"))
-
-            Slider(
-                value: Binding(get: { local ?? volume }, set: { local = $0; onVolume($0) }),
-                in: 0...1,
-                onEditingChanged: { if !$0 { local = nil } }
-            )
-            .controlSize(.small)
-            .frame(width: 84)
-            .disabled(!enabled)
-            .help(Text(verbatim: "\(help): \(Int((local ?? volume) * 100))%"))
+        } label: {
+            Image(systemName: enabled ? symbol : mutedSymbol, variableValue: kind == .speakers ? v : nil)
+                .contentTransition(.symbolEffect(.replace))
+                .foregroundStyle(enabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                .frame(width: 28, height: 28)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.borderless)
+        .help(enabled ? String(localized: "\(help) — ⌥-click to mute") : String(localized: "\(help) — ⌥-click to unmute"))
+        .accessibilityLabel(help)
+        .accessibilityValue(enabled ? Text(v, format: .percent.precision(.fractionLength(0))) : Text("Mute"))
+        .popover(isPresented: $open, arrowEdge: .top) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(help).font(.headline)
+                    Spacer(minLength: 12)
+                    Toggle("Mute", isOn: Binding(get: { !enabled }, set: { store.setEnabled(kind, !$0) }))
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                }
+                HStack(spacing: 8) {
+                    Image(systemName: enabled ? symbol : mutedSymbol, variableValue: kind == .speakers ? 0 : nil)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 18)
+                    Slider(
+                        value: Binding(get: { local ?? volume }, set: { local = $0; store.setVolume(kind, $0) }),
+                        in: 0...maxVolume,
+                        onEditingChanged: { if !$0 { local = nil } }
+                    )
+                    .disabled(!enabled)
+                    .tint(v > 1 ? .orange : nil)
+                    Text(v, format: .percent.precision(.fractionLength(0)))
+                        .font(.callout.monospacedDigit())
+                        .foregroundStyle(v > 1 ? AnyShapeStyle(.orange) : AnyShapeStyle(.secondary))
+                        .frame(width: 44, alignment: .trailing)
+                }
+                LevelMeter(horizontal: true)
+            }
+            .padding(16)
+            .frame(width: 300)
         }
     }
 }
 
-/// 5-segment output meter drawn in one Canvas. It only redraws when the
-/// number of lit segments changes (no per-frame animation).
+/// Output level meter: one continuous bar like a hardware meter. Colors sit
+/// at fixed positions (green, yellow near the top, red at the end), the bar
+/// rises instantly and falls smoothly, and a thin mark holds the recent peak.
 struct LevelMeter: View {
     @Environment(Store.self) private var store
+    var horizontal = false
+
     var body: some View {
         let level = store.playback.level
+        let hold = store.playback.peakHold
         Canvas { ctx, size in
-            let n = PlaybackModel.meterSegments
-            let gap: CGFloat = 2
-            let h = (size.height - gap * CGFloat(n - 1)) / CGFloat(n)
-            for i in 0..<n {
-                let y = size.height - CGFloat(i + 1) * h - CGFloat(i) * gap
-                let color: Color = i >= level ? .primary.opacity(0.12) : i == n - 1 ? .red : i == n - 2 ? .yellow : .green
-                ctx.fill(Path(roundedRect: CGRect(x: 0, y: y, width: size.width, height: h), cornerRadius: h / 2),
-                         with: .color(color))
+            let length = horizontal ? size.width : size.height
+            let thick = horizontal ? size.height : size.width
+            func rect(_ from: Double, _ to: Double) -> CGRect {
+                let a = length * from, b = length * to
+                return horizontal
+                    ? CGRect(x: a, y: 0, width: b - a, height: thick)
+                    : CGRect(x: 0, y: length - b, width: thick, height: b - a)
+            }
+            let track = Path(roundedRect: rect(0, 1), cornerRadius: thick / 2)
+            ctx.fill(track, with: .color(.primary.opacity(0.12)))
+            // Fixed color scale; the level reveals it, like a real meter.
+            let gradient = Gradient(stops: [
+                .init(color: .green, location: 0),
+                .init(color: .green, location: 0.7),
+                .init(color: .yellow, location: 0.85),
+                .init(color: .red, location: 0.97),
+            ])
+            let shading = GraphicsContext.Shading.linearGradient(
+                gradient,
+                startPoint: horizontal ? CGPoint(x: 0, y: 0) : CGPoint(x: 0, y: size.height),
+                endPoint: horizontal ? CGPoint(x: size.width, y: 0) : CGPoint(x: 0, y: 0))
+            if level > 0 {
+                ctx.drawLayer { layer in
+                    layer.clip(to: track)
+                    layer.fill(Path(rect(0, level)), with: shading)
+                }
+            }
+            if hold > 0.01 {
+                let markWidth = max(2, thick * 0.5) / length
+                let at = min(max(hold - markWidth, 0), 1 - markWidth)
+                ctx.drawLayer { layer in
+                    layer.clip(to: track)
+                    layer.fill(Path(rect(at, at + markWidth)), with: shading)
+                }
             }
         }
-        .frame(width: 4, height: 23)
+        .frame(width: horizontal ? nil : 4, height: horizontal ? 5 : 23)
         .accessibilityLabel("Output level")
         .help("Output level")
     }

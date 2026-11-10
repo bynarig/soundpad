@@ -27,6 +27,8 @@ pub enum LoadState {
     Loading,
     Ready { duration: f64 },
     Failed { error: String },
+    /// The file isn't there any more (moved or deleted).
+    Missing,
 }
 
 struct PlaylistEntry {
@@ -114,6 +116,8 @@ pub enum Command {
     SetVolume { output: Output, value: f32 },
     SetPassthroughVolume { value: f32 },
     SetOverlap { on: bool },
+    /// Allow the virtual-mic volume up to 150%. Turning it off caps it at 100%.
+    SetMicBoost { on: bool },
     /// `None` = system default.
     SetSpeakerDevice { id: Option<String> },
     /// `None` = off.
@@ -274,6 +278,10 @@ impl Core {
         for s in state.sounds {
             core.push_sound(s.path, s.name, s.hotkey, s.added);
         }
+        let missing = core.sounds.iter().filter(|s| matches!(s.state, LoadState::Missing)).count();
+        if missing > 0 {
+            core.notify(format!("{missing} sound file(s) are missing"));
+        }
         for pl in state.playlists {
             let sounds = pl.sounds.iter().filter_map(|p| core.sounds.iter().find(|s| &s.path == p)).map(|s| s.id).collect();
             let id = core.alloc_id();
@@ -398,8 +406,7 @@ impl Core {
             }
             C::Retry { id } => {
                 let i = self.index_of(id).ok_or("unknown sound")?;
-                self.sounds[i].state = LoadState::Loading;
-                self.loader.load(id, self.sounds[i].path.clone());
+                self.sounds[i].state = self.start_loading(id, self.sounds[i].path.clone());
             }
             C::Reveal { id } => {
                 let i = self.index_of(id).ok_or("unknown sound")?;
@@ -430,16 +437,21 @@ impl Core {
                 self.mark_dirty();
             }
             C::SetVolume { output, value } => {
-                let v = value.clamp(0.0, 1.0);
                 match output {
-                    Output::Speakers => self.settings.speaker_volume = v,
-                    Output::Mic => self.settings.mic_volume = v,
+                    Output::Speakers => self.settings.speaker_volume = value.clamp(0.0, 1.0),
+                    Output::Mic => self.settings.mic_volume = value.clamp(0.0, self.max_mic_volume()),
                 }
                 self.apply_player_settings();
                 self.mark_dirty();
             }
             C::SetPassthroughVolume { value } => {
                 self.settings.passthrough_volume = value.clamp(0.0, 2.0);
+                self.apply_player_settings();
+                self.mark_dirty();
+            }
+            C::SetMicBoost { on } => {
+                self.settings.mic_boost = on;
+                self.settings.mic_volume = self.settings.mic_volume.min(self.max_mic_volume());
                 self.apply_player_settings();
                 self.mark_dirty();
             }
@@ -589,6 +601,7 @@ impl Core {
         }
         if self.last_default_check.elapsed() > Duration::from_secs(2) {
             self.last_default_check = Instant::now();
+            changed |= self.check_missing_files();
             if self.settings.speaker_device.is_none() {
                 let current = self.engine.output(OutputKind::Speakers).map(|o| o.device.id.clone());
                 let default = engine::default_output_id();
@@ -673,6 +686,11 @@ impl Core {
             .unwrap()
     }
 
+    /// Highest virtual-mic volume: 150% with the boost setting, else 100%.
+    fn max_mic_volume(&self) -> f32 {
+        if self.settings.mic_boost { 1.5 } else { 1.0 }
+    }
+
     /// Tell the player the order used by next/previous and playlist mode.
     fn sync_queue(&self) {
         let ids = match self.active_playlist.and_then(|id| self.playlists.iter().find(|p| p.id == id)) {
@@ -684,8 +702,8 @@ impl Core {
 
     fn push_sound(&mut self, path: PathBuf, name: String, hotkey: Option<String>, added: Option<u64>) -> u64 {
         let id = self.alloc_id();
-        self.loader.load(id, path.clone());
-        self.sounds.push(SoundEntry { id, name, path, hotkey, added, state: LoadState::Loading });
+        let state = self.start_loading(id, path.clone());
+        self.sounds.push(SoundEntry { id, name, path, hotkey, added, state });
         id
     }
 
@@ -740,8 +758,51 @@ impl Core {
         }
     }
 
+    /// Marks sounds whose file was moved or deleted as missing (so hotkeys
+    /// don't play a few buffered seconds), and reloads ones that came back.
+    fn check_missing_files(&mut self) -> bool {
+        let mut gone = 0;
+        let mut changed = false;
+        for i in 0..self.sounds.len() {
+            let (id, exists) = (self.sounds[i].id, self.sounds[i].path.exists());
+            match self.sounds[i].state {
+                LoadState::Missing if exists => {
+                    self.sounds[i].state = self.start_loading(id, self.sounds[i].path.clone());
+                    changed = true;
+                }
+                LoadState::Ready { .. } if !exists => {
+                    self.sounds[i].state = LoadState::Missing;
+                    self.player.remove_sound(id);
+                    gone += 1;
+                    changed = true;
+                }
+                _ => {}
+            }
+        }
+        if gone > 0 {
+            self.notify(format!("{gone} sound file(s) are missing"));
+        }
+        changed
+    }
+
+    /// Starts decoding a file, or reports it missing without trying.
+    fn start_loading(&self, id: u64, path: PathBuf) -> LoadState {
+        if path.exists() {
+            self.loader.load(id, path);
+            LoadState::Loading
+        } else {
+            LoadState::Missing
+        }
+    }
+
     fn play(&mut self, id: u64) -> Result<(), String> {
         let i = self.index_of(id).ok_or("unknown sound")?;
+        // Long sounds stream from disk: a file deleted while Soundpad runs would
+        // play only what is already buffered, so check before playing.
+        if !matches!(self.sounds[i].state, LoadState::Missing) && !self.sounds[i].path.exists() {
+            self.sounds[i].state = LoadState::Missing;
+            self.player.remove_sound(id);
+        }
         match &self.sounds[i].state {
             LoadState::Ready { .. } => {
                 self.player.play(id);
@@ -749,6 +810,7 @@ impl Core {
             }
             LoadState::Loading => Err("Still loading…".into()),
             LoadState::Failed { error } => Err(format!("Can't play “{}”: {error}", self.sounds[i].name)),
+            LoadState::Missing => Err(format!("“{}” is missing. Was it moved or deleted?", self.sounds[i].name)),
         }
     }
 
@@ -958,6 +1020,19 @@ mod tests {
         assert!(matches!(c, Command::SetVolume { output: Output::Mic, .. }));
         let c: Command = serde_json::from_str(r#"{"cmd":"set_speaker_device","id":null}"#).unwrap();
         assert!(matches!(c, Command::SetSpeakerDevice { id: None }));
+    }
+
+    #[test]
+    fn missing_state_serializes() {
+        let j = serde_json::to_value(LoadState::Missing).unwrap();
+        assert_eq!(j["status"], "missing");
+    }
+
+    #[test]
+    fn mic_boost_command_parses_and_is_off_by_default() {
+        let c: Command = serde_json::from_str(r#"{"cmd":"set_mic_boost","on":true}"#).unwrap();
+        assert!(matches!(c, Command::SetMicBoost { on: true }));
+        assert!(!Settings::default().mic_boost);
     }
 
     #[test]

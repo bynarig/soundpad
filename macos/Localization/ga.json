@@ -169,5 +169,16 @@
   "view": "Amharc",
   "as_icons": "mar dheilbhíní",
   "as_list": "mar liosta",
-  "icon_size": "Méid na ndeilbhíní"
+  "icon_size": "Méid na ndeilbhíní",
+  "mute": "Balbhaigh",
+  "opt_click_mute": "%@ — ⌥-cliceáil chun balbhú",
+  "opt_click_unmute": "%@ — ⌥-cliceáil chun díbhalbhú",
+  "mic_boost": "Ceadaigh airde suas le 150% do dhaoine eile",
+  "mic_boost_desc": "Ligeann sé d’airde 🎙 dul os cionn 100%. As de réir réamhshocraithe.",
+  "mic_boost_alert": "Ceadaigh airde suas le 150%?",
+  "mic_boost_alert_msg": "Os cionn 100%, d’fhéadfadh fuaimeanna a bheith díchumtha agus i bhfad níos airde do dhaoine i do ghlao nó i do shruth. Laghdaigh airde 🎙 má deir daoine eile go bhfuil sé ró-ard.",
+  "turn_on": "Cas air",
+  "file_not_found": "Níor aimsíodh an comhad: %@",
+  "n_missing": "Tá %@ comhad fuaime ar iarraidh",
+  "is_missing": "Tá “%@” ar iarraidh. Ar bogadh nó ar scriosadh é?"
 }

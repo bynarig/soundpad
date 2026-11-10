@@ -6,6 +6,8 @@ import Foundation
 /// translated template. Unknown messages are shown as they are.
 private let coreTemplates: [String] = [
     "Skipped %@ unsupported file(s)",
+    "%@ sound file(s) are missing",
+    "“%@” is missing. Was it moved or deleted?",
     "Can't play “%@”: %@",
     "Hotkey %@ failed: %@",
     "Virtual mic setup failed: %@",

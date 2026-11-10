@@ -169,5 +169,16 @@
   "view": "顯示方式",
   "as_icons": "圖像",
   "as_list": "列表",
-  "icon_size": "圖像大小"
+  "icon_size": "圖像大小",
+  "mute": "靜音",
+  "opt_click_mute": "%@ — 按住 ⌥ 點按以靜音",
+  "opt_click_unmute": "%@ — 按住 ⌥ 點按以取消靜音",
+  "mic_boost": "允許他人聽到的音量最高達 150%",
+  "mic_boost_desc": "允許 🎙 音量超過 100%。預設關閉。",
+  "mic_boost_alert": "允許音量最高達 150%?",
+  "mic_boost_alert_msg": "超過 100% 時,聲音可能失真,而且通話或直播中的其他人聽起來會大聲很多。如果別人說太大聲,請調低 🎙 音量。",
+  "turn_on": "開啟",
+  "file_not_found": "找不到檔案:%@",
+  "n_missing": "缺少 %@ 個聲音檔案",
+  "is_missing": "找不到「%@」。它是否已被移動或刪除?"
 }

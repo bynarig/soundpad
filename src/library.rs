@@ -42,6 +42,8 @@ pub struct Settings {
     pub speaker_volume: f32,
     pub mic_volume: f32,
     pub passthrough_volume: f32,
+    /// Let the virtual-mic volume go up to 150% (off by default; the UI warns).
+    pub mic_boost: bool,
     /// Allow several sounds at once (otherwise a new sound replaces the current one).
     pub overlap: bool,
     pub stop_hotkey: Option<String>,
@@ -61,6 +63,7 @@ impl Default for Settings {
             speaker_volume: 0.8,
             mic_volume: 0.8,
             passthrough_volume: 1.0,
+            mic_boost: false,
             overlap: false,
             stop_hotkey: None,
             pause_hotkey: None,

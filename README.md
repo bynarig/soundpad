@@ -64,9 +64,14 @@ Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 > 💡 If sounds get cut off or sound quiet for others, turn off the chat app's
 > **noise suppression** (in Discord this is called *Krisp*).
 
-You hear sounds through your normal speakers or headphones. The two sliders in the player
-bar set how loud the sounds are **for you** (🔊) and **for others** (🎙). Click an icon to mute
-that side.
+You hear sounds through your normal speakers or headphones. The 🔊 and 🎙 buttons at the right
+of the player bar set how loud the sounds are **for you** (🔊) and **for others** (🎙). Click a
+button to open its volume slider, a **Mute** switch and a level meter. **⌥-click** mutes or
+unmutes that side straight away.
+
+Need sounds louder for others? Turn on **Settings → Audio → Allow sound volume up to 150% for
+others**. It's off by default, because above 100% sounds can distort and be much louder for the
+people listening.
 
 ## Playlists
 
@@ -136,7 +141,7 @@ only installs genuine ones.
 
 **My friends don't hear the sounds.**
 Check that your chat app's microphone is set to **Soundpad Virtual Mic**, and that the 🎙
-slider in Soundpad isn't at zero or muted.
+volume in Soundpad isn't at zero or muted (a slashed 🎙 icon means muted).
 
 **My friends hear the sounds but not my voice.**
 In Soundpad's Settings, set **Mix in my microphone** to your real microphone, and allow
@@ -162,7 +167,9 @@ next to *"Soundpad" was blocked*. You only need to do this once.
 
 **Where are my sounds stored?**
 Soundpad doesn't copy your files. It remembers where they are on your Mac. If you move or
-delete a file, Soundpad can't play it anymore. Your list and settings are saved in
+delete a file, Soundpad marks that sound as missing (dimmed, with a ? folder icon). Put the file
+back and it loads again by itself, or remove the sound with right-click → **Delete from Library**.
+Your list and settings are saved in
 `~/Library/Application Support/Soundpad/`.
 
 **How do I uninstall it?**

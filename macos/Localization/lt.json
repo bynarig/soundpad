@@ -169,5 +169,16 @@
   "view": "Rodinys",
   "as_icons": "kaip piktogramos",
   "as_list": "kaip sąrašas",
-  "icon_size": "Piktogramų dydis"
+  "icon_size": "Piktogramų dydis",
+  "mute": "Nutildyti",
+  "opt_click_mute": "%@ — ⌥ spustelėkite, kad nutildytumėte",
+  "opt_click_unmute": "%@ — ⌥ spustelėkite, kad įjungtumėte garsą",
+  "mic_boost": "Leisti kitiems iki 150 % garsumą",
+  "mic_boost_desc": "Leidžia 🎙 garsumą padidinti virš 100 %. Pagal numatytuosius nustatymus išjungta.",
+  "mic_boost_alert": "Leisti garsumą iki 150 %?",
+  "mic_boost_alert_msg": "Virš 100 % garsai gali iškraipyti ir būti daug garsesni jūsų skambučio ar transliacijos dalyviams. Sumažinkite 🎙 garsumą, jei kiti sako, kad per garsu.",
+  "turn_on": "Įjungti",
+  "file_not_found": "Failas nerastas: %@",
+  "n_missing": "Trūksta garso failų: %@",
+  "is_missing": "„%@“ nėra. Ar jis perkeltas ar ištrintas?"
 }

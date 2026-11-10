@@ -169,5 +169,16 @@
   "view": "Görüntü",
   "as_icons": "Simge olarak",
   "as_list": "Liste olarak",
-  "icon_size": "Simge boyutu"
+  "icon_size": "Simge boyutu",
+  "mute": "Sessiz",
+  "opt_click_mute": "%@ — sessize almak için ⌥-tıklayın",
+  "opt_click_unmute": "%@ — sesi açmak için ⌥-tıklayın",
+  "mic_boost": "Başkaları için %150’ye kadar ses düzeyine izin ver",
+  "mic_boost_desc": "🎙 ses düzeyinin %100’ü aşmasına izin verir. Varsayılan olarak kapalı.",
+  "mic_boost_alert": "%150’ye kadar ses düzeyine izin verilsin mi?",
+  "mic_boost_alert_msg": "%100’ün üzerinde sesler bozulabilir ve görüşmenizdeki veya yayınınızdaki kişilere çok daha yüksek gelebilir. Başkaları çok yüksek derse 🎙 ses düzeyini kısın.",
+  "turn_on": "Aç",
+  "file_not_found": "Dosya bulunamadı: %@",
+  "n_missing": "%@ ses dosyası eksik",
+  "is_missing": "“%@” eksik. Taşındı ya da silindi mi?"
 }

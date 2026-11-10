@@ -169,5 +169,16 @@
   "view": "Xem",
   "as_icons": "dưới dạng Biểu tượng",
   "as_list": "dưới dạng Danh sách",
-  "icon_size": "Kích thước biểu tượng"
+  "icon_size": "Kích thước biểu tượng",
+  "mute": "Tắt tiếng",
+  "opt_click_mute": "%@ — ⌥-bấm để tắt tiếng",
+  "opt_click_unmute": "%@ — ⌥-bấm để bật tiếng",
+  "mic_boost": "Cho phép âm lượng tới 150% cho người khác",
+  "mic_boost_desc": "Cho phép âm lượng 🎙 vượt quá 100%. Tắt theo mặc định.",
+  "mic_boost_alert": "Cho phép âm lượng tới 150%?",
+  "mic_boost_alert_msg": "Trên 100%, âm thanh có thể bị méo và to hơn nhiều với người trong cuộc gọi hoặc buổi phát trực tiếp của bạn. Hãy giảm âm lượng 🎙 nếu người khác nói quá to.",
+  "turn_on": "Bật",
+  "file_not_found": "Không tìm thấy tệp: %@",
+  "n_missing": "Thiếu %@ tệp âm thanh",
+  "is_missing": "Thiếu “%@”. Tệp đã bị di chuyển hay xóa?"
 }

@@ -169,5 +169,16 @@
   "view": "Vaade",
   "as_icons": "ikoonidena",
   "as_list": "loendina",
-  "icon_size": "Ikooni suurus"
+  "icon_size": "Ikooni suurus",
+  "mute": "Vaigista",
+  "opt_click_mute": "%@ — ⌥-klõps vaigistab",
+  "opt_click_unmute": "%@ — ⌥-klõps taastab heli",
+  "mic_boost": "Luba teistele helitugevus kuni 150%",
+  "mic_boost_desc": "Lubab 🎙 helitugevust üle 100%. Vaikimisi väljas.",
+  "mic_boost_alert": "Kas lubada helitugevus kuni 150%?",
+  "mic_boost_alert_msg": "Üle 100% võivad helid moonduda ja olla kõnes või otseülekandes osalejatele palju valjemad. Vähenda 🎙 helitugevust, kui teised ütlevad, et see on liiga vali.",
+  "turn_on": "Lülita sisse",
+  "file_not_found": "Faili ei leitud: %@",
+  "n_missing": "%@ helifaili puudub",
+  "is_missing": "„%@” puudub. Kas see teisaldati või kustutati?"
 }

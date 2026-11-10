@@ -169,5 +169,16 @@
   "view": "Weergave",
   "as_icons": "als symbolen",
   "as_list": "als lijst",
-  "icon_size": "Symboolgrootte"
+  "icon_size": "Symboolgrootte",
+  "mute": "Dempen",
+  "opt_click_mute": "%@ — ⌥-klik om te dempen",
+  "opt_click_unmute": "%@ — ⌥-klik om dempen op te heffen",
+  "mic_boost": "Volume tot 150% toestaan voor anderen",
+  "mic_boost_desc": "Laat het 🎙-volume boven 100% gaan. Standaard uit.",
+  "mic_boost_alert": "Volume tot 150% toestaan?",
+  "mic_boost_alert_msg": "Boven 100% kunnen geluiden vervormen en veel harder klinken voor mensen in je gesprek of stream. Zet het 🎙-volume lager als anderen zeggen dat het te hard is.",
+  "turn_on": "Zet aan",
+  "file_not_found": "Bestand niet gevonden: %@",
+  "n_missing": "%@ geluidsbestand(en) ontbreken",
+  "is_missing": "‘%@’ ontbreekt. Is het verplaatst of verwijderd?"
 }

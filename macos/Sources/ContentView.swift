@@ -7,7 +7,10 @@ struct ContentView: View {
             Sidebar()
                 .navigationSplitViewColumnWidth(min: 170, ideal: 200, max: 300)
         } detail: {
+            // The player bar needs about this much; without a minimum, widening the
+            // sidebar squeezes the detail until the whole layout overflows sideways.
             SoundList()
+                .navigationSplitViewColumnWidth(min: 460, ideal: 560)
         }
         .frame(minWidth: 760, minHeight: 460)
     }
@@ -376,8 +379,10 @@ struct SoundList: View {
                 Button("Clear Hotkey", systemImage: "keyboard.badge.ellipsis") { store.clearHotkey(.sound(id)) }
             }
             Button("Rename…", systemImage: "pencil") { renaming = s }
-            Button("Show in Finder", systemImage: "folder") { store.reveal(id) }
-            if s.isFailed {
+            if !s.isMissing {
+                Button("Show in Finder", systemImage: "folder") { store.reveal(id) }
+            }
+            if s.isFailed || s.isMissing {
                 Button("Retry Loading", systemImage: "arrow.clockwise") { store.retry(id) }
             }
             Divider()
@@ -524,8 +529,11 @@ struct FilterBar: View {
         // Full labels when there's room; otherwise drop the labels rather
         // than truncating the menus.
         ViewThatFits(in: .horizontal) {
-            controls(labels: true)
-            controls(labels: false)
+            controls(labels: true, slider: true)
+            controls(labels: false, slider: true)
+            controls(labels: false, slider: false)
+            // Last resort: menus may shrink, so the bar never pushes the layout wider.
+            controls(labels: false, slider: false, fixed: false)
         }
         .pickerStyle(.menu)
         .controlSize(.small)
@@ -538,7 +546,7 @@ struct FilterBar: View {
         if show { Text(text).foregroundStyle(.secondary) }
     }
 
-    private func controls(labels: Bool) -> some View {
+    private func controls(labels: Bool, slider: Bool, fixed: Bool = true) -> some View {
         HStack(spacing: 10) {
             label("Sort By", labels)
             HStack(spacing: 2) {
@@ -546,7 +554,7 @@ struct FilterBar: View {
                     ForEach(SoundSort.allCases) { Text($0.title).tag($0) }
                 }
                 .labelsHidden()
-                .fixedSize()
+                .fixedSize(horizontal: fixed, vertical: false)
                 Button { reversed.toggle() } label: {
                     Image(systemName: reversed ? "arrow.down" : "arrow.up")
                         .frame(width: 18, height: 18)
@@ -560,17 +568,17 @@ struct FilterBar: View {
                 ForEach(LengthFilter.allCases) { Text($0.title).tag($0) }
             }
             .labelsHidden()
-            .fixedSize()
+            .fixedSize(horizontal: fixed, vertical: false)
             .help("Length")
             label("Date Added", labels).padding(.leading, 4)
             Picker("Date Added", selection: $added) {
                 ForEach(AddedFilter.allCases) { Text($0.title).tag($0) }
             }
             .labelsHidden()
-            .fixedSize()
+            .fixedSize(horizontal: fixed, vertical: false)
             .help("Date Added")
             Spacer(minLength: 12)
-            if let iconSize {
+            if slider, let iconSize {
                 HStack(spacing: 6) {
                     Image(systemName: "photo").imageScale(.small)
                     Slider(value: iconSize, in: IconSize.range)
@@ -617,7 +625,7 @@ struct SoundRow: View {
             ArtworkView(sound: sound, cornerRadius: 4)
                 .frame(width: 24, height: 24)
                 .overlay {
-                    if playing || sound.isLoading || sound.isFailed {
+                    if playing || sound.isLoading || sound.isFailed || sound.isMissing {
                         statusIcon(playing: playing)
                             .font(.caption)
                             .frame(width: 24, height: 24)
@@ -628,7 +636,7 @@ struct SoundRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(sound.name)
                     .fontWeight(playing ? .semibold : .regular)
-                    .foregroundStyle(sound.isFailed ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+                    .foregroundStyle(sound.isFailed ? AnyShapeStyle(.red) : sound.isMissing ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
                     .lineLimit(1)
                 if playing { RowProgress() }
             }
@@ -643,7 +651,8 @@ struct SoundRow: View {
                 .frame(width: 52, alignment: .trailing)
         }
         .padding(.vertical, 3)
-        .help(sound.error ?? sound.path)
+        .opacity(sound.isMissing ? 0.6 : 1)
+        .help(sound.tooltip)
         .animation(.smooth(duration: 0.25), value: playing)
     }
 
@@ -656,6 +665,8 @@ struct SoundRow: View {
             ProgressView().controlSize(.mini)
         } else if sound.isFailed {
             Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+        } else if sound.isMissing {
+            Image(systemName: "questionmark.folder.fill").foregroundStyle(.orange)
         }
     }
 }

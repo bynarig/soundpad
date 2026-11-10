@@ -169,5 +169,16 @@
   "view": "Skats",
   "as_icons": "kā ikonas",
   "as_list": "kā saraksts",
-  "icon_size": "Ikonu izmērs"
+  "icon_size": "Ikonu izmērs",
+  "mute": "Izslēgt skaņu",
+  "opt_click_mute": "%@ — ⌥ klikšķis, lai izslēgtu skaņu",
+  "opt_click_unmute": "%@ — ⌥ klikšķis, lai ieslēgtu skaņu",
+  "mic_boost": "Atļaut citiem skaļumu līdz 150%",
+  "mic_boost_desc": "Ļauj 🎙 skaļumam pārsniegt 100%. Pēc noklusējuma izslēgts.",
+  "mic_boost_alert": "Atļaut skaļumu līdz 150%?",
+  "mic_boost_alert_msg": "Virs 100% skaņas var kropļoties un būt daudz skaļākas jūsu zvana vai straumes dalībniekiem. Samaziniet 🎙 skaļumu, ja citi saka, ka ir pārāk skaļi.",
+  "turn_on": "Ieslēgt",
+  "file_not_found": "Fails nav atrasts: %@",
+  "n_missing": "Trūkst %@ skaņas failu",
+  "is_missing": "“%@” trūkst. Vai tas tika pārvietots vai izdzēsts?"
 }
