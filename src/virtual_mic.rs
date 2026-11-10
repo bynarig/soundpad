@@ -97,11 +97,7 @@ fn run_as_admin(shell: &str, prompt: &str, args: &[&str]) -> Result<(), String> 
         return Ok(());
     }
     let err = String::from_utf8_lossy(&out.stderr);
-    if err.contains("-128") {
-        Err("Cancelled".into())
-    } else {
-        Err(err.trim().to_string())
-    }
+    if err.contains("-128") { Err("Cancelled".into()) } else { Err(err.trim().to_string()) }
 }
 
 /// Restart CoreAudio so it loads/unloads plug-ins. Audio stops for ~1 s.

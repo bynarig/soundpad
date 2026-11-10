@@ -166,7 +166,12 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("soundpad-test-{}", std::process::id()));
         let path = dir.join("cfg.json");
         let mut st = SavedState::default();
-        st.sounds.push(SavedSound { path: "/a/b.mp3".into(), name: "b".into(), hotkey: Some("alt+KeyB".into()), added: Some(1_700_000_000) });
+        st.sounds.push(SavedSound {
+            path: "/a/b.mp3".into(),
+            name: "b".into(),
+            hotkey: Some("alt+KeyB".into()),
+            added: Some(1_700_000_000),
+        });
         st.settings.overlap = true;
         save_to(&path, &st).unwrap();
         assert_eq!(load_from(&path), st);

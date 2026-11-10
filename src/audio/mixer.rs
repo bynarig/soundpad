@@ -90,15 +90,27 @@ pub struct OutputStatus {
 pub enum Command {
     /// Start a sound. With `exclusive`, all other voices fade out.
     /// Build it with [`Command::play`], which also opens the stream of long sounds.
-    Play { sound_id: u64, sound: SoundRef, exclusive: bool, looping: bool, stream: Option<Box<StreamReader>> },
+    Play {
+        sound_id: u64,
+        sound: SoundRef,
+        exclusive: bool,
+        looping: bool,
+        stream: Option<Box<StreamReader>>,
+    },
     /// Jump the newest voice of `sound_id` to `frame` (with a new stream for long sounds).
-    Seek { sound_id: u64, frame: usize, stream: Option<Box<StreamReader>> },
+    Seek {
+        sound_id: u64,
+        frame: usize,
+        stream: Option<Box<StreamReader>>,
+    },
     /// Repeat (or stop repeating) every playing voice.
     SetLooping(bool),
     /// Fade out and drop every voice.
     StopAll,
     /// Fade out voices of one library sound.
-    Stop { sound_id: u64 },
+    Stop {
+        sound_id: u64,
+    },
     SetPaused(bool),
     /// Attach or detach live microphone input.
     SetMicInput(Option<Box<MicInput>>),
@@ -302,10 +314,7 @@ fn mix<const CH: usize>(
                 let p2 = at(i + 1, c);
                 let p3 = at(i + 2, c);
                 *out = p1
-                    + 0.5
-                        * t
-                        * (p2 - p0
-                            + t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3 + t * (3.0 * (p1 - p2) + p3 - p0)));
+                    + 0.5 * t * (p2 - p0 + t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3 + t * (3.0 * (p1 - p2) + p3 - p0)));
             }
             if CH == 1 {
                 lr[1] = lr[0];
@@ -523,10 +532,7 @@ impl Mixer {
                 }
                 Command::Stop { sound_id } => {
                     let d = self.fade_delta;
-                    self.voices
-                        .iter_mut()
-                        .filter(|v| v.sound_id == sound_id)
-                        .for_each(|v| v.start_fade_out(d));
+                    self.voices.iter_mut().filter(|v| v.sound_id == sound_id).for_each(|v| v.start_fade_out(d));
                 }
                 Command::SetPaused(p) => self.paused = p,
                 Command::Seek { sound_id, frame, stream } => {
@@ -601,9 +607,7 @@ impl Mixer {
             }
         }
         for (idx, v) in self.voices.iter().enumerate() {
-            if !v.stopping
-                && newest.is_none_or(|n| self.voices[n].started_seq < v.started_seq)
-            {
+            if !v.stopping && newest.is_none_or(|n| self.voices[n].started_seq < v.started_seq) {
                 newest = Some(idx);
             }
         }
@@ -647,14 +651,14 @@ impl Mixer {
         let mut peak = 0.0f32;
         match channels {
             1 => {
-                for (o, f) in out.iter_mut().zip(a.chunks_exact(2)) {
+                for (o, f) in out.iter_mut().zip(a.as_chunks::<2>().0) {
                     let s = soft_clip((f[0] + f[1]) * 0.5);
                     peak = peak.max(s.abs());
                     *o = s;
                 }
             }
             _ => {
-                for (o, f) in out.chunks_exact_mut(channels).zip(a.chunks_exact(2)) {
+                for (o, f) in out.chunks_exact_mut(channels).zip(a.as_chunks::<2>().0) {
                     let l = soft_clip(f[0]);
                     let r = soft_clip(f[1]);
                     peak = peak.max(l.abs()).max(r.abs());

@@ -95,9 +95,3 @@ struct SoundpadApp: App {
         }
     }
 }
-
-func trace(_ s: String) {
-    if ProcessInfo.processInfo.environment["SOUNDPAD_TRACE"] != nil {
-        FileHandle.standardError.write(Data("[trace] \(s)\n".utf8))
-    }
-}

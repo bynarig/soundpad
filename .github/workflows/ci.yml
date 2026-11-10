@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  # Pinned so new compiler lints don't break CI unexpectedly; bump on purpose.
+  RUST_VERSION: "1.99.1"
+
+jobs:
+  rust:
+    name: Rust (format, lint, tests)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
+          rustup default "$RUST_VERSION"
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --release --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --release
+
+  swift:
+    name: Swift (unit tests)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
+          rustup default "$RUST_VERSION"
+      - uses: Swatinem/rust-cache@v2
+      - name: Swift version
+        run: xcrun swiftc --version
+      - name: Swift tests
+        run: scripts/test_swift.sh
+
+  app:
+    name: Build app
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
+          rustup default "$RUST_VERSION"
+      - uses: Swatinem/rust-cache@v2
+      - name: Translations
+        run: python3 scripts/localize.py --check
+      - name: Build Soundpad.app (ad-hoc signed)
+        run: scripts/bundle.sh
+      - name: Virtual mic driver test (no install)
+        run: scripts/test_driver.sh
+      - name: Package
+        run: ditto -c -k --keepParent dist/Soundpad.app Soundpad-ci.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Soundpad-${{ github.sha }}
+          path: Soundpad-ci.zip
+          retention-days: 14

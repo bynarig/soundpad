@@ -71,6 +71,7 @@ do file or network I/O, or make system calls. Doing any of those causes audible 
 
 ```sh
 cargo test --release                                    # all Rust tests
+scripts/test_swift.sh                                   # Swift unit tests (macos/Tests)
 cargo test --release --test realtime -- --nocapture     # also prints performance numbers
 scripts/test_driver.sh                                  # virtual mic driver, no install needed
 dist/Soundpad.app/Contents/MacOS/Soundpad --selftest [--with-mic]   # silent test on your real devices
@@ -83,6 +84,10 @@ python3 scripts/localize.py --check                     # translations
   to playing a fully loaded copy.
 - `tests/decode.rs`: decodes every macOS system sound, plus mp3/flac/ogg/m4a/aiff/caf files
   made with `ffmpeg` / `afconvert` when available.
+- `macos/Tests/SwiftTests.swift`: the Swift side: version comparison and the update feed,
+  decoding sounds and settings sent by the core (including missing files), sorting and the
+  length / date added filters. `scripts/test_swift.sh` compiles them with the app's sources
+  (without `SoundpadApp.swift`, the entry point) and the Rust core, then runs them.
 - `tests/driver/harness.c`: loads the compiled driver the way `coreaudiod` does and checks that
   audio comes back bit-exact.
 - `--selftest`: plays silently on your real devices and measures latency and callback cost.
@@ -91,8 +96,22 @@ python3 scripts/localize.py --check                     # translations
   test signal.
 - `SOUNDPAD_LOG=1` prints every global hotkey press and how long it took.
 
-Before opening a pull request, please run `cargo test --release` and
-`cargo clippy --release --all-targets`, and build the app with `scripts/bundle.sh`.
+Before opening a pull request, please run `cargo fmt`, `cargo test --release`,
+`cargo clippy --release --all-targets -- -D warnings` and `scripts/test_swift.sh`, and build
+the app with `scripts/bundle.sh`.
+
+### Continuous integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push to `main` and every pull request,
+on a macOS 26 runner:
+
+- **Rust:** `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test --release`
+- **Swift:** `scripts/test_swift.sh`
+- **App:** translation check, `scripts/bundle.sh` (ad-hoc signed), the driver test, and the
+  built app uploaded as a downloadable artifact
+
+CI uses a pinned Rust version (`RUST_VERSION` in the workflow), so a new compiler release can't
+break the build by surprise. Bump it on purpose and fix any new lints.
 
 ## Fixing or adding a translation
 

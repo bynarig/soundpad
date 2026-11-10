@@ -233,10 +233,7 @@ fn streamer() -> &'static Sender<Job> {
     static TX: OnceLock<Sender<Job>> = OnceLock::new();
     TX.get_or_init(|| {
         let (tx, rx) = unbounded::<Job>();
-        std::thread::Builder::new()
-            .name("streamer".into())
-            .spawn(move || run(rx))
-            .expect("spawn streamer thread");
+        std::thread::Builder::new().name("streamer".into()).spawn(move || run(rx)).expect("spawn streamer thread");
         tx
     })
 }

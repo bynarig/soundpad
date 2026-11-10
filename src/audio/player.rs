@@ -195,9 +195,7 @@ impl Player {
             None if offset > 0 => -1,
             None => n,
         };
-        (1..=n)
-            .map(|k| q[(start + offset * k).rem_euclid(n) as usize])
-            .find(|id| bank.contains_key(id))
+        (1..=n).map(|k| q[(start + offset * k).rem_euclid(n) as usize]).find(|id| bank.contains_key(id))
     }
 
     pub fn next(&self) -> bool {
@@ -362,9 +360,10 @@ impl Player {
     pub(crate) fn install_output(&self, k: OutputKind, h: Option<MixerHandle>) {
         let mut h = h;
         if let Some(h) = h.as_mut()
-            && self.paused.load(Relaxed) {
-                h.send(Command::SetPaused(true));
-            }
+            && self.paused.load(Relaxed)
+        {
+            h.send(Command::SetPaused(true));
+        }
         let old = std::mem::replace(self.outputs.lock().get(k), h);
         drop(old);
         self.apply_params();

@@ -444,3 +444,10 @@ func formatTime(_ s: Double) -> String {
 func formatLength(_ s: Double) -> String {
     s < 60 ? String(format: "%.1fs", s) : formatTime(s)
 }
+
+/// Debug log to stderr when SOUNDPAD_TRACE is set.
+func trace(_ s: String) {
+    if ProcessInfo.processInfo.environment["SOUNDPAD_TRACE"] != nil {
+        FileHandle.standardError.write(Data("[trace] \(s)\n".utf8))
+    }
+}

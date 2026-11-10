@@ -1,5 +1,7 @@
 # Soundpad for macOS
 
+[![CI](https://github.com/bynarig/soundpad/actions/workflows/ci.yml/badge.svg)](https://github.com/bynarig/soundpad/actions/workflows/ci.yml)
+
 **Play sounds into Discord, Zoom, Teams and games, and hear them yourself, with one key press.**
 
 Soundpad is a free soundboard for Mac. Add your sound clips and music, give them keyboard

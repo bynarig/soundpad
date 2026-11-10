@@ -25,8 +25,12 @@ pub type Waker = Arc<dyn Fn() + Send + Sync>;
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum LoadState {
     Loading,
-    Ready { duration: f64 },
-    Failed { error: String },
+    Ready {
+        duration: f64,
+    },
+    Failed {
+        error: String,
+    },
     /// The file isn't there any more (moved or deleted).
     Missing,
 }
@@ -80,50 +84,108 @@ pub enum Command {
         #[serde(default)]
         playlist: Option<u64>,
     },
-    Remove { id: u64 },
-    Play { id: u64 },
+    Remove {
+        id: u64,
+    },
+    Play {
+        id: u64,
+    },
     Stop,
     TogglePause,
     Next,
     Previous,
     /// Jump to an absolute position of the playing sound.
-    Seek { secs: f64 },
+    Seek {
+        secs: f64,
+    },
     /// Move the playing sound by `secs` (negative = back).
-    SeekBy { secs: f64 },
-    SetPlaybackMode { mode: PlaybackMode },
+    SeekBy {
+        secs: f64,
+    },
+    SetPlaybackMode {
+        mode: PlaybackMode,
+    },
     /// Creates a playlist (optionally with sounds) and makes it the active one.
     CreatePlaylist {
         name: String,
         #[serde(default)]
         ids: Vec<u64>,
     },
-    RenamePlaylist { id: u64, name: String },
-    DeletePlaylist { id: u64 },
-    AddToPlaylist { playlist: u64, ids: Vec<u64> },
-    RemoveFromPlaylist { playlist: u64, ids: Vec<u64> },
-    MoveInPlaylist { playlist: u64, id: u64, to_index: usize },
+    RenamePlaylist {
+        id: u64,
+        name: String,
+    },
+    DeletePlaylist {
+        id: u64,
+    },
+    AddToPlaylist {
+        playlist: u64,
+        ids: Vec<u64>,
+    },
+    RemoveFromPlaylist {
+        playlist: u64,
+        ids: Vec<u64>,
+    },
+    MoveInPlaylist {
+        playlist: u64,
+        id: u64,
+        to_index: usize,
+    },
     /// List shown and used for next/previous (`None` = all sounds).
-    SetActivePlaylist { id: Option<u64> },
-    Rename { id: u64, name: String },
-    Move { id: u64, to_index: usize },
-    Retry { id: u64 },
-    Reveal { id: u64 },
+    SetActivePlaylist {
+        id: Option<u64>,
+    },
+    Rename {
+        id: u64,
+        name: String,
+    },
+    Move {
+        id: u64,
+        to_index: usize,
+    },
+    Retry {
+        id: u64,
+    },
+    Reveal {
+        id: u64,
+    },
     /// Release global hotkeys while the UI records a new combination.
     BeginCapture,
     EndCapture,
-    SetHotkey { target: HotkeyTarget, hotkey: Option<String> },
-    SetOutputEnabled { output: Output, on: bool },
-    SetVolume { output: Output, value: f32 },
-    SetPassthroughVolume { value: f32 },
-    SetOverlap { on: bool },
+    SetHotkey {
+        target: HotkeyTarget,
+        hotkey: Option<String>,
+    },
+    SetOutputEnabled {
+        output: Output,
+        on: bool,
+    },
+    SetVolume {
+        output: Output,
+        value: f32,
+    },
+    SetPassthroughVolume {
+        value: f32,
+    },
+    SetOverlap {
+        on: bool,
+    },
     /// Allow the virtual-mic volume up to 150%. Turning it off caps it at 100%.
-    SetMicBoost { on: bool },
+    SetMicBoost {
+        on: bool,
+    },
     /// `None` = system default.
-    SetSpeakerDevice { id: Option<String> },
+    SetSpeakerDevice {
+        id: Option<String>,
+    },
     /// `None` = off.
-    SetMicDevice { id: Option<String> },
+    SetMicDevice {
+        id: Option<String>,
+    },
     /// `None` = off, `Some("")` = system default input.
-    SetInputDevice { id: Option<String> },
+    SetInputDevice {
+        id: Option<String>,
+    },
     RefreshDevices,
     InstallDriver,
     UninstallDriver,
@@ -283,7 +345,8 @@ impl Core {
             core.notify(format!("{missing} sound file(s) are missing"));
         }
         for pl in state.playlists {
-            let sounds = pl.sounds.iter().filter_map(|p| core.sounds.iter().find(|s| &s.path == p)).map(|s| s.id).collect();
+            let sounds =
+                pl.sounds.iter().filter_map(|p| core.sounds.iter().find(|s| &s.path == p)).map(|s| s.id).collect();
             let id = core.alloc_id();
             core.playlists.push(PlaylistEntry { id, name: pl.name, sounds });
         }
@@ -497,9 +560,11 @@ impl Core {
 
     pub fn state(&mut self) -> StateView {
         let label = |h: &Option<String>| h.as_deref().map(hotkeys::pretty);
-        let virtual_selected = self.settings.mic_device.as_ref().is_some_and(|id| {
-            self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d))
-        });
+        let virtual_selected = self
+            .settings
+            .mic_device
+            .as_ref()
+            .is_some_and(|id| self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d)));
         let default_input_name = if self.in_devices.is_empty() {
             None
         } else {
@@ -622,7 +687,12 @@ impl Core {
             sounds: self
                 .sounds
                 .iter()
-                .map(|s| SavedSound { path: s.path.clone(), name: s.name.clone(), hotkey: s.hotkey.clone(), added: s.added })
+                .map(|s| SavedSound {
+                    path: s.path.clone(),
+                    name: s.name.clone(),
+                    hotkey: s.hotkey.clone(),
+                    added: s.added,
+                })
                 .collect(),
             settings: self.settings.clone(),
             playlists: self
@@ -630,7 +700,12 @@ impl Core {
                 .iter()
                 .map(|p| SavedPlaylist {
                     name: p.name.clone(),
-                    sounds: p.sounds.iter().filter_map(|&id| self.index_of(id)).map(|i| self.sounds[i].path.clone()).collect(),
+                    sounds: p
+                        .sounds
+                        .iter()
+                        .filter_map(|&id| self.index_of(id))
+                        .map(|i| self.sounds[i].path.clone())
+                        .collect(),
                 })
                 .collect(),
         };
@@ -905,9 +980,11 @@ impl Core {
         });
         self.driver_job = Some((install, rx));
         if !install {
-            let is_ours = self.settings.mic_device.as_ref().is_some_and(|id| {
-                self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d))
-            });
+            let is_ours = self
+                .settings
+                .mic_device
+                .as_ref()
+                .is_some_and(|id| self.out_devices.iter().any(|d| &d.id == id && virtual_mic::is_virtual_mic(d)));
             if is_ours {
                 self.settings.mic_device = None;
                 self.settings.mic_device_chosen = true;

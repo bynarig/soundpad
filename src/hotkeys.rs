@@ -120,15 +120,18 @@ pub fn pretty(s: &str) -> String {
         out.push('⌘');
     }
     let key = hk.key.to_string();
-    let key = key
-        .strip_prefix("Key")
-        .or_else(|| key.strip_prefix("Digit"))
-        .map(str::to_string)
-        .unwrap_or_else(|| match hk.key {
-            Code::Numpad0 | Code::Numpad1 | Code::Numpad2 | Code::Numpad3 | Code::Numpad4
-            | Code::Numpad5 | Code::Numpad6 | Code::Numpad7 | Code::Numpad8 | Code::Numpad9 => {
-                key.replace("Numpad", "Num ")
-            }
+    let key = key.strip_prefix("Key").or_else(|| key.strip_prefix("Digit")).map(str::to_string).unwrap_or_else(|| {
+        match hk.key {
+            Code::Numpad0
+            | Code::Numpad1
+            | Code::Numpad2
+            | Code::Numpad3
+            | Code::Numpad4
+            | Code::Numpad5
+            | Code::Numpad6
+            | Code::Numpad7
+            | Code::Numpad8
+            | Code::Numpad9 => key.replace("Numpad", "Num "),
             Code::Space => "Space".into(),
             Code::ArrowUp => "↑".into(),
             Code::ArrowDown => "↓".into(),
@@ -137,7 +140,8 @@ pub fn pretty(s: &str) -> String {
             Code::Enter => "↩".into(),
             Code::Escape => "Esc".into(),
             _ => key.clone(),
-        });
+        }
+    });
     out.push_str(&key);
     out
 }

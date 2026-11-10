@@ -41,10 +41,9 @@ pub fn run() -> i32 {
     // two streams on independent clocks run simultaneously like in real use.
     let outs = engine::output_devices();
     let default = engine::default_output_id();
-    let virtual_dev = crate::virtual_mic::find_device(&outs).or_else(|| outs.iter().find(|d| d.looks_virtual())).cloned();
-    let second = virtual_dev
-        .as_ref()
-        .or_else(|| outs.iter().find(|d| Some(&d.id) != default.as_ref()));
+    let virtual_dev =
+        crate::virtual_mic::find_device(&outs).or_else(|| outs.iter().find(|d| d.looks_virtual())).cloned();
+    let second = virtual_dev.as_ref().or_else(|| outs.iter().find(|d| Some(&d.id) != default.as_ref()));
     if let Some(v) = second {
         match eng.set_output(OutputKind::VirtualMic, Some(&v.id)) {
             Ok(()) => println!("Second output (virtual-mic path): {}", v.name),
@@ -147,11 +146,14 @@ pub fn run() -> i32 {
 }
 
 /// Record audio from an input device (test harness only, not real-time critical).
+/// Captured audio: (arrival time, mono samples).
+type Chunks = Arc<parking_lot::Mutex<Vec<(Instant, Vec<f32>)>>>;
+
 struct Recorder {
     _stream: cpal::Stream,
     rate: u32,
     /// (arrival time, mono samples)
-    chunks: Arc<parking_lot::Mutex<Vec<(Instant, Vec<f32>)>>>,
+    chunks: Chunks,
 }
 
 fn record(device_name: &str) -> Result<Recorder, String> {
@@ -168,7 +170,7 @@ fn record(device_name: &str) -> Result<Recorder, String> {
     }
     let rate = cfg.sample_rate();
     let ch = cfg.channels() as usize;
-    let chunks: Arc<parking_lot::Mutex<Vec<(Instant, Vec<f32>)>>> = Arc::default();
+    let chunks: Chunks = Arc::default();
     let sink = chunks.clone();
     let stream = dev
         .build_input_stream::<f32, _, _>(
@@ -202,11 +204,11 @@ fn tone_power(x: &[f32], rate: u32, hz: f32) -> f32 {
 /// virtual mic's input side — exactly what Discord/Zoom would receive.
 fn loopback_test(player: &Arc<Player>, eng: &mut AudioEngine, dev: &crate::audio::engine::DeviceInfo) -> bool {
     println!("\n[Loopback] {} → output → driver → input (what other apps hear)", dev.name);
-    if eng.output(OutputKind::VirtualMic).map(|o| o.device.id.as_str()) != Some(dev.id.as_str()) {
-        if let Err(e) = eng.set_output(OutputKind::VirtualMic, Some(&dev.id)) {
-            println!("  FAIL: cannot open {}: {e}", dev.name);
-            return false;
-        }
+    if eng.output(OutputKind::VirtualMic).map(|o| o.device.id.as_str()) != Some(dev.id.as_str())
+        && let Err(e) = eng.set_output(OutputKind::VirtualMic, Some(&dev.id))
+    {
+        println!("  FAIL: cannot open {}: {e}", dev.name);
+        return false;
     }
     let rec = match record(crate::virtual_mic::recording_side(&dev.name)) {
         Ok(r) => r,
@@ -233,10 +235,8 @@ fn loopback_test(player: &Arc<Player>, eng: &mut AudioEngine, dev: &crate::audio
 
     let chunks = std::mem::take(&mut *rec.chunks.lock());
     let samples: Vec<f32> = chunks.iter().flat_map(|(_, c)| c.iter().copied()).collect();
-    let Some(onset) = chunks
-        .iter()
-        .find(|(_, c)| c.iter().any(|v| v.abs() > 0.05))
-        .map(|(t, _)| t.saturating_duration_since(t0))
+    let Some(onset) =
+        chunks.iter().find(|(_, c)| c.iter().any(|v| v.abs() > 0.05)).map(|(t, _)| t.saturating_duration_since(t0))
     else {
         let silent = samples.iter().all(|&v| v == 0.0);
         println!(

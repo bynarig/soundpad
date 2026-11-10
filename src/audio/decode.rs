@@ -138,12 +138,8 @@ impl PcmReader {
         let track_id = track.id;
         let num_frames = track.num_frames;
         let time_base = track.time_base;
-        let params = track
-            .codec_params
-            .as_ref()
-            .and_then(|p| p.audio())
-            .ok_or("track has no audio codec parameters")?
-            .clone();
+        let params =
+            track.codec_params.as_ref().and_then(|p| p.audio()).ok_or("track has no audio codec parameters")?.clone();
 
         let decoder = symphonia::default::get_codecs()
             .make_audio_decoder(&params, &AudioDecoderOptions::default())
@@ -165,9 +161,7 @@ impl PcmReader {
     fn ts_to_frames(&self, ts: Timestamp) -> u64 {
         let ts = ts.get().max(0) as u128;
         match self.time_base {
-            Some(tb) => {
-                (ts * tb.numer.get() as u128 * self.sample_rate as u128 / tb.denom.get().max(1) as u128) as u64
-            }
+            Some(tb) => (ts * tb.numer.get() as u128 * self.sample_rate as u128 / tb.denom.get().max(1) as u128) as u64,
             None => ts as u64,
         }
     }

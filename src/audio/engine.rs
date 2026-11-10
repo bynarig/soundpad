@@ -22,8 +22,7 @@ pub struct DeviceInfo {
 }
 
 /// Names of known virtual loopback drivers that can act as a microphone.
-const VIRTUAL_HINTS: &[&str] =
-    &["blackhole", "loopback", "soundflower", "vb-cable", "vb-audio", "virtual", "soundpad"];
+const VIRTUAL_HINTS: &[&str] = &["blackhole", "loopback", "soundflower", "vb-cable", "vb-audio", "virtual", "soundpad"];
 
 impl DeviceInfo {
     pub fn looks_virtual(&self) -> bool {
@@ -136,11 +135,7 @@ impl AudioEngine {
         let result = match device_id {
             None => Ok(None),
             Some(id) => {
-                let dev = if id.is_empty() {
-                    cpal::default_host().default_output_device()
-                } else {
-                    find_device(id)
-                };
+                let dev = if id.is_empty() { cpal::default_host().default_output_device() } else { find_device(id) };
                 match dev {
                     None => Err(format!("Output device not found: {id}")),
                     Some(dev) => open_output(&dev, self.lost.clone()).map(Some),
@@ -183,7 +178,8 @@ impl AudioEngine {
             find_device(id)
         };
         let Some(dev) = dev else {
-            let e = if id.is_empty() { "No microphone found".to_string() } else { format!("Input device not found: {id}") };
+            let e =
+                if id.is_empty() { "No microphone found".to_string() } else { format!("Input device not found: {id}") };
             self.last_error = Some(e.clone());
             return Err(e);
         };
@@ -270,8 +266,7 @@ where
             let t0 = Instant::now();
             if is_f32 {
                 // SAFETY: T is f32 (checked via T::FORMAT); identical layout.
-                let data: &mut [f32] =
-                    unsafe { std::slice::from_raw_parts_mut(data.as_mut_ptr().cast(), data.len()) };
+                let data: &mut [f32] = unsafe { std::slice::from_raw_parts_mut(data.as_mut_ptr().cast(), data.len()) };
                 mixer.render(data, channels);
             } else {
                 if scratch.len() < data.len() {

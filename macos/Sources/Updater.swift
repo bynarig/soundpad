@@ -96,7 +96,7 @@ final class Updater {
         Task { await automaticCheck() }
         dailyTimer?.invalidate()
         dailyTimer = Timer.scheduledTimer(withTimeInterval: 24 * 3600, repeats: true) { _ in
-            MainActor.assumeIsolated { Task { await Updater.shared.automaticCheck() } }
+            Task { @MainActor in await Updater.shared.automaticCheck() }
         }
     }
 
