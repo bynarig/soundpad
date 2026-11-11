@@ -159,14 +159,40 @@ a zip whose Ed25519 signature matches the public key in `macos/Updates.json`.
 One-time setup, already done by the maintainer:
 
 ```sh
-scripts/release.sh --setup   # creates ~/.config/soundpad/update_signing_key (back it up!)
+scripts/release.sh --setup     # creates ~/.config/soundpad/update_signing_key (back it up!)
+scripts/setup_codesign.sh      # permanent code-signing identity, so macOS keeps permissions
+scripts/setup_ci_secrets.sh    # stores both as encrypted GitHub Actions secrets
 ```
 
-For each release:
+### Releasing with GitHub Actions (normal way)
+
+```sh
+scripts/new_release.sh 0.3.3 "Short summary of what's new" [whats-new.md]
+```
+
+This bumps `version` in `Cargo.toml`, commits, creates the annotated tag `v0.3.3` and pushes.
+The tag starts `.github/workflows/release.yml`, which:
+
+1. runs every CI check (format, clippy, Rust and Swift tests, app build, driver test);
+2. checks that the tag matches `Cargo.toml` and that the update key matches `macos/Updates.json`;
+3. builds the universal app (Apple silicon + Intel), signs it with "Soundpad Code Signing" and
+   signs the update zip;
+4. verifies version, architectures and signature, then creates the GitHub release with
+   `Soundpad-X.Y.Z.zip` and `appcast.json`. The tag message becomes the release notes (its
+   first line is what the app shows in the update offer), followed by
+   `.github/release-notes-footer.md`.
+
+Installed copies pick the release up at their next launch. To try the pipeline without
+publishing, open **Actions → Release → Run workflow**: it does everything except the release,
+and attaches the signed build to the run.
+
+### Releasing by hand (fallback)
 
 1. Bump `version` in `Cargo.toml` (for example 0.1.0 → 0.2.0) and commit.
-2. Run `scripts/release.sh "What's new"`. Add `--universal` to include Intel Macs.
+2. Run `scripts/release.sh --universal "What's new"`.
    This creates `dist/release/Soundpad-X.Y.Z.zip` and `dist/release/appcast.json`.
 3. Publish both files with the `gh release create vX.Y.Z …` command the script prints.
 
-Never commit the signing key. Anyone who has it can ship updates to every user.
+Never commit the signing key or the code-signing keychain. Anyone who has the update key can
+ship updates to every user. In GitHub they live only as encrypted secrets, which forks and pull
+requests can't read.

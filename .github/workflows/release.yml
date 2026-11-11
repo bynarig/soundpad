@@ -1,0 +1,151 @@
+name: Release
+
+# Push a tag like v0.3.3 (scripts/new_release.sh does it) to publish a release:
+# run all CI checks, build the universal app, sign the app and the update,
+# and create the GitHub release with Soundpad-X.Y.Z.zip and appcast.json.
+# The annotated tag's message becomes the release notes; its first line is
+# the short text shown in the app's update offer.
+#
+# "Run workflow" by hand does a dry run: everything except publishing. The
+# signed build is attached to the run as a download.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUST_VERSION: "1.99.1"
+
+jobs:
+  checks:
+    name: CI checks
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Build, sign and publish
+    needs: checks
+    runs-on: macos-26
+    permissions:
+      contents: write
+    env:
+      PUBLISH: ${{ github.event_name == 'push' }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # tags and their messages
+
+      - name: Rust toolchain (both Mac architectures)
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal \
+            --target aarch64-apple-darwin --target x86_64-apple-darwin
+          rustup default "$RUST_VERSION"
+
+      - name: Version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$PUBLISH" == "true" && "$TAG" != "v$VERSION" ]]; then
+            echo "::error::Tag $TAG doesn't match Cargo.toml version $VERSION. Bump Cargo.toml first (scripts/new_release.sh does it)."
+            exit 1
+          fi
+          if [[ "$PUBLISH" == "true" ]] && gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::Release $TAG already exists."
+            exit 1
+          fi
+
+      - name: Signing keys
+        env:
+          UPDATE_KEY: ${{ secrets.SOUNDPAD_UPDATE_SIGNING_KEY }}
+          KEYCHAIN_B64: ${{ secrets.SOUNDPAD_CODESIGN_KEYCHAIN }}
+          KEYCHAIN_PASSWORD: ${{ secrets.SOUNDPAD_CODESIGN_KEYCHAIN_PASSWORD }}
+        run: |
+          DIR="$RUNNER_TEMP/soundpad-signing"
+          mkdir -p "$DIR"; chmod 700 "$DIR"
+          if [[ -z "$UPDATE_KEY" || -z "$KEYCHAIN_B64" || -z "$KEYCHAIN_PASSWORD" ]]; then
+            if [[ "$PUBLISH" == "true" ]]; then
+              echo "::error::Signing secrets are missing. Run scripts/setup_ci_secrets.sh once (see CONTRIBUTING.md)."
+              exit 1
+            fi
+            echo "::warning::Signing secrets aren't set: dry run with a throwaway update key and an ad-hoc code signature."
+            swift scripts/update_tool.swift generate-keys "$DIR/update_signing_key" > "$DIR/public_key"
+            echo "DRY_RUN_PUBLIC_KEY=$(cat "$DIR/public_key")" >> "$GITHUB_ENV"
+          else
+            umask 077
+            printf '%s' "$UPDATE_KEY" > "$DIR/update_signing_key"
+            printf '%s' "$KEYCHAIN_B64" | base64 --decode > "$DIR/codesign.keychain-db"
+            printf '%s' "$KEYCHAIN_PASSWORD" > "$DIR/codesign.keychain-password"
+          fi
+          echo "SOUNDPAD_CONFIG_DIR=$DIR" >> "$GITHUB_ENV"
+          echo "SOUNDPAD_SIGNING_KEY=$DIR/update_signing_key" >> "$GITHUB_ENV"
+
+      - name: Release notes
+        run: |
+          NOTES="$RUNNER_TEMP/notes.md"
+          # checkout can leave a lightweight copy of the tag; fetch the real (annotated) one.
+          [[ "$PUBLISH" == "true" ]] && git fetch --force --quiet origin "refs/tags/$TAG:refs/tags/$TAG"
+          if [[ "$PUBLISH" == "true" && "$(git cat-file -t "$TAG")" == "tag" ]]; then
+            git for-each-ref "refs/tags/$TAG" --format='%(contents)' | sed '/^-----BEGIN PGP/,$d' > "$NOTES"
+          else
+            echo "Soundpad ${{ steps.version.outputs.version }}" > "$NOTES"
+          fi
+          SHORT=$(head -n1 "$NOTES")
+          sed "s/{{VERSION}}/${{ steps.version.outputs.version }}/g" .github/release-notes-footer.md >> "$NOTES"
+          echo "SHORT_NOTES=$SHORT" >> "$GITHUB_ENV"
+          echo "NOTES_FILE=$NOTES" >> "$GITHUB_ENV"
+          cat "$NOTES"
+
+      - name: Build and sign (universal)
+        run: |
+          if [[ -n "${DRY_RUN_PUBLIC_KEY:-}" ]]; then
+            # Dry run without secrets: build against the throwaway key instead.
+            python3 -c 'import json,sys; p="macos/Updates.json"; c=json.load(open(p)); c["publicKey"]=sys.argv[1]; open(p,"w").write(json.dumps(c, indent=2)+"\n")' "$DRY_RUN_PUBLIC_KEY"
+          fi
+          scripts/release.sh --universal "$SHORT_NOTES"
+
+      - name: Verify the build
+        run: |
+          APP=dist/Soundpad.app
+          V=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Contents/Info.plist")
+          [[ "$V" == "${{ steps.version.outputs.version }}" ]] || { echo "::error::App reports version $V"; exit 1; }
+          ARCHS=$(lipo -archs "$APP/Contents/MacOS/Soundpad")
+          [[ "$ARCHS" == *arm64* && "$ARCHS" == *x86_64* ]] || { echo "::error::Not universal: $ARCHS"; exit 1; }
+          codesign --verify --deep --strict "$APP"
+          AUTH=$(codesign -dv --verbose=2 "$APP" 2>&1 | grep '^Authority=' || true)
+          echo "Version $V · $ARCHS · ${AUTH:-ad-hoc signature}"
+          if [[ "$PUBLISH" == "true" && "$AUTH" != *"Soundpad Code Signing"* ]]; then
+            echo "::error::Releases must be signed with the Soundpad Code Signing identity."
+            exit 1
+          fi
+          cat dist/release/appcast.json
+
+      - name: Publish release
+        if: env.PUBLISH == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=${{ steps.version.outputs.version }}
+          gh release create "$TAG" "dist/release/Soundpad-$V.zip" dist/release/appcast.json \
+            --verify-tag --title "Soundpad $V" --notes-file "$NOTES_FILE"
+          sleep 5
+          curl -fsSL "https://github.com/${{ github.repository }}/releases/latest/download/appcast.json"
+
+      - name: Upload dry-run build
+        if: env.PUBLISH != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Soundpad-release-dry-run-${{ steps.version.outputs.version }}
+          path: dist/release/
+          retention-days: 7
+
+      - name: Remove signing keys
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/soundpad-signing"
