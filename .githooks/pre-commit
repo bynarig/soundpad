@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Runs the CI checks the staged files need before every commit.
+# Installed with scripts/setup_hooks.sh (sets core.hooksPath to .githooks).
+# Skip once with `git commit --no-verify`.
+exec "$(git rev-parse --show-toplevel)/scripts/check.sh"

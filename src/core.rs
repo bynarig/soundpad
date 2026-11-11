@@ -299,10 +299,22 @@ pub struct Core {
     driver_job: Option<(bool, crossbeam_channel::Receiver<Result<(), String>>)>,
     await_virtual_mic_until: Option<Instant>,
     wake: Waker,
+    /// False in headless tests: no audio devices, no global hotkeys.
+    hardware: bool,
 }
 
 impl Core {
     pub fn new(config_path: PathBuf, wake: Waker) -> Self {
+        Self::build(config_path, wake, true)
+    }
+
+    /// The same core without audio devices or global hotkeys, for tests.
+    #[cfg(test)]
+    fn headless(config_path: PathBuf) -> Self {
+        Self::build(config_path, Arc::new(|| {}), false)
+    }
+
+    fn build(config_path: PathBuf, wake: Waker, hardware: bool) -> Self {
         let state = library::load_from(&config_path);
         let player = Player::new();
         {
@@ -310,7 +322,7 @@ impl Core {
             player.set_on_change(move || wake());
         }
         let loader = Loader::new(wake.clone());
-        let hotkeys = Hotkeys::new(player.clone());
+        let hotkeys = if hardware { Hotkeys::new(player.clone()) } else { Hotkeys::disabled() };
         let engine = AudioEngine::new(player.clone());
         let mut core = Self {
             player,
@@ -333,6 +345,7 @@ impl Core {
             driver_job: None,
             await_virtual_mic_until: None,
             wake,
+            hardware,
         };
         if let Some(e) = core.hotkeys.init_error.clone() {
             core.notify(e);
@@ -352,8 +365,10 @@ impl Core {
         }
         core.sync_queue();
         core.apply_player_settings();
-        core.refresh_device_lists();
-        core.open_devices();
+        if hardware {
+            core.refresh_device_lists();
+            core.open_devices();
+        }
         core.sync_hotkeys();
         core
     }
@@ -667,7 +682,7 @@ impl Core {
         if self.last_default_check.elapsed() > Duration::from_secs(2) {
             self.last_default_check = Instant::now();
             changed |= self.check_missing_files();
-            if self.settings.speaker_device.is_none() {
+            if self.hardware && self.settings.speaker_device.is_none() {
                 let current = self.engine.output(OutputKind::Speakers).map(|o| o.device.id.clone());
                 let default = engine::default_output_id();
                 if default.is_some() && current != default {
@@ -1127,5 +1142,364 @@ mod tests {
         assert_eq!(j["status"], "ready");
         assert_eq!(j["duration"], 1.5);
         assert_eq!(j["added"], 1_700_000_000);
+    }
+
+    // ---------- headless core: the real command handling, no devices or hotkeys ----------
+
+    use std::path::Path;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    /// A fresh, empty folder for one test.
+    fn tmpdir(name: &str) -> PathBuf {
+        static N: AtomicUsize = AtomicUsize::new(0);
+        let d = std::env::temp_dir().join(format!(
+            "soundpad-core-{}-{}-{}",
+            std::process::id(),
+            N.fetch_add(1, Ordering::Relaxed),
+            name
+        ));
+        let _ = std::fs::remove_dir_all(&d);
+        std::fs::create_dir_all(&d).unwrap();
+        d
+    }
+
+    /// A short silent mono WAV file.
+    fn wav(dir: &Path, name: &str) -> PathBuf {
+        let path = dir.join(name);
+        let (rate, frames) = (8000u32, 800u32);
+        let mut b = Vec::new();
+        b.extend_from_slice(b"RIFF");
+        b.extend_from_slice(&(36 + frames * 2).to_le_bytes());
+        b.extend_from_slice(b"WAVEfmt ");
+        b.extend_from_slice(&16u32.to_le_bytes());
+        b.extend_from_slice(&1u16.to_le_bytes()); // PCM
+        b.extend_from_slice(&1u16.to_le_bytes()); // mono
+        b.extend_from_slice(&rate.to_le_bytes());
+        b.extend_from_slice(&(rate * 2).to_le_bytes());
+        b.extend_from_slice(&2u16.to_le_bytes());
+        b.extend_from_slice(&16u16.to_le_bytes());
+        b.extend_from_slice(b"data");
+        b.extend_from_slice(&(frames * 2).to_le_bytes());
+        b.resize(b.len() + frames as usize * 2, 0);
+        std::fs::write(&path, b).unwrap();
+        path
+    }
+
+    fn core_in(dir: &Path) -> Core {
+        Core::headless(dir.join("soundpad.json"))
+    }
+
+    fn add(core: &mut Core, paths: &[&PathBuf]) {
+        core.command(Command::AddFiles { paths: paths.iter().map(|p| (*p).clone()).collect(), playlist: None })
+            .unwrap();
+    }
+
+    /// Lets the background decoder finish.
+    fn wait_loaded(core: &mut Core) {
+        for _ in 0..500 {
+            core.tick();
+            if core.sounds.iter().all(|s| !matches!(s.state, LoadState::Loading)) {
+                return;
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        panic!("sounds didn't finish loading");
+    }
+
+    fn names(core: &Core) -> Vec<&str> {
+        core.sounds.iter().map(|s| s.name.as_str()).collect()
+    }
+
+    fn ids(core: &Core) -> Vec<u64> {
+        core.sounds.iter().map(|s| s.id).collect()
+    }
+
+    fn playlist(core: &Core, id: u64) -> &PlaylistEntry {
+        core.playlists.iter().find(|p| p.id == id).unwrap()
+    }
+
+    #[test]
+    fn adding_files_folders_and_unsupported_files() {
+        let dir = tmpdir("add");
+        let a = wav(&dir, "Air_horn.wav");
+        let folder = dir.join("folder");
+        std::fs::create_dir_all(&folder).unwrap();
+        wav(&folder, "b.wav");
+        wav(&folder, "a.wav");
+        std::fs::write(folder.join("notes.txt"), "not audio").unwrap();
+        let text = dir.join("readme.txt");
+        std::fs::write(&text, "x").unwrap();
+
+        let mut core = core_in(&dir);
+        let before = library::now_secs();
+        add(&mut core, &[&a, &folder, &text]);
+        // Underscores become spaces; folders are added sorted; unsupported files skipped.
+        assert_eq!(names(&core), ["Air horn", "a", "b"]);
+        assert!(core.state().messages.iter().any(|m| m == "Skipped 1 unsupported file(s)"));
+        assert!(core.sounds.iter().all(|s| s.added.is_some_and(|t| t >= before)), "date added is recorded");
+
+        // Adding the same file again doesn't duplicate it.
+        add(&mut core, &[&a]);
+        assert_eq!(core.sounds.len(), 3);
+
+        wait_loaded(&mut core);
+        assert!(core.sounds.iter().all(|s| matches!(s.state, LoadState::Ready { .. })));
+    }
+
+    #[test]
+    fn adding_files_straight_into_a_playlist() {
+        let dir = tmpdir("add-to-playlist");
+        let mut core = core_in(&dir);
+        core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![] }).unwrap();
+        let pl = core.playlists[0].id;
+        let f = wav(&dir, "x.wav");
+        core.command(Command::AddFiles { paths: vec![f], playlist: Some(pl) }).unwrap();
+        assert_eq!(playlist(&core, pl).sounds, ids(&core));
+    }
+
+    #[test]
+    fn playlists_create_rename_edit_and_delete() {
+        let dir = tmpdir("playlists");
+        let (a, b, c) = (wav(&dir, "a.wav"), wav(&dir, "b.wav"), wav(&dir, "c.wav"));
+        let mut core = core_in(&dir);
+        add(&mut core, &[&a, &b, &c]);
+        let [ia, ib, ic] = ids(&core)[..] else { unreachable!() };
+
+        // Names are made unique; unknown and repeated ids are ignored; the new list becomes active.
+        core.command(Command::CreatePlaylist { name: "  New Playlist ".into(), ids: vec![ib, 999, ib, ia] }).unwrap();
+        core.command(Command::CreatePlaylist { name: "New Playlist".into(), ids: vec![] }).unwrap();
+        let (p1, p2) = (core.playlists[0].id, core.playlists[1].id);
+        assert_eq!(playlist(&core, p1).name, "New Playlist");
+        assert_eq!(playlist(&core, p2).name, "New Playlist 2");
+        assert_eq!(playlist(&core, p1).sounds, [ib, ia]);
+        assert_eq!(core.active_playlist, Some(p2));
+
+        assert_eq!(
+            core.command(Command::RenamePlaylist { id: p1, name: "   ".into() }),
+            Err("Name can't be empty".into())
+        );
+        core.command(Command::RenamePlaylist { id: p1, name: " Memes ".into() }).unwrap();
+        assert_eq!(playlist(&core, p1).name, "Memes");
+
+        // Adding keeps one copy of each sound, appended in order.
+        core.command(Command::AddToPlaylist { playlist: p1, ids: vec![ic, ia] }).unwrap();
+        assert_eq!(playlist(&core, p1).sounds, [ib, ia, ic]);
+        core.command(Command::MoveInPlaylist { playlist: p1, id: ic, to_index: 0 }).unwrap();
+        assert_eq!(playlist(&core, p1).sounds, [ic, ib, ia]);
+        core.command(Command::MoveInPlaylist { playlist: p1, id: ic, to_index: 99 }).unwrap();
+        assert_eq!(playlist(&core, p1).sounds, [ib, ia, ic], "index past the end moves to the end");
+        assert!(core.command(Command::MoveInPlaylist { playlist: p2, id: ia, to_index: 0 }).is_err());
+        core.command(Command::RemoveFromPlaylist { playlist: p1, ids: vec![ib] }).unwrap();
+        assert_eq!(playlist(&core, p1).sounds, [ia, ic]);
+        assert_eq!(core.sounds.len(), 3, "removing from a playlist keeps the sound in the library");
+
+        core.command(Command::SetActivePlaylist { id: Some(p1) }).unwrap();
+        assert!(core.command(Command::SetActivePlaylist { id: Some(12345) }).is_err());
+        assert_eq!(core.active_playlist, Some(p1));
+        core.command(Command::DeletePlaylist { id: p1 }).unwrap();
+        assert_eq!(core.active_playlist, None, "deleting the active list shows All Sounds");
+        assert_eq!(core.playlists.len(), 1);
+    }
+
+    #[test]
+    fn removing_renaming_and_reordering_sounds() {
+        let dir = tmpdir("library");
+        let (a, b, c) = (wav(&dir, "a.wav"), wav(&dir, "b.wav"), wav(&dir, "c.wav"));
+        let mut core = core_in(&dir);
+        add(&mut core, &[&a, &b, &c]);
+        let [ia, ib, ic] = ids(&core)[..] else { unreachable!() };
+        core.command(Command::CreatePlaylist { name: "P".into(), ids: vec![ia, ib] }).unwrap();
+
+        core.command(Command::Rename { id: ia, name: "  Airhorn ".into() }).unwrap();
+        assert_eq!(core.sounds[0].name, "Airhorn");
+        assert!(core.command(Command::Rename { id: ia, name: "".into() }).is_err());
+        assert!(core.command(Command::Rename { id: 999, name: "x".into() }).is_err());
+
+        core.command(Command::Move { id: ic, to_index: 0 }).unwrap();
+        assert_eq!(ids(&core), [ic, ia, ib]);
+        core.command(Command::Move { id: ic, to_index: 50 }).unwrap();
+        assert_eq!(ids(&core), [ia, ib, ic]);
+
+        core.command(Command::Remove { id: ia }).unwrap();
+        assert_eq!(ids(&core), [ib, ic]);
+        assert_eq!(core.playlists[0].sounds, [ib], "removed sounds leave every playlist too");
+    }
+
+    #[test]
+    fn one_hotkey_does_one_thing() {
+        let dir = tmpdir("hotkeys");
+        let (a, b) = (wav(&dir, "a.wav"), wav(&dir, "b.wav"));
+        let mut core = core_in(&dir);
+        add(&mut core, &[&a, &b]);
+        let [ia, ib] = ids(&core)[..] else { unreachable!() };
+        let set =
+            |core: &mut Core, target, key: &str| core.command(Command::SetHotkey { target, hotkey: Some(key.into()) });
+
+        set(&mut core, HotkeyTarget::Sound(ia), "alt+Digit1").unwrap();
+        assert_eq!(core.state().sounds[0].hotkey_label.as_deref(), Some("⌥1"));
+        // Giving the same combination to another sound, or to Stop, takes it away.
+        set(&mut core, HotkeyTarget::Sound(ib), "alt+Digit1").unwrap();
+        assert_eq!(core.sounds[0].hotkey, None);
+        assert!(core.sounds[1].hotkey.is_some());
+        set(&mut core, HotkeyTarget::Stop, "alt+Digit1").unwrap();
+        assert_eq!(core.sounds[1].hotkey, None);
+        assert_eq!(core.state().stop_hotkey_label.as_deref(), Some("⌥1"));
+
+        // Bare letters would swallow typing everywhere.
+        assert!(set(&mut core, HotkeyTarget::Pause, "KeyA").is_err());
+        set(&mut core, HotkeyTarget::Pause, "F5").unwrap();
+        core.command(Command::SetHotkey { target: HotkeyTarget::Pause, hotkey: None }).unwrap();
+        assert_eq!(core.settings.pause_hotkey, None);
+    }
+
+    #[test]
+    fn volume_limits_and_the_150_percent_option() {
+        let mut core = core_in(&tmpdir("volume"));
+        let vol = |core: &mut Core, output, value| core.command(Command::SetVolume { output, value }).unwrap();
+
+        vol(&mut core, Output::Speakers, 1.4);
+        assert_eq!(core.settings.speaker_volume, 1.0, "speakers stop at 100%");
+        vol(&mut core, Output::Speakers, -1.0);
+        assert_eq!(core.settings.speaker_volume, 0.0);
+
+        assert!(!core.settings.mic_boost, "boost is off by default");
+        vol(&mut core, Output::Mic, 1.4);
+        assert_eq!(core.settings.mic_volume, 1.0, "mic stops at 100% without the boost");
+        core.command(Command::SetMicBoost { on: true }).unwrap();
+        vol(&mut core, Output::Mic, 1.4);
+        assert_eq!(core.settings.mic_volume, 1.4);
+        vol(&mut core, Output::Mic, 3.0);
+        assert_eq!(core.settings.mic_volume, 1.5, "boost stops at 150%");
+        core.command(Command::SetMicBoost { on: false }).unwrap();
+        assert_eq!(core.settings.mic_volume, 1.0, "turning the boost off brings it back to 100%");
+
+        core.command(Command::SetPassthroughVolume { value: 5.0 }).unwrap();
+        assert_eq!(core.settings.passthrough_volume, 2.0);
+        core.command(Command::SetOutputEnabled { output: Output::Mic, on: false }).unwrap();
+        assert!(!core.settings.mic_enabled);
+    }
+
+    #[test]
+    fn the_library_survives_a_restart() {
+        let dir = tmpdir("restart");
+        let (a, b) = (wav(&dir, "a.wav"), wav(&dir, "b.wav"));
+        let added = {
+            let mut core = core_in(&dir);
+            add(&mut core, &[&a, &b]);
+            let [ia, ib] = ids(&core)[..] else { unreachable!() };
+            core.command(Command::Rename { id: ia, name: "Airhorn".into() }).unwrap();
+            core.command(Command::SetHotkey { target: HotkeyTarget::Sound(ia), hotkey: Some("alt+KeyH".into()) })
+                .unwrap();
+            core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![ib, ia] }).unwrap();
+            core.command(Command::SetMicBoost { on: true }).unwrap();
+            core.command(Command::SetVolume { output: Output::Mic, value: 1.25 }).unwrap();
+            core.command(Command::SetPlaybackMode { mode: PlaybackMode::Loop }).unwrap();
+            core.save();
+            core.sounds[0].added
+        };
+
+        let mut core = core_in(&dir);
+        assert_eq!(names(&core), ["Airhorn", "b"]);
+        assert_eq!(core.sounds[0].hotkey, Some(hotkeys::validate_capture("alt+KeyH").unwrap()));
+        assert_eq!(core.sounds[0].added, added, "date added is kept");
+        assert_eq!(core.playlists.len(), 1);
+        assert_eq!(core.playlists[0].name, "Memes");
+        let [na, nb] = ids(&core)[..] else { unreachable!() };
+        assert_eq!(core.playlists[0].sounds, [nb, na], "playlist order is kept");
+        assert!(core.settings.mic_boost);
+        assert_eq!(core.settings.mic_volume, 1.25);
+        assert_eq!(core.settings.playback_mode, PlaybackMode::Loop);
+        wait_loaded(&mut core);
+        assert!(core.command(Command::Play { id: na }).is_ok());
+    }
+
+    #[test]
+    fn a_damaged_library_file_is_kept_not_overwritten() {
+        let dir = tmpdir("damaged");
+        let config = dir.join("soundpad.json");
+        std::fs::write(&config, "{ this is not json").unwrap();
+        let mut core = Core::headless(config.clone());
+        assert!(core.sounds.is_empty());
+        core.save();
+        let backups: Vec<_> = std::fs::read_dir(&dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_name().to_string_lossy().contains("damaged"))
+            .collect();
+        assert_eq!(backups.len(), 1, "a copy of the damaged file is kept");
+        assert_eq!(std::fs::read_to_string(backups[0].path()).unwrap(), "{ this is not json");
+    }
+
+    #[test]
+    fn missing_files_at_startup_while_running_and_restored() {
+        let dir = tmpdir("missing");
+        let (a, b) = (wav(&dir, "a.wav"), wav(&dir, "b.wav"));
+        {
+            let mut core = core_in(&dir);
+            add(&mut core, &[&a, &b]);
+            core.save();
+        }
+
+        // Deleted before launch: marked missing at startup, with one notice.
+        std::fs::remove_file(&a).unwrap();
+        let mut core = core_in(&dir);
+        assert!(matches!(core.sounds[0].state, LoadState::Missing));
+        assert!(core.state().messages.iter().any(|m| m == "1 sound file(s) are missing"));
+        let ia = core.sounds[0].id;
+        assert_eq!(core.command(Command::Play { id: ia }), Err("“a” is missing. Was it moved or deleted?".into()));
+        wait_loaded(&mut core);
+
+        // Deleted while running: caught before playing (hotkeys rely on the periodic check).
+        let ib = core.sounds[1].id;
+        std::fs::remove_file(&b).unwrap();
+        assert!(core.command(Command::Play { id: ib }).is_err());
+        assert!(matches!(core.sounds[1].state, LoadState::Missing));
+        assert!(!core.player.has_sound(ib), "the player forgets it, so hotkeys can't play it");
+
+        // Put back: the periodic check reloads it.
+        wav(&dir, "b.wav");
+        assert!(core.check_missing_files());
+        wait_loaded(&mut core);
+        assert!(matches!(core.sounds[1].state, LoadState::Ready { .. }));
+        assert!(core.command(Command::Play { id: ib }).is_ok());
+
+        // Retry Loading on a still-missing file keeps it missing.
+        core.command(Command::Retry { id: ia }).unwrap();
+        assert!(matches!(core.sounds[0].state, LoadState::Missing));
+    }
+
+    #[test]
+    fn playing_needs_a_loaded_sound() {
+        let dir = tmpdir("play");
+        let a = wav(&dir, "a.wav");
+        let mut core = core_in(&dir);
+        add(&mut core, &[&a]);
+        let id = core.sounds[0].id;
+        // Right after adding it may still be decoding.
+        if matches!(core.sounds[0].state, LoadState::Loading) {
+            assert_eq!(core.command(Command::Play { id }), Err("Still loading…".into()));
+        }
+        wait_loaded(&mut core);
+        assert!(core.command(Command::Play { id }).is_ok());
+        assert!(core.command(Command::Play { id: 999 }).is_err());
+
+        let bad = dir.join("broken.wav");
+        std::fs::write(&bad, "RIFF nonsense").unwrap();
+        add(&mut core, &[&bad]);
+        wait_loaded(&mut core);
+        let bid = core.sounds[1].id;
+        assert!(matches!(core.sounds[1].state, LoadState::Failed { .. }));
+        assert!(core.command(Command::Play { id: bid }).unwrap_err().starts_with("Can't play “broken”"));
+    }
+
+    #[test]
+    fn messages_are_shown_once() {
+        let dir = tmpdir("messages");
+        let text = dir.join("x.txt");
+        std::fs::write(&text, "x").unwrap();
+        let mut core = core_in(&dir);
+        add(&mut core, &[&text]);
+        assert_eq!(core.state().messages.len(), 1);
+        assert!(core.state().messages.is_empty(), "state() hands each message to the UI once");
     }
 }

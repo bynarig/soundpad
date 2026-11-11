@@ -98,10 +98,18 @@ pub fn config_path() -> PathBuf {
 }
 
 pub fn load_from(path: &Path) -> SavedState {
-    std::fs::read(path)
-        .ok()
-        .and_then(|b| serde_json::from_slice(&b).map_err(|e| eprintln!("bad config {path:?}: {e}")).ok())
-        .unwrap_or_default()
+    let Ok(bytes) = std::fs::read(path) else { return SavedState::default() };
+    match serde_json::from_slice(&bytes) {
+        Ok(state) => state,
+        Err(e) => {
+            // Keep the damaged file: starting empty and saving over it would
+            // silently delete the user's whole library.
+            let backup = path.with_extension(format!("json.damaged-{}", now_secs()));
+            eprintln!("bad config {path:?}: {e}; kept a copy at {backup:?}");
+            let _ = std::fs::copy(path, &backup);
+            SavedState::default()
+        }
+    }
 }
 
 /// Atomic write (temp file + rename) so a crash never corrupts the library.

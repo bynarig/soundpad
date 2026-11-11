@@ -153,6 +153,44 @@ enum SwiftTests {
                 == "“Airhorn” is missing. Was it moved or deleted?", "quoted template round-trip")
         }
 
+        test("level meter rises at once and falls smoothly") {
+            var m = PlaybackModel.meterStep(peak: 1, level: 0, hold: 0, holdLeft: 0)
+            expect(m.level == 1 && m.hold == 1, "full scale jumps straight to the top")
+            expect(m.holdLeft == PlaybackModel.peakHoldTicks, "peak mark starts holding")
+            let half = PlaybackModel.meterStep(peak: 0.001, level: 0, hold: 0, holdLeft: 0) // -60 dB
+            expect(half.level == 0, "-60 dB is the bottom of the scale")
+            let mid = PlaybackModel.meterStep(peak: 0.0316, level: 0, hold: 0, holdLeft: 0) // ~-30 dB
+            expect(abs(mid.level - 0.5) < 0.01, "-30 dB is the middle")
+
+            m = PlaybackModel.meterStep(peak: 0, level: m.level, hold: m.hold, holdLeft: m.holdLeft)
+            expect(abs(m.level - (1 - PlaybackModel.meterFallPerTick)) < 0.006, "silence: falls by one step")
+            expect(m.hold == 1, "peak mark stays up while holding")
+        }
+
+        test("peak mark holds about a second, then falls") {
+            var m = PlaybackModel.meterStep(peak: 1, level: 0, hold: 0, holdLeft: 0)
+            for _ in 0..<PlaybackModel.peakHoldTicks {
+                m = PlaybackModel.meterStep(peak: 0, level: m.level, hold: m.hold, holdLeft: m.holdLeft)
+            }
+            expect(m.hold == 1 && m.holdLeft == 0, "still at the peak after the hold time")
+            let fell = PlaybackModel.meterStep(peak: 0, level: m.level, hold: m.hold, holdLeft: m.holdLeft)
+            expect(fell.hold < 1, "then it falls")
+            for _ in 0..<200 {
+                m = PlaybackModel.meterStep(peak: 0, level: m.level, hold: m.hold, holdLeft: m.holdLeft)
+            }
+            expect(m.level == 0 && m.hold == 0, "silence ends at zero")
+            expect(m.hold >= m.level, "the mark never sits below the bar")
+        }
+
+        test("time and length labels") {
+            expect(formatTime(0) == "0:00", "zero")
+            expect(formatTime(65) == "1:05", "minutes")
+            expect(formatTime(3725) == "1:02:05", "hours")
+            expect(formatTime(-3) == "0:00", "never negative")
+            expect(formatLength(3.04) == "3.0s", "short sounds in seconds")
+            expect(formatLength(95) == "1:35", "long sounds as m:ss")
+        }
+
         print("\n\(checks) checks, \(failures) failed")
         exit(failures == 0 ? 0 : 1)
     }

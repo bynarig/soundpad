@@ -186,6 +186,20 @@ final class PlaybackModel {
     static let meterRange = 60.0        // dB shown, -60…0 dBFS
     static let meterFallPerTick = 0.03  // ~0.9 of the scale per second at 30 Hz
     static let peakHoldTicks = 30       // ~1 s
+
+    /// One 30 Hz step of the level meter, like a hardware meter: rises at once,
+    /// falls smoothly, and a peak mark holds ~1 s before falling too.
+    /// `peak` is the linear sample peak (0…1); results are quantized so views
+    /// redraw only on visible changes.
+    static func meterStep(peak: Double, level: Double, hold: Double, holdLeft: Int)
+        -> (level: Double, hold: Double, holdLeft: Int) {
+        let db = 20 * log10(max(peak, 1e-6))
+        let target = min(max((db + meterRange) / meterRange, 0), 1)
+        let next = ((target >= level ? target : max(target, level - meterFallPerTick)) * 200).rounded() / 200
+        if next >= hold { return (next, next, peakHoldTicks) }
+        if holdLeft > 0 { return (next, hold, holdLeft - 1) }
+        return (next, max(next, hold - meterFallPerTick), 0)
+    }
 }
 
 // MARK: - Store: owns the Rust core
@@ -283,18 +297,10 @@ final class Store {
         let fraction = p.duration > 0
             ? (min(max(p.position / p.duration, 0), 1) * PlaybackModel.progressSteps).rounded() / PlaybackModel.progressSteps
             : 0
-        let db = 20 * log10(max(Double(p.peak), 1e-6))
-        let target = min(max((db + PlaybackModel.meterRange) / PlaybackModel.meterRange, 0), 1)
-        let level = ((target >= pb.level ? target : max(target, pb.level - PlaybackModel.meterFallPerTick)) * 200).rounded() / 200
-        var hold = pb.peakHold
-        if level >= hold {
-            hold = level
-            peakHoldLeft = PlaybackModel.peakHoldTicks
-        } else if peakHoldLeft > 0 {
-            peakHoldLeft -= 1
-        } else {
-            hold = max(level, hold - PlaybackModel.meterFallPerTick)
-        }
+        let meter = PlaybackModel.meterStep(
+            peak: Double(p.peak), level: pb.level, hold: pb.peakHold, holdLeft: peakHoldLeft)
+        let (level, hold) = (meter.level, meter.hold)
+        peakHoldLeft = meter.holdLeft
         if pb.soundID != p.sound_id { pb.soundID = p.sound_id }
         if pb.elapsed != elapsed { pb.elapsed = elapsed }
         if pb.duration != p.duration { pb.duration = p.duration }

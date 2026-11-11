@@ -70,6 +70,7 @@ do file or network I/O, or make system calls. Doing any of those causes audible 
 ## Tests
 
 ```sh
+scripts/check.sh --all                                  # everything CI runs, in one go
 cargo test --release                                    # all Rust tests
 scripts/test_swift.sh                                   # Swift unit tests (macos/Tests)
 cargo test --release --test realtime -- --nocapture     # also prints performance numbers
@@ -84,9 +85,13 @@ python3 scripts/localize.py --check                     # translations
   to playing a fully loaded copy.
 - `tests/decode.rs`: decodes every macOS system sound, plus mp3/flac/ogg/m4a/aiff/caf files
   made with `ffmpeg` / `afconvert` when available.
+- `src/core.rs` tests run the real command handling on a *headless* core (no audio devices,
+  no global hotkeys): adding files and folders, playlists, renaming and ordering, hotkeys,
+  volume limits and the 150% option, saving and reloading the library, a damaged library file,
+  missing files (at startup, while running, restored), and play errors.
 - `macos/Tests/SwiftTests.swift`: the Swift side: version comparison and the update feed,
   decoding sounds and settings sent by the core (including missing files), sorting and the
-  length / date added filters. `scripts/test_swift.sh` compiles them with the app's sources
+  length / date added filters, the level meter's movement and the time labels. `scripts/test_swift.sh` compiles them with the app's sources
   (without `SoundpadApp.swift`, the entry point) and the Rust core, then runs them.
 - `tests/driver/harness.c`: loads the compiled driver the way `coreaudiod` does and checks that
   audio comes back bit-exact.
@@ -96,9 +101,22 @@ python3 scripts/localize.py --check                     # translations
   test signal.
 - `SOUNDPAD_LOG=1` prints every global hotkey press and how long it took.
 
-Before opening a pull request, please run `cargo fmt`, `cargo test --release`,
-`cargo clippy --release --all-targets -- -D warnings` and `scripts/test_swift.sh`, and build
-the app with `scripts/bundle.sh`.
+### Checks before every commit
+
+Turn them on once per clone:
+
+```sh
+scripts/setup_hooks.sh
+```
+
+From then on every `git commit` runs `scripts/check.sh`, which runs only what the staged files
+need: Rust changes get format, clippy and the Rust tests; Swift changes the Swift tests;
+translations the translation check; driver changes the driver test. Commits that only touch the
+website or docs go straight through. If a check fails, the commit is stopped and the output says
+why. In an emergency, `git commit --no-verify` skips it (CI still checks everything on push).
+
+Before opening a pull request, run `scripts/check.sh --all` and build the app with
+`scripts/bundle.sh`.
 
 ### Continuous integration
 

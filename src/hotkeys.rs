@@ -61,6 +61,12 @@ impl Hotkeys {
         Self { manager, actions, registered: HashMap::new(), init_error }
     }
 
+    /// No system-wide hotkeys at all (headless tests: registering real ones
+    /// would grab the developer's key combinations).
+    pub fn disabled() -> Self {
+        Self { manager: None, actions: Arc::default(), registered: HashMap::new(), init_error: None }
+    }
+
     /// Make the registered set equal to `wanted`. Returns per-hotkey errors.
     pub fn sync(&mut self, wanted: &[(String, Action)]) -> Vec<(String, String)> {
         let mut errors = Vec::new();
