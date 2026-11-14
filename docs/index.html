@@ -150,6 +150,14 @@
   },
   {
    "@type": "Question",
+   "name": "Is it safe? Is it checked for viruses?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Every release is scanned automatically on GitHub before it's published: with ClamAV, and with VirusTotal's antivirus engines. A detection stops the release. The results, a link to the full VirusTotal report and the zip's SHA-256 checksum are at the bottom of each release's notes. Soundpad is also open source, so anyone can read the code it's built from."
+   }
+  },
+  {
+   "@type": "Question",
    "name": "How do I uninstall it?",
    "acceptedAnswer": {
     "@type": "Answer",
@@ -228,6 +236,7 @@
   .btn svg { width: 16px; height: 16px; }
   .meta { margin-top: 14px; font-size: 13px; color: var(--muted); }
   .meta a { color: var(--muted); }
+  .meta.scan { margin-top: 4px; }
 
   .keys { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 48px 0 0; color: var(--muted); font-size: 14px; flex-wrap: wrap; }
   kbd {
@@ -297,6 +306,7 @@
         <span id="download-label">Download for Mac</span>
       </a>
       <div class="meta">macOS 26 or later · Apple silicon &amp; Intel · <a href="https://github.com/bynarig/soundpad">Open source</a></div>
+      <div class="meta scan"><a id="scan" href="https://github.com/bynarig/soundpad/releases/latest">Virus-scanned before every release</a></div>
 
       <div class="keys" aria-hidden="true">
         <kbd>⌥</kbd><kbd>1</kbd><span>→ airhorn</span>
@@ -343,6 +353,7 @@
       <details><summary>A hotkey doesn't work.</summary><p>Another app might already use that combination. Pick a different one.</p></details>
       <details><summary>Does it collect any data?</summary><p>No. No accounts, no ads, no analytics. It only goes online to check for updates, and you can turn that off.</p></details>
       <details><summary>How do updates work?</summary><p>Each time Soundpad starts, it checks for a new version and downloads it in the background. A Restart to Update button appears when it's ready, and nothing changes until you click it. Offline? It simply tries again next time. You can turn this off in Settings → Updates.</p></details>
+      <details><summary>Is it safe? Is it checked for viruses?</summary><p>Every release is scanned automatically on GitHub before it's published: with ClamAV, and with VirusTotal's antivirus engines. A detection stops the release. The results, a link to the full VirusTotal report and the zip's SHA-256 checksum are at the bottom of each release's notes. Soundpad is also open source, so anyone can read the code it's built from.</p></details>
       <details><summary>How do I uninstall it?</summary><p>Open Settings → Soundpad Virtual Mic → Manage → Uninstall, then drag Soundpad from Applications to the Trash.</p></details>
       <details><summary>Prefer Terminal for the first launch?</summary><p><code>xattr -dr com.apple.quarantine /Applications/Soundpad.app</code></p></details>
     </section>
@@ -366,8 +377,24 @@
         if (zip) document.getElementById("download").href = zip.browser_download_url;
         if (rel.tag_name) document.getElementById("download-label").textContent =
           "Download " + rel.tag_name;
+        showScan(rel);
       })
       .catch(() => {});
+  }
+  // The release workflow adds the virus scan results to the release notes,
+  // with a hidden JSON line (scripts/virus_scan.sh) that we read here.
+  function showScan(rel) {
+    const m = /<!-- virus-scan: (\{.*?\}) -->/.exec(rel.body || "");
+    if (!m) return;
+    let scan;
+    try { scan = JSON.parse(m[1]); } catch { return; }
+    const vt = scan.virustotal;
+    const parts = ["ClamAV: " + (scan.clamav === "clean" ? "clean" : "see report")];
+    if (vt) parts.push("VirusTotal: " + vt.malicious + "/" + vt.engines);
+    const link = document.getElementById("scan");
+    link.textContent = "✓ Virus-scanned " + scan.date + " · " + parts.join(" · ");
+    link.href = vt ? vt.url : rel.html_url;
+    link.title = scan.file + " · SHA-256 " + scan.sha256;
   }
   const later = window.requestIdleCallback || (f => setTimeout(f, 1));
   if (document.readyState === "complete") later(updateDownloadButton);

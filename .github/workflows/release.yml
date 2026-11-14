@@ -2,12 +2,14 @@ name: Release
 
 # Push a tag like v0.3.3 (scripts/new_release.sh does it) to publish a release:
 # run all CI checks, build the universal app, sign the app and the update,
-# and create the GitHub release with Soundpad-X.Y.Z.zip and appcast.json.
+# scan it for viruses (virus-scan.yml; a detection stops the release), and
+# create the GitHub release with Soundpad-X.Y.Z.zip, appcast.json and the scan
+# results in the notes.
 # The annotated tag's message becomes the release notes; its first line is
 # the short text shown in the app's update offer.
 #
 # "Run workflow" by hand does a dry run: everything except publishing. The
-# signed build is attached to the run as a download.
+# signed build and the scan report are attached to the run as downloads.
 
 on:
   push:
@@ -26,12 +28,14 @@ jobs:
     name: CI checks
     uses: ./.github/workflows/ci.yml
 
-  release:
-    name: Build, sign and publish
+  build:
+    name: Build and sign
     needs: checks
     runs-on: macos-26
     permissions:
-      contents: write
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     env:
       PUBLISH: ${{ github.event_name == 'push' }}
       TAG: ${{ github.ref_name }}
@@ -127,25 +131,58 @@ jobs:
           fi
           cat dist/release/appcast.json
 
-      - name: Publish release
-        if: env.PUBLISH == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          V=${{ steps.version.outputs.version }}
-          gh release create "$TAG" "dist/release/Soundpad-$V.zip" dist/release/appcast.json \
-            --verify-tag --title "Soundpad $V" --notes-file "$NOTES_FILE"
-          sleep 5
-          curl -fsSL "https://github.com/${{ github.repository }}/releases/latest/download/appcast.json"
+      - name: Keep the build for the next jobs
+        run: cp "$NOTES_FILE" dist/release/notes.md
 
-      - name: Upload dry-run build
-        if: env.PUBLISH != 'true'
+      - name: Upload the build
         uses: actions/upload-artifact@v7
         with:
-          name: Soundpad-release-dry-run-${{ steps.version.outputs.version }}
+          name: Soundpad-release
           path: dist/release/
           retention-days: 7
 
       - name: Remove signing keys
         if: always()
         run: rm -rf "$RUNNER_TEMP/soundpad-signing"
+
+  scan:
+    name: Virus scan
+    needs: build
+    permissions:
+      contents: write
+    uses: ./.github/workflows/virus-scan.yml
+    with:
+      artifact: Soundpad-release
+    secrets:
+      VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+
+  publish:
+    name: Publish
+    needs: [build, scan]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: Soundpad-release
+          path: release
+      - uses: actions/download-artifact@v7
+        with:
+          name: virus-scan-report
+          path: scan
+
+      - name: Publish release
+        run: |
+          printf '\n' >> release/notes.md
+          cat scan/virus-scan.md >> release/notes.md
+          gh release create "$TAG" "release/Soundpad-$VERSION.zip" release/appcast.json \
+            --verify-tag --title "Soundpad $VERSION" --notes-file release/notes.md
+          sleep 5
+          curl -fsSL "https://github.com/$GH_REPO/releases/latest/download/appcast.json"

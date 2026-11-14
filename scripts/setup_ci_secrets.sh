@@ -8,6 +8,8 @@
 #   SOUNDPAD_UPDATE_SIGNING_KEY          ~/.config/soundpad/update_signing_key
 #   SOUNDPAD_CODESIGN_KEYCHAIN           ~/.config/soundpad/codesign.keychain-db (base64)
 #   SOUNDPAD_CODESIGN_KEYCHAIN_PASSWORD  ~/.config/soundpad/codesign.keychain-password
+#   VIRUSTOTAL_API_KEY                   optional; asked for (hidden input), for the
+#                                        release virus scan (virus-scan.yml)
 #
 # Anyone who can push tags to the repo can then publish signed updates.
 set -euo pipefail
@@ -32,5 +34,13 @@ echo "Storing release signing secrets in $REPO…"
 gh secret set SOUNDPAD_UPDATE_SIGNING_KEY --repo "$REPO" < "$KEY"
 base64 -i "$KC" | gh secret set SOUNDPAD_CODESIGN_KEYCHAIN --repo "$REPO"
 gh secret set SOUNDPAD_CODESIGN_KEYCHAIN_PASSWORD --repo "$REPO" < "$PASS"
+echo
+echo "Optional: a VirusTotal API key lets every release be checked by ~70 antivirus engines"
+echo "(free account at https://www.virustotal.com → your name → API key). ClamAV runs either way."
+read -r -s -p "VirusTotal API key (Enter to skip): " VT_KEY; echo
+if [[ -n "$VT_KEY" ]]; then
+  printf '%s' "$VT_KEY" | gh secret set VIRUSTOTAL_API_KEY --repo "$REPO"
+fi
+unset VT_KEY
 echo "Done. Secrets in $REPO:"
 gh secret list --repo "$REPO"

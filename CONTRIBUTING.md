@@ -179,8 +179,12 @@ One-time setup, already done by the maintainer:
 ```sh
 scripts/release.sh --setup     # creates ~/.config/soundpad/update_signing_key (back it up!)
 scripts/setup_codesign.sh      # permanent code-signing identity, so macOS keeps permissions
-scripts/setup_ci_secrets.sh    # stores both as encrypted GitHub Actions secrets
+scripts/setup_ci_secrets.sh    # stores both as encrypted GitHub Actions secrets,
+                               # plus an optional VirusTotal API key for the virus scan
 ```
+
+Only the VirusTotal key? `gh secret set VIRUSTOTAL_API_KEY` and paste it (free account at
+[virustotal.com](https://www.virustotal.com), then your name → **API key**).
 
 ### Releasing with GitHub Actions (normal way)
 
@@ -195,14 +199,24 @@ The tag starts `.github/workflows/release.yml`, which:
 2. checks that the tag matches `Cargo.toml` and that the update key matches `macos/Updates.json`;
 3. builds the universal app (Apple silicon + Intel), signs it with "Soundpad Code Signing" and
    signs the update zip;
-4. verifies version, architectures and signature, then creates the GitHub release with
-   `Soundpad-X.Y.Z.zip` and `appcast.json`. The tag message becomes the release notes (its
-   first line is what the app shows in the update offer), followed by
-   `.github/release-notes-footer.md`.
+4. verifies version, architectures and signature;
+5. scans the zip for viruses (`.github/workflows/virus-scan.yml`, `scripts/virus_scan.sh`):
+   ClamAV always, and VirusTotal's ~70 engines when the `VIRUSTOTAL_API_KEY` secret is set.
+   A ClamAV detection, or 3 or more VirusTotal engines calling it malicious, stops the
+   release. Fewer VirusTotal hits are shown but don't block: a single engine flagging a
+   new unnotarized app is a common false alarm, so check the report;
+6. creates the GitHub release with `Soundpad-X.Y.Z.zip` and `appcast.json`. The tag message
+   becomes the release notes (its first line is what the app shows in the update offer),
+   followed by `.github/release-notes-footer.md` and the scan results. The website reads the
+   results from there and shows them under the download button.
 
 Installed copies pick the release up at their next launch. To try the pipeline without
 publishing, open **Actions → Release → Run workflow**: it does everything except the release,
-and attaches the signed build to the run.
+and attaches the signed build and the scan report to the run.
+
+To scan a release that's already published (for example to refresh an old result), open
+**Actions → Virus scan → Run workflow**, enter the tag, and tick *Add the result to that
+release's notes*. It replaces the earlier scan section.
 
 ### Releasing by hand (fallback)
 

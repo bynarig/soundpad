@@ -187,6 +187,15 @@ To remove the virtual microphone, open Settings → Soundpad Virtual Mic → **M
 Soundpad doesn't collect any data and has no accounts or ads. The only time it connects to the
 internet is to check this page for updates, and you can turn that off in Settings → Updates.
 
+## Virus scan
+
+Every release is scanned automatically on GitHub before it's published: with
+[ClamAV](https://www.clamav.net) and with [VirusTotal](https://www.virustotal.com)'s antivirus
+engines. A detection stops the release. The results, a link to the full VirusTotal report and
+the zip's SHA-256 checksum are at the bottom of each
+[release's notes](https://github.com/bynarig/soundpad/releases/latest). To check your
+download, run `shasum -a 256 Soundpad-x.y.z.zip` and compare.
+
 ## Help make Soundpad better
 
 Found a bug or have an idea? [Open an issue](https://github.com/bynarig/soundpad/issues).

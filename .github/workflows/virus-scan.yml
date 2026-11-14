@@ -1,0 +1,93 @@
+name: Virus scan
+
+# Scans a release zip with ClamAV and, when the VIRUSTOTAL_API_KEY secret is
+# set, VirusTotal (~70 antivirus engines). See scripts/virus_scan.sh.
+#
+# - release.yml calls it for every new release, before publishing: a detection
+#   stops the release, and the report is added to the release notes.
+# - "Run workflow" by hand scans a release that's already published. With
+#   "update notes" ticked, it replaces that release's scan section.
+
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        description: Name of the uploaded artifact that holds Soundpad-X.Y.Z.zip
+        type: string
+        required: true
+    secrets:
+      VIRUSTOTAL_API_KEY:
+        required: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release to scan, for example v0.3.2 (empty = latest)
+        required: false
+      update_notes:
+        description: Add the result to that release's notes
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: ClamAV + VirusTotal
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # only used by "update notes"
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Get the release zip (new release)
+        if: inputs.artifact != ''
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ inputs.artifact }}
+          path: files
+
+      - name: Get the release zip (published release)
+        if: inputs.artifact == ''
+        run: |
+          TAG="${{ inputs.tag }}"
+          [[ -n "$TAG" ]] || TAG=$(gh release view --json tagName -q .tagName)
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          gh release download "$TAG" --pattern 'Soundpad-*.zip' --dir files
+
+      - name: Scan
+        env:
+          VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: |
+          ZIP=$(ls files/Soundpad-*.zip)
+          [[ -n "$VIRUSTOTAL_API_KEY" ]] || echo "::notice::VIRUSTOTAL_API_KEY isn't set, so only ClamAV runs. See CONTRIBUTING.md."
+          set +e
+          scripts/virus_scan.sh "$ZIP" virus-scan.md
+          STATUS=$?
+          set -e
+          cat virus-scan.md >> "$GITHUB_STEP_SUMMARY"
+          exit $STATUS
+
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: virus-scan-report
+          path: virus-scan.md
+          if-no-files-found: ignore
+
+      - name: Update the release notes
+        if: inputs.artifact == '' && inputs.update_notes
+        run: |
+          gh release view "$TAG" --json body -q .body > notes.md
+          # Drop an earlier scan section, then add the new one.
+          python3 - <<'EOF'
+          import re
+          notes = open("notes.md").read()
+          notes = re.sub(r"\n*<!-- virus-scan-start -->.*?<!-- virus-scan-end -->\n*", "\n", notes, flags=re.S)
+          open("notes.md", "w").write(notes.rstrip() + "\n\n" + open("virus-scan.md").read())
+          EOF
+          gh release edit "$TAG" --notes-file notes.md
