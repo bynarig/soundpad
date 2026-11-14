@@ -10,7 +10,8 @@ Thanks for helping! Bug reports, ideas, translation fixes and code are all welco
 - **Code:** fork the repo, create a branch, and open a pull request against `main`.
 
 By contributing, you agree that your contribution is licensed under the project's
-[GPL-3.0 license](LICENSE).
+[MIT License](LICENSE). Changes to the BlackHole driver in `vendor/blackhole-driver/` stay
+under its GPL-3.0 license.
 
 ---
 

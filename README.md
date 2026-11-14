@@ -203,9 +203,11 @@ Want to help with code or translations? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Soundpad is free and open-source software, released under the
-[GNU General Public License v3.0](LICENSE). Created by bynarig and Claude.
+Soundpad is free and open-source software, released under the [MIT License](LICENSE).
+Created by bynarig and Claude.
 
 The virtual microphone is built from the open-source
-[BlackHole](https://github.com/ExistentialAudio/BlackHole) driver by Existential Audio
-(GPL-3.0). It is renamed to *Soundpad Virtual Mic*, as BlackHole's license terms require.
+[BlackHole](https://github.com/ExistentialAudio/BlackHole) driver by Existential Audio, which
+keeps its own license, GPL-3.0 (see `vendor/blackhole-driver/LICENSE`). It is renamed to
+*Soundpad Virtual Mic*, as BlackHole's license terms require, and ships inside the app as a
+separate driver with its license. Its source is in `vendor/blackhole-driver/`.
