@@ -34,14 +34,17 @@ FAILED=0
 
 # ---- ClamAV ----
 echo "▸ ClamAV"
-docker pull -q "$IMAGE" >/dev/null
-CLAM_VERSION=$(docker run --rm --entrypoint clamscan "$IMAGE" --version)  # ClamAV 1.x/DB/date
-echo "$CLAM_VERSION"
+mkdir "$WORK/out"
 set +e
-docker run --rm --entrypoint clamscan -v "$WORK/files:/scan:ro" "$IMAGE" \
-  --recursive --infected --scan-archive=yes --alert-broken-media=no /scan | tee "$WORK/clamav.log"
+# Fetch today's signatures first; the image's own are up to a few days old.
+docker run --rm --entrypoint sh -v "$WORK/files:/scan:ro" -v "$WORK/out:/out" "$IMAGE" -c '
+  freshclam --stdout >/out/freshclam.log 2>&1 || echo "::warning::Could not update ClamAV signatures; using the ones in the image."
+  clamscan --version > /out/version
+  clamscan --recursive --infected --scan-archive=yes --alert-broken-media=no /scan' | tee "$WORK/clamav.log"
 CLAM_EXIT=${PIPESTATUS[0]}
 set -e
+CLAM_VERSION=$(cat "$WORK/out/version")  # "ClamAV 1.5.4/28177/Sun Nov  8 06:23:52 2026"
+echo "$CLAM_VERSION"
 case $CLAM_EXIT in
   0) CLAM=clean; CLAM_LINE="no threats found" ;;
   1) CLAM=infected; FAILED=1
@@ -49,7 +52,6 @@ case $CLAM_EXIT in
      echo "::error::ClamAV found threats in $NAME" ;;
   *) echo "::error::ClamAV couldn't run (exit $CLAM_EXIT)"; exit 2 ;;
 esac
-# "ClamAV 1.4.3/27820/Fri Nov 13 09:24:02 2026" → version and signature date
 CLAM_VER=$(cut -d/ -f1 <<< "$CLAM_VERSION" | sed 's/^ClamAV //')
 CLAM_DB=$(cut -d/ -f3- <<< "$CLAM_VERSION")
 
