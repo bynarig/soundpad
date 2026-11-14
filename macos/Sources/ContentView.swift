@@ -230,6 +230,8 @@ struct SoundList: View {
     @AppStorage("showFilters") private var showFilters = true
     @AppStorage("viewStyle") private var viewStyle: ViewStyle = .list
     @AppStorage("iconSize") private var iconSize = IconSize.standard
+    @AppStorage(MediaDownloader.enabledKey) private var downloadsEnabled = false
+    @State private var showDownload = false
     @State private var lengthFilter: LengthFilter = .any
     @State private var addedFilter: AddedFilter = .any
 
@@ -406,6 +408,16 @@ struct SoundList: View {
                           systemImage: filtersActive ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                 }
                 .help(showFilters ? "Hide Filters" : "Show Filters")
+            }
+        }
+        if downloadsEnabled {
+            ToolbarItem(placement: .primaryAction) {
+                Button { showDownload.toggle() } label: {
+                    Label("Download from a Link", systemImage: MediaDownloader.shared.isBusy
+                          ? "arrow.down.circle.dotted" : "arrow.down.circle")
+                }
+                .help("Download from a Link")
+                .popover(isPresented: $showDownload, arrowEdge: .bottom) { DownloadPopover() }
             }
         }
         ToolbarItem(placement: .primaryAction) {

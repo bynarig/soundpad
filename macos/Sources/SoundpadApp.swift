@@ -22,7 +22,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool { true }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { Store.shared.start() }
+        MainActor.assumeIsolated {
+            Store.shared.start()
+            // Link downloads (optional): find or update yt-dlp in the background.
+            Task { await MediaDownloader.shared.prepare() }
+        }
     }
 }
 

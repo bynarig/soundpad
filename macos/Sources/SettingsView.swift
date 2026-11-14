@@ -94,6 +94,10 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Download from Links") {
+                DownloadsSection()
+            }
+
             Section("Updates") {
                 UpdatesSection()
             }

@@ -45,6 +45,8 @@ Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 - 🌍 **40 languages,** including English, Ukrainian, every EU language, Chinese, Japanese,
   Arabic and Hindi. Soundpad uses your Mac's language automatically.
 - 🔄 **Updates itself** when a new version comes out.
+- ⬇️ **Download audio from links** (optional): paste a YouTube, YouTube Music, SoundCloud or
+  Spotify link and the sound is added to your library.
 
 ---
 
@@ -99,6 +101,23 @@ people listening.
 - A sound can be in several playlists. Removing it from a playlist doesn't delete it from
   All Sounds.
 - Drag sounds up and down to change their order.
+
+## Download audio from links
+
+An optional feature, off until you turn it on in **Settings → Download from Links**.
+
+- Click **⬇** in the toolbar, paste a link from **YouTube, YouTube Music, SoundCloud or
+  Spotify** (a link on your clipboard is filled in for you) and click **Download**.
+- The audio is saved in **Music → Soundpad Downloads**, with the video's thumbnail as its
+  cover, and added to All Sounds, or to the playlist you're looking at.
+- **Spotify** songs are DRM-protected, so Soundpad reads the song's title and artist and
+  downloads the same song from YouTube. Single songs only, not albums or playlists.
+- It uses [yt-dlp](https://github.com/yt-dlp/yt-dlp), a free open-source downloader. Soundpad
+  downloads it from yt-dlp's official GitHub page when you turn the feature on (about 35 MB),
+  checks its SHA-256 checksum, and keeps it up to date.
+
+Only download audio you have the right to use. Downloading can be against a site's terms of
+service.
 
 ## Icons, list, sorting and filters
 

@@ -241,6 +241,63 @@ enum SwiftTests {
             expect(stale.extend(to: 4, in: grid, selection: [99]) == [4], "a deleted anchor falls back to a plain select")
         }
 
+        test("link downloads: which links are supported") {
+            let site = MediaDownloader.site(for:)
+            expect(site("https://www.youtube.com/watch?v=dQw4w9WgXcQ") == .youtube, "youtube.com")
+            expect(site("https://youtu.be/dQw4w9WgXcQ?si=x") == .youtube, "youtu.be")
+            expect(site("https://m.youtube.com/watch?v=abc") == .youtube, "mobile")
+            expect(site("https://music.youtube.com/watch?v=abc") == .youtubeMusic, "YouTube Music")
+            expect(site("https://soundcloud.com/artist/track") == .soundcloud, "SoundCloud")
+            expect(site("https://on.soundcloud.com/abc") == .soundcloud, "SoundCloud short link")
+            expect(site("https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC") == .spotify, "Spotify")
+            expect(site("  https://spotify.link/abc \n") == .spotify, "Spotify short link, trimmed")
+            expect(site("https://notyoutube.com/watch") == nil, "look-alike domain")
+            expect(site("https://example.com/youtube.com") == nil, "domain only in the path")
+            expect(site("ftp://youtube.com/x") == nil, "not http(s)")
+            expect(site("youtube") == nil, "not a link")
+        }
+
+        test("link downloads: yt-dlp output and errors") {
+            expect(MediaDownloader.parse("SP-TITLE Never Gonna Give You Up").title == "Never Gonna Give You Up", "title")
+            expect(MediaDownloader.parse("SP-PROGRESS  42.5%").progress == 0.425, "progress")
+            expect(MediaDownloader.parse("SP-PROGRESS 100.0%").progress == 1, "done")
+            expect(MediaDownloader.parse("[download] Destination: x").title == nil, "other lines ignored")
+            expect(MediaDownloader.errorMessage("WARNING: x\nERROR: [youtube] abc123: Video unavailable\n") == "Video unavailable",
+                   "last error without prefixes")
+            expect(MediaDownloader.errorMessage("ERROR: Unsupported URL: https://x") == "Unsupported URL: https://x", "plain error")
+            let args = MediaDownloader.arguments(for: "https://youtu.be/x", into: URL(fileURLWithPath: "/tmp/w"))
+            expect(args.contains("--no-playlist") && args.last == "https://youtu.be/x", "one item, link last")
+            expect(args[args.firstIndex(of: "--")! + 1] == "https://youtu.be/x", "a link starting with - can't become an option")
+        }
+
+        test("link downloads: file names never overwrite") {
+            expect(MediaDownloader.fileName(for: "AC/DC: Thunderstruck") == "AC-DC - Thunderstruck", "slashes and colons")
+            expect(MediaDownloader.fileName(for: "  ...  ") == "Download", "empty after cleaning")
+            expect(MediaDownloader.fileName(for: String(repeating: "a", count: 300)).count == 120, "length limit")
+            let dir = FileManager.default.temporaryDirectory.appending(path: "sp-names-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            defer { try? FileManager.default.removeItem(at: dir) }
+            expect(MediaDownloader.uniqueURL(in: dir, base: "Song", ext: "m4a").lastPathComponent == "Song.m4a", "free name")
+            FileManager.default.createFile(atPath: dir.appending(path: "Song.mp3").path, contents: Data())
+            expect(MediaDownloader.uniqueURL(in: dir, base: "Song", ext: "m4a").lastPathComponent == "Song 2.m4a",
+                   "taken by another format, so covers don't mix")
+            FileManager.default.createFile(atPath: dir.appending(path: "Song 2.webp").path, contents: Data())
+            expect(MediaDownloader.uniqueURL(in: dir, base: "Song", ext: "m4a").lastPathComponent == "Song 3.m4a", "taken by a cover")
+        }
+
+        test("link downloads: Spotify song from the page") {
+            let page = """
+                <head><meta property="og:title" content="Never Gonna Give You Up"/>
+                <meta property="og:description" content="Rick Astley · Song · 1987"/></head>
+                """
+            let song = MediaDownloader.parseSpotifyPage(page)
+            expect(song?.title == "Never Gonna Give You Up" && song?.artist == "Rick Astley", "title and artist")
+            expect(song?.search == "Rick Astley - Never Gonna Give You Up", "search text")
+            let amp = MediaDownloader.parseSpotifyPage(#"<meta property="og:title" content="Rock &amp; Roll"/>"#)
+            expect(amp?.title == "Rock & Roll" && amp?.search == "Rock & Roll", "entities, no artist")
+            expect(MediaDownloader.parseSpotifyPage("<html></html>") == nil, "no song")
+        }
+
         print("\n\(checks) checks, \(failures) failed")
         exit(failures == 0 ? 0 : 1)
     }

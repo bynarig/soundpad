@@ -61,6 +61,12 @@ final class ArtworkCache {
     private nonisolated static func load(_ path: String) async -> NSImage? {
         let url = URL(fileURLWithPath: path)
         if let data = await embedded(url), let img = thumbnail(data) { return img }
+        // A picture with the same name as the sound ("Song.jpg" next to
+        // "Song.m4a"), like the covers saved with downloads.
+        for ext in ["jpg", "jpeg", "png", "webp"] {
+            let f = url.deletingPathExtension().appendingPathExtension(ext)
+            if let data = try? Data(contentsOf: f), let img = thumbnail(data) { return img }
+        }
         let dir = url.deletingLastPathComponent()
         for name in ["cover", "folder", "front", "album", "artwork"] {
             for ext in ["jpg", "jpeg", "png", "webp"] {
