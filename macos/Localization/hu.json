@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Törlés a könyvtárból…",
   "delete_confirm_one": "Törli a(z) „%@” hangot a Soundpadből?",
   "delete_confirm_n": "Törli a(z) %lld hangot a Soundpadből?",
-  "delete_confirm_msg": "A hangok a billentyűparancsaikkal együtt kikerülnek a könyvtárból és minden lejátszási listából. A hangfájlok a Macen maradnak."
+  "delete_confirm_msg": "A hangok a billentyűparancsaikkal együtt kikerülnek a könyvtárból és minden lejátszási listából. A hangfájlok a Macen maradnak.",
+  "no_audio_in": "Nincsenek hangfájlok itt: „%@”"
 }

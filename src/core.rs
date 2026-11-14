@@ -106,10 +106,14 @@ pub enum Command {
         mode: PlaybackMode,
     },
     /// Creates a playlist (optionally with sounds) and makes it the active one.
+    /// `paths` (files or folders) are added to the library first and go into
+    /// the playlist too; used when a Finder folder is dropped on the sidebar.
     CreatePlaylist {
         name: String,
         #[serde(default)]
         ids: Vec<u64>,
+        #[serde(default)]
+        paths: Vec<PathBuf>,
     },
     RenamePlaylist {
         id: u64,
@@ -415,7 +419,15 @@ impl Core {
                 self.player.set_mode(mode);
                 self.mark_dirty();
             }
-            C::CreatePlaylist { name, ids } => {
+            C::CreatePlaylist { name, mut ids, paths } => {
+                if !paths.is_empty() {
+                    let found = self.add_files(paths);
+                    if found.is_empty() && ids.is_empty() {
+                        // Don't leave an empty playlist behind for a folder without audio.
+                        return Err(format!("No audio files in “{}”", name.trim()));
+                    }
+                    ids.extend(found);
+                }
                 let name = self.unique_playlist_name(name.trim());
                 let id = self.alloc_id();
                 let mut sounds = Vec::new();
@@ -1247,10 +1259,46 @@ mod tests {
     }
 
     #[test]
+    fn a_dropped_folder_becomes_a_playlist() {
+        let dir = tmpdir("folder-playlist");
+        let memes = dir.join("Memes");
+        std::fs::create_dir_all(&memes).unwrap();
+        let (b, a) = (wav(&memes, "b.wav"), wav(&memes, "a.wav"));
+        std::fs::write(memes.join("notes.txt"), "not audio").unwrap();
+        let empty = dir.join("Empty");
+        std::fs::create_dir_all(&empty).unwrap();
+        let mut core = core_in(&dir);
+        add(&mut core, &[&b]); // already in the library: reused, not duplicated
+
+        let folder = |name: &str, path: &PathBuf| Command::CreatePlaylist {
+            name: name.into(),
+            ids: vec![],
+            paths: vec![path.clone()],
+        };
+        core.command(folder("Memes", &memes)).unwrap();
+        assert_eq!(core.sounds.len(), 2, "a.wav added, b.wav reused, notes.txt ignored");
+        let p = &core.playlists[0];
+        assert_eq!(p.name, "Memes");
+        let in_order: Vec<&Path> =
+            p.sounds.iter().map(|&id| core.sounds[core.index_of(id).unwrap()].path.as_path()).collect();
+        assert_eq!(in_order, [a.as_path(), b.as_path()], "sorted by file name, like the folder");
+        assert_eq!(core.active_playlist, Some(p.id), "the new playlist is shown");
+
+        // Dropping the same folder again makes a second list rather than merging.
+        core.command(folder("Memes", &memes)).unwrap();
+        assert_eq!(core.playlists[1].name, "Memes 2");
+        assert_eq!(core.sounds.len(), 2);
+
+        // A folder without audio doesn't leave an empty playlist behind.
+        assert_eq!(core.command(folder("Empty", &empty)), Err("No audio files in “Empty”".into()));
+        assert_eq!(core.playlists.len(), 2);
+    }
+
+    #[test]
     fn adding_files_straight_into_a_playlist() {
         let dir = tmpdir("add-to-playlist");
         let mut core = core_in(&dir);
-        core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![] }).unwrap();
+        core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![], paths: vec![] }).unwrap();
         let pl = core.playlists[0].id;
         let f = wav(&dir, "x.wav");
         core.command(Command::AddFiles { paths: vec![f], playlist: Some(pl) }).unwrap();
@@ -1266,8 +1314,13 @@ mod tests {
         let [ia, ib, ic] = ids(&core)[..] else { unreachable!() };
 
         // Names are made unique; unknown and repeated ids are ignored; the new list becomes active.
-        core.command(Command::CreatePlaylist { name: "  New Playlist ".into(), ids: vec![ib, 999, ib, ia] }).unwrap();
-        core.command(Command::CreatePlaylist { name: "New Playlist".into(), ids: vec![] }).unwrap();
+        core.command(Command::CreatePlaylist {
+            name: "  New Playlist ".into(),
+            ids: vec![ib, 999, ib, ia],
+            paths: vec![],
+        })
+        .unwrap();
+        core.command(Command::CreatePlaylist { name: "New Playlist".into(), ids: vec![], paths: vec![] }).unwrap();
         let (p1, p2) = (core.playlists[0].id, core.playlists[1].id);
         assert_eq!(playlist(&core, p1).name, "New Playlist");
         assert_eq!(playlist(&core, p2).name, "New Playlist 2");
@@ -1308,7 +1361,7 @@ mod tests {
         let mut core = core_in(&dir);
         add(&mut core, &[&a, &b, &c]);
         let [ia, ib, ic] = ids(&core)[..] else { unreachable!() };
-        core.command(Command::CreatePlaylist { name: "P".into(), ids: vec![ia, ib] }).unwrap();
+        core.command(Command::CreatePlaylist { name: "P".into(), ids: vec![ia, ib], paths: vec![] }).unwrap();
 
         core.command(Command::Rename { id: ia, name: "  Airhorn ".into() }).unwrap();
         assert_eq!(core.sounds[0].name, "Airhorn");
@@ -1390,7 +1443,7 @@ mod tests {
             core.command(Command::Rename { id: ia, name: "Airhorn".into() }).unwrap();
             core.command(Command::SetHotkey { target: HotkeyTarget::Sound(ia), hotkey: Some("alt+KeyH".into()) })
                 .unwrap();
-            core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![ib, ia] }).unwrap();
+            core.command(Command::CreatePlaylist { name: "Memes".into(), ids: vec![ib, ia], paths: vec![] }).unwrap();
             core.command(Command::SetMicBoost { on: true }).unwrap();
             core.command(Command::SetVolume { output: Output::Mic, value: 1.25 }).unwrap();
             core.command(Command::SetPlaybackMode { mode: PlaybackMode::Loop }).unwrap();

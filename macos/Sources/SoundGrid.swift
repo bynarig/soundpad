@@ -143,7 +143,8 @@ struct ArtworkView: View {
 // MARK: - Icon grid
 
 /// Finder-style icon view: click to select, ⌘-click to toggle, ⇧-click for a
-/// range, double-click (or Return) to play, arrow keys to move.
+/// range, ⇧-arrows to grow or shrink it, ⌘A for all, double-click (or Return)
+/// to play, arrow keys to move. The selection rules live in `GridSelection`.
 struct SoundGrid<Menu: View>: View {
     @Environment(Store.self) private var store
     let sounds: [Sound]
@@ -153,7 +154,7 @@ struct SoundGrid<Menu: View>: View {
     let onDelete: () -> Void
     @ViewBuilder let menu: (Set<UInt64>) -> Menu
 
-    @State private var anchor: UInt64?
+    @State private var cursor = GridSelection()
     @State private var width: CGFloat = 600
     @FocusState private var focused: Bool
 
@@ -206,7 +207,11 @@ struct SoundGrid<Menu: View>: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         focused = true
-                        selection = []
+                        // Like Finder, ⌘/⇧-clicking empty space keeps the selection.
+                        if !Self.clickModifiers.contains(.command) && !Self.clickModifiers.contains(.shift) {
+                            selection = []
+                            cursor = GridSelection()
+                        }
                     }
             }
             .focusable()
@@ -219,6 +224,11 @@ struct SoundGrid<Menu: View>: View {
             }
             .onKeyPress(.space) {
                 store.togglePause()
+                return .handled
+            }
+            .onKeyPress(characters: ["a"], phases: .down) { press in
+                guard press.modifiers == .command else { return .ignored }
+                selection = Set(sounds.map(\.id))
                 return .handled
             }
             .onKeyPress(keys: [.leftArrow, .rightArrow, .upArrow, .downArrow]) { press in
@@ -239,42 +249,81 @@ struct SoundGrid<Menu: View>: View {
 
     private var orderedSelection: [UInt64] { sounds.map(\.id).filter(selection.contains) }
 
-    private func click(_ id: UInt64) {
-        let mods = NSEvent.modifierFlags
-        if mods.contains(.command) {
-            if selection.contains(id) { selection.remove(id) } else { selection.insert(id) }
-            anchor = id
-        } else if mods.contains(.shift), let anchor, let range = range(anchor, id) {
-            selection.formUnion(range)
-        } else {
-            selection = [id]
-            anchor = id
-        }
+    /// Modifier keys of the click being handled. The event's own flags, so a
+    /// click is read the way it was made even if keys changed since.
+    static var clickModifiers: NSEvent.ModifierFlags {
+        (NSApp.currentEvent?.modifierFlags ?? NSEvent.modifierFlags).intersection(.deviceIndependentFlagsMask)
     }
 
-    private func range(_ a: UInt64, _ b: UInt64) -> [UInt64]? {
+    private func click(_ id: UInt64) {
+        let mods = Self.clickModifiers
         let ids = sounds.map(\.id)
-        guard let i = ids.firstIndex(of: a), let j = ids.firstIndex(of: b) else { return nil }
-        return Array(ids[min(i, j)...max(i, j)])
+        if mods.contains(.command) {
+            selection = cursor.toggle(id, in: selection)
+        } else if mods.contains(.shift) {
+            selection = cursor.extend(to: id, in: ids, selection: selection)
+        } else {
+            selection = cursor.select(id)
+        }
     }
 
     /// Moves the selection with the arrow keys; returns the newly focused sound.
     private func move(by step: Int, extend: Bool) -> UInt64? {
         let ids = sounds.map(\.id)
-        guard !ids.isEmpty else { return nil }
-        let current = anchor.flatMap { ids.firstIndex(of: $0) } ?? orderedSelection.last.flatMap { ids.firstIndex(of: $0) }
-        let target: Int
-        if let current {
-            let t = current + step
-            guard t >= 0, t < ids.count else { return nil }
-            target = t
-        } else {
-            target = step > 0 ? 0 : ids.count - 1
-        }
-        let id = ids[target]
-        if extend { selection.insert(id) } else { selection = [id] }
-        anchor = id
+        guard let id = cursor.target(moving: step, in: ids, selection: selection) else { return nil }
+        selection = extend ? cursor.extend(to: id, in: ids, selection: selection) : cursor.select(id)
         return id
+    }
+}
+
+/// Finder's selection rules for the icon view, kept apart from the view so they
+/// can be tested (macos/Tests).
+///
+/// - click: only that sound; it becomes the anchor.
+/// - ⌘-click: add or remove that sound; it becomes the anchor.
+/// - ⇧-click / ⇧-arrow: everything from the anchor to that sound, plus what was
+///   selected before the anchor was set. Moving back toward the anchor shrinks
+///   the range again, like Finder.
+struct GridSelection: Equatable {
+    /// Where ⇧-ranges start.
+    var anchor: UInt64?
+    /// The moving end: where the arrow keys continue from.
+    var focus: UInt64?
+    /// What stays selected while the range changes (earlier ⌘-clicks).
+    var base: Set<UInt64> = []
+
+    mutating func select(_ id: UInt64) -> Set<UInt64> {
+        anchor = id
+        focus = id
+        base = []
+        return [id]
+    }
+
+    mutating func toggle(_ id: UInt64, in selection: Set<UInt64>) -> Set<UInt64> {
+        var s = selection
+        if s.contains(id) { s.remove(id) } else { s.insert(id) }
+        anchor = id
+        focus = id
+        base = s.subtracting([id])
+        return s
+    }
+
+    mutating func extend(to id: UInt64, in ids: [UInt64], selection: Set<UInt64>) -> Set<UInt64> {
+        guard let anchor, let i = ids.firstIndex(of: anchor), let j = ids.firstIndex(of: id) else {
+            return select(id)
+        }
+        focus = id
+        return base.union(ids[min(i, j)...max(i, j)])
+    }
+
+    /// The sound an arrow key moves to, or nil at the edge.
+    func target(moving step: Int, in ids: [UInt64], selection: Set<UInt64>) -> UInt64? {
+        guard !ids.isEmpty else { return nil }
+        let from = focus.flatMap { ids.firstIndex(of: $0) }
+            ?? ids.lastIndex(where: selection.contains)
+        guard let from else { return step > 0 ? ids.first : ids.last }
+        let t = from + step
+        return ids.indices.contains(t) ? ids[t] : nil
     }
 }
 

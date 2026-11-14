@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "보관함에서 삭제…",
   "delete_confirm_one": "Soundpad에서 ‘%@’을(를) 삭제할까요?",
   "delete_confirm_n": "Soundpad에서 사운드 %lld개를 삭제할까요?",
-  "delete_confirm_msg": "사운드가 단축키와 함께 보관함과 모든 재생목록에서 제거됩니다. 오디오 파일은 Mac에 그대로 남습니다."
+  "delete_confirm_msg": "사운드가 단축키와 함께 보관함과 모든 재생목록에서 제거됩니다. 오디오 파일은 Mac에 그대로 남습니다.",
+  "no_audio_in": "‘%@’에 오디오 파일이 없습니다"
 }

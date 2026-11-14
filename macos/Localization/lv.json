@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Dzēst no bibliotēkas…",
   "delete_confirm_one": "Vai dzēst “%@” no Soundpad?",
   "delete_confirm_n": "Vai dzēst skaņas (%lld) no Soundpad?",
-  "delete_confirm_msg": "Skaņas kopā ar īsinājumtaustiņiem tiek noņemtas no bibliotēkas un visiem atskaņošanas sarakstiem. Audio faili paliek jūsu Mac datorā."
+  "delete_confirm_msg": "Skaņas kopā ar īsinājumtaustiņiem tiek noņemtas no bibliotēkas un visiem atskaņošanas sarakstiem. Audio faili paliek jūsu Mac datorā.",
+  "no_audio_in": "Mapē “%@” nav audio failu"
 }

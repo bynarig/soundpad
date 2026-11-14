@@ -393,6 +393,10 @@ final class Store {
     func createPlaylist(with ids: some Sequence<UInt64> = []) {
         send("create_playlist", ["name": String(localized: "New Playlist"), "ids": Array(ids)])
     }
+    /// A playlist named after `folder` with the audio files in it (added to the library too).
+    func createPlaylist(fromFolder folder: URL) {
+        send("create_playlist", ["name": folder.lastPathComponent, "ids": [UInt64](), "paths": [folder.path]])
+    }
     func renamePlaylist(_ id: UInt64, _ name: String) { send("rename_playlist", ["id": id, "name": name]) }
     func deletePlaylist(_ id: UInt64) { send("delete_playlist", ["id": id]) }
     func addToPlaylist(_ playlist: UInt64, _ ids: some Sequence<UInt64>) {

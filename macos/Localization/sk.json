@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Vymazať z knižnice…",
   "delete_confirm_one": "Vymazať „%@“ zo Soundpadu?",
   "delete_confirm_n": "Vymazať zvuky (%lld) zo Soundpadu?",
-  "delete_confirm_msg": "Zvuky sa odstránia z knižnice a zo všetkých playlistov aj so skratkami. Zvukové súbory zostanú vo vašom Macu."
+  "delete_confirm_msg": "Zvuky sa odstránia z knižnice a zo všetkých playlistov aj so skratkami. Zvukové súbory zostanú vo vašom Macu.",
+  "no_audio_in": "V priečinku „%@“ nie sú žiadne zvukové súbory"
 }

@@ -151,6 +151,8 @@ enum SwiftTests {
             expect(localizeCoreMessage("2 sound file(s) are missing") == "2 sound file(s) are missing", "template round-trip")
             expect(localizeCoreMessage("“Airhorn” is missing. Was it moved or deleted?")
                 == "“Airhorn” is missing. Was it moved or deleted?", "quoted template round-trip")
+            expect(localizeCoreMessage("No audio files in “Party Pack”") == "No audio files in “Party Pack”",
+                   "empty-folder message round-trip")
         }
 
         test("level meter rises at once and falls smoothly") {
@@ -189,6 +191,54 @@ enum SwiftTests {
             expect(formatTime(-3) == "0:00", "never negative")
             expect(formatLength(3.04) == "3.0s", "short sounds in seconds")
             expect(formatLength(95) == "1:35", "long sounds as m:ss")
+        }
+
+        let grid: [UInt64] = [1, 2, 3, 4, 5, 6, 7, 8]
+
+        test("icon view: click, ⌘-click and ⇧-click like Finder") {
+            var g = GridSelection()
+            var sel = g.select(3)
+            expect(sel == [3], "click selects only that sound")
+            sel = g.extend(to: 6, in: grid, selection: sel)
+            expect(sel == [3, 4, 5, 6], "⇧-click selects the range from the anchor")
+            sel = g.extend(to: 1, in: grid, selection: sel)
+            expect(sel == [1, 2, 3], "⇧-click the other way replaces the range, anchor stays")
+            sel = g.toggle(8, in: sel)
+            expect(sel == [1, 2, 3, 8], "⌘-click adds")
+            sel = g.extend(to: 6, in: grid, selection: sel)
+            expect(sel == [1, 2, 3, 6, 7, 8], "⇧-click after ⌘-click ranges from the new anchor and keeps the rest")
+            sel = g.toggle(2, in: sel)
+            expect(sel == [1, 3, 6, 7, 8], "⌘-click removes")
+            sel = g.select(5)
+            expect(sel == [5], "a plain click starts over")
+        }
+
+        test("icon view: ⇧-arrows grow and shrink the range") {
+            var g = GridSelection()
+            var sel = g.select(2)
+            for _ in 0..<2 {
+                let next = g.target(moving: 1, in: grid, selection: sel)!
+                sel = g.extend(to: next, in: grid, selection: sel)
+            }
+            expect(sel == [2, 3, 4], "⇧→ twice includes the sounds in between")
+            let back = g.target(moving: -1, in: grid, selection: sel)!
+            sel = g.extend(to: back, in: grid, selection: sel)
+            expect(sel == [2, 3], "⇧← shrinks it again")
+            let down = g.target(moving: 4, in: grid, selection: sel)!   // one row of 4 columns
+            sel = g.extend(to: down, in: grid, selection: sel)
+            expect(sel == [2, 3, 4, 5, 6, 7], "⇧↓ selects through the next row")
+            expect(g.target(moving: 4, in: grid, selection: sel) == nil, "stops at the edge")
+            let plain = g.target(moving: -1, in: grid, selection: sel)!
+            sel = g.select(plain)
+            expect(sel == [6], "an arrow without ⇧ moves a single selection")
+        }
+
+        test("icon view: arrows with nothing selected, and a stale anchor") {
+            let g = GridSelection()
+            expect(g.target(moving: 1, in: grid, selection: []) == 1, "→ starts at the first sound")
+            expect(g.target(moving: -1, in: grid, selection: []) == 8, "← starts at the last sound")
+            var stale = GridSelection(anchor: 99, focus: 99)
+            expect(stale.extend(to: 4, in: grid, selection: [99]) == [4], "a deleted anchor falls back to a plain select")
         }
 
         print("\n\(checks) checks, \(failures) failed")

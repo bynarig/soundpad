@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Ištrinti iš bibliotekos…",
   "delete_confirm_one": "Ištrinti „%@“ iš Soundpad?",
   "delete_confirm_n": "Ištrinti garsus (%lld) iš Soundpad?",
-  "delete_confirm_msg": "Garsai kartu su spartiaisiais klavišais pašalinami iš bibliotekos ir visų grojaraščių. Garso failai lieka jūsų kompiuteryje Mac."
+  "delete_confirm_msg": "Garsai kartu su spartiaisiais klavišais pašalinami iš bibliotekos ir visų grojaraščių. Garso failai lieka jūsų kompiuteryje Mac.",
+  "no_audio_in": "Aplanke „%@“ nėra garso failų"
 }

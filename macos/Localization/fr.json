@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Supprimer de la bibliothèque…",
   "delete_confirm_one": "Supprimer « %@ » de Soundpad ?",
   "delete_confirm_n": "Supprimer %lld sons de Soundpad ?",
-  "delete_confirm_msg": "Les sons sont retirés de la bibliothèque et de toutes les playlists, avec leurs raccourcis. Les fichiers audio restent sur votre Mac."
+  "delete_confirm_msg": "Les sons sont retirés de la bibliothèque et de toutes les playlists, avec leurs raccourcis. Les fichiers audio restent sur votre Mac.",
+  "no_audio_in": "Aucun fichier audio dans « %@ »"
 }

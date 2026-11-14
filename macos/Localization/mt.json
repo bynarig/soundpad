@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Ħassar mil-librerija…",
   "delete_confirm_one": "Tħassar “%@” minn Soundpad?",
   "delete_confirm_n": "Tħassar %lld ħoss minn Soundpad?",
-  "delete_confirm_msg": "Il-ħsejjes jitneħħew mil-librerija u mill-playlists kollha, flimkien mal-hotkeys tagħhom. Il-fajls tal-awdjo jibqgħu fuq il-Mac tiegħek."
+  "delete_confirm_msg": "Il-ħsejjes jitneħħew mil-librerija u mill-playlists kollha, flimkien mal-hotkeys tagħhom. Il-fajls tal-awdjo jibqgħu fuq il-Mac tiegħek.",
+  "no_audio_in": "M’hemm l-ebda fajl tal-awdjo f’“%@”"
 }

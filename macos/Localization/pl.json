@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Usuń z biblioteki…",
   "delete_confirm_one": "Usunąć „%@” z Soundpada?",
   "delete_confirm_n": "Usunąć dźwięki (%lld) z Soundpada?",
-  "delete_confirm_msg": "Dźwięki zostaną usunięte z biblioteki i wszystkich playlist razem ze skrótami. Pliki audio pozostaną na Twoim Macu."
+  "delete_confirm_msg": "Dźwięki zostaną usunięte z biblioteki i wszystkich playlist razem ze skrótami. Pliki audio pozostaną na Twoim Macu.",
+  "no_audio_in": "Brak plików audio w folderze „%@”"
 }

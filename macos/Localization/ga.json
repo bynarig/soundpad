@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Scrios ón leabharlann…",
   "delete_confirm_one": "An scriosfar “%@” as Soundpad?",
   "delete_confirm_n": "An scriosfar %lld fuaim as Soundpad?",
-  "delete_confirm_msg": "Bainfear na fuaimeanna den leabharlann agus de gach seinmliosta, mar aon lena n-aicearraí. Fanfaidh na comhaid fuaime ar do Mac."
+  "delete_confirm_msg": "Bainfear na fuaimeanna den leabharlann agus de gach seinmliosta, mar aon lena n-aicearraí. Fanfaidh na comhaid fuaime ar do Mac.",
+  "no_audio_in": "Níl aon chomhad fuaime in “%@”"
 }

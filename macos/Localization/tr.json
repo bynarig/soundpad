@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Arşivden sil…",
   "delete_confirm_one": "“%@” Soundpad'den silinsin mi?",
   "delete_confirm_n": "%lld ses Soundpad'den silinsin mi?",
-  "delete_confirm_msg": "Sesler kısayollarıyla birlikte arşivden ve tüm çalma listelerinden kaldırılır. Ses dosyaları Mac'inizde kalır."
+  "delete_confirm_msg": "Sesler kısayollarıyla birlikte arşivden ve tüm çalma listelerinden kaldırılır. Ses dosyaları Mac'inizde kalır.",
+  "no_audio_in": "“%@” içinde ses dosyası yok"
 }

@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "ライブラリから削除…",
   "delete_confirm_one": "“%@”をSoundpadから削除しますか？",
   "delete_confirm_n": "%lld個のサウンドをSoundpadから削除しますか？",
-  "delete_confirm_msg": "サウンドはホットキーとともにライブラリとすべてのプレイリストから削除されます。オーディオファイルはMacに残ります。"
+  "delete_confirm_msg": "サウンドはホットキーとともにライブラリとすべてのプレイリストから削除されます。オーディオファイルはMacに残ります。",
+  "no_audio_in": "“%@”にオーディオファイルがありません"
 }

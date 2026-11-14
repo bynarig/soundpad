@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Hapus dari perpustakaan…",
   "delete_confirm_one": "Hapus “%@” dari Soundpad?",
   "delete_confirm_n": "Hapus %lld suara dari Soundpad?",
-  "delete_confirm_msg": "Suara dihapus dari perpustakaan dan semua playlist, beserta pintasannya. File audio tetap ada di Mac Anda."
+  "delete_confirm_msg": "Suara dihapus dari perpustakaan dan semua playlist, beserta pintasannya. File audio tetap ada di Mac Anda.",
+  "no_audio_in": "Tidak ada file audio di “%@”"
 }

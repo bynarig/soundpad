@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Xóa khỏi thư viện…",
   "delete_confirm_one": "Xóa “%@” khỏi Soundpad?",
   "delete_confirm_n": "Xóa %lld âm thanh khỏi Soundpad?",
-  "delete_confirm_msg": "Âm thanh sẽ bị gỡ khỏi thư viện và mọi danh sách phát, cùng với phím tắt. Các tệp âm thanh vẫn ở trên máy Mac của bạn."
+  "delete_confirm_msg": "Âm thanh sẽ bị gỡ khỏi thư viện và mọi danh sách phát, cùng với phím tắt. Các tệp âm thanh vẫn ở trên máy Mac của bạn.",
+  "no_audio_in": "Không có tệp âm thanh trong “%@”"
 }

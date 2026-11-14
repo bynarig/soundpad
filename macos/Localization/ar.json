@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "حذف من المكتبة…",
   "delete_confirm_one": "حذف «%@» من Soundpad؟",
   "delete_confirm_n": "حذف %lld من الأصوات من Soundpad؟",
-  "delete_confirm_msg": "تُزال من مكتبتك ومن كل قوائم التشغيل، مع اختصاراتها. تبقى الملفات الصوتية على جهاز Mac."
+  "delete_confirm_msg": "تُزال من مكتبتك ومن كل قوائم التشغيل، مع اختصاراتها. تبقى الملفات الصوتية على جهاز Mac.",
+  "no_audio_in": "لا توجد ملفات صوتية في «%@»"
 }

@@ -8,6 +8,7 @@ private let coreTemplates: [String] = [
     "Skipped %@ unsupported file(s)",
     "%@ sound file(s) are missing",
     "“%@” is missing. Was it moved or deleted?",
+    "No audio files in “%@”",
     "Can't play “%@”: %@",
     "Hotkey %@ failed: %@",
     "Virtual mic setup failed: %@",

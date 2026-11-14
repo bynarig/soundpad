@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Slet fra biblioteket…",
   "delete_confirm_one": "Vil du slette “%@” fra Soundpad?",
   "delete_confirm_n": "Vil du slette %lld lyde fra Soundpad?",
-  "delete_confirm_msg": "Lydene fjernes fra dit bibliotek og alle playlister sammen med deres genveje. Lydfilerne bliver på din Mac."
+  "delete_confirm_msg": "Lydene fjernes fra dit bibliotek og alle playlister sammen med deres genveje. Lydfilerne bliver på din Mac.",
+  "no_audio_in": "Ingen lydfiler i “%@”"
 }

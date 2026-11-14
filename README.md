@@ -91,6 +91,9 @@ people listening.
 ## Playlists
 
 - Click **＋ New Playlist** at the bottom of the sidebar.
+- **Drag a folder from Finder** into the sidebar, below or between your playlists (or onto
+  **＋ New Playlist**): it becomes a playlist named after the folder, with the audio files in
+  it. Drop several folders to get one playlist each.
 - Drop audio files from Finder onto a playlist, or drag sounds from **All Sounds** onto it.
   You can also right-click sounds → **Add to Playlist**.
 - A sound can be in several playlists. Removing it from a playlist doesn't delete it from
@@ -136,7 +139,10 @@ These work while the Soundpad window is active. Your own per-sound hotkeys work 
 | Esc or ⌘. | Stop |
 | ⌘[ / ⌘] | Jump back / forward 10 seconds |
 | ⌥⌘[ / ⌥⌘] | Previous / next sound |
-| ↑ / ↓ | Select a sound |
+| ↑ / ↓ (← / → in icon view) | Select a sound |
+| ⇧-click / ⇧ + arrows | Select a range, like Finder |
+| ⌘-click | Add a sound to the selection, or remove it |
+| ⌘A | Select all |
 | ⌫ | Remove the selected sound (from the playlist, when you are in one) |
 | ⌘⌫ | Delete the selected sounds from Soundpad, after asking (the audio files stay on your Mac) |
 | ⌘O | Add sounds |

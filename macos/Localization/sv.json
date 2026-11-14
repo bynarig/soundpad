@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Radera från biblioteket…",
   "delete_confirm_one": "Radera ”%@” från Soundpad?",
   "delete_confirm_n": "Radera %lld ljud från Soundpad?",
-  "delete_confirm_msg": "Ljuden tas bort från biblioteket och alla spellistor, tillsammans med sina kortkommandon. Ljudfilerna finns kvar på din Mac."
+  "delete_confirm_msg": "Ljuden tas bort från biblioteket och alla spellistor, tillsammans med sina kortkommandon. Ljudfilerna finns kvar på din Mac.",
+  "no_audio_in": "Inga ljudfiler i ”%@”"
 }

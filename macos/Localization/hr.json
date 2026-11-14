@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Izbriši iz knjižnice…",
   "delete_confirm_one": "Izbrisati „%@” iz Soundpada?",
   "delete_confirm_n": "Izbrisati zvukove (%lld) iz Soundpada?",
-  "delete_confirm_msg": "Zvukovi se uklanjaju iz knjižnice i svih popisa za reprodukciju, zajedno s prečacima. Audiodatoteke ostaju na vašem Macu."
+  "delete_confirm_msg": "Zvukovi se uklanjaju iz knjižnice i svih popisa za reprodukciju, zajedno s prečacima. Audiodatoteke ostaju na vašem Macu.",
+  "no_audio_in": "U mapi „%@” nema audiodatoteka"
 }

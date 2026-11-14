@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "從資料庫刪除…",
   "delete_confirm_one": "要從 Soundpad 刪除「%@」嗎？",
   "delete_confirm_n": "要從 Soundpad 刪除 %lld 個聲音嗎？",
-  "delete_confirm_msg": "聲音會連同快速鍵一起從資料庫和所有播放清單中移除。音訊檔案仍保留在你的 Mac 上。"
+  "delete_confirm_msg": "聲音會連同快速鍵一起從資料庫和所有播放清單中移除。音訊檔案仍保留在你的 Mac 上。",
+  "no_audio_in": "「%@」中沒有音訊檔案"
 }

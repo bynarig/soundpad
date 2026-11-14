@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Kustuta teegist…",
   "delete_confirm_one": "Kas kustutada „%@” Soundpadist?",
   "delete_confirm_n": "Kas kustutada Soundpadist %lld heli?",
-  "delete_confirm_msg": "Helid eemaldatakse teegist ja kõigist esitusloenditest koos kiirklahvidega. Helifailid jäävad sinu Maci."
+  "delete_confirm_msg": "Helid eemaldatakse teegist ja kõigist esitusloenditest koos kiirklahvidega. Helifailid jäävad sinu Maci.",
+  "no_audio_in": "Kaustas „%@” pole helifaile"
 }

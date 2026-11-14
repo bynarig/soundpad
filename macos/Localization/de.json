@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Aus Mediathek löschen…",
   "delete_confirm_one": "„%@“ aus Soundpad löschen?",
   "delete_confirm_n": "%lld Sounds aus Soundpad löschen?",
-  "delete_confirm_msg": "Die Sounds werden samt Tastenkürzeln aus der Mediathek und allen Playlists entfernt. Die Audiodateien bleiben auf deinem Mac."
+  "delete_confirm_msg": "Die Sounds werden samt Tastenkürzeln aus der Mediathek und allen Playlists entfernt. Die Audiodateien bleiben auf deinem Mac.",
+  "no_audio_in": "Keine Audiodateien in „%@“"
 }

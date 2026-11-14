@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Ștergeți din bibliotecă…",
   "delete_confirm_one": "Ștergeți „%@” din Soundpad?",
   "delete_confirm_n": "Ștergeți %lld sunete din Soundpad?",
-  "delete_confirm_msg": "Sunetele sunt eliminate din bibliotecă și din toate playlisturile, împreună cu scurtăturile. Fișierele audio rămân pe Mac."
+  "delete_confirm_msg": "Sunetele sunt eliminate din bibliotecă și din toate playlisturile, împreună cu scurtăturile. Fișierele audio rămân pe Mac.",
+  "no_audio_in": "Niciun fișier audio în „%@”"
 }

@@ -188,5 +188,6 @@
   "delete_from_library_ellipsis": "Poista kirjastosta…",
   "delete_confirm_one": "Poistetaanko ”%@” Soundpadista?",
   "delete_confirm_n": "Poistetaanko %lld ääntä Soundpadista?",
-  "delete_confirm_msg": "Äänet poistetaan kirjastosta ja kaikista soittolistoista pikanäppäimineen. Äänitiedostot jäävät Maciisi."
+  "delete_confirm_msg": "Äänet poistetaan kirjastosta ja kaikista soittolistoista pikanäppäimineen. Äänitiedostot jäävät Maciisi.",
+  "no_audio_in": "Kansiossa ”%@” ei ole äänitiedostoja"
 }

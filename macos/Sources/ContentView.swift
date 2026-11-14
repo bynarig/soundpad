@@ -34,6 +34,18 @@ enum DroppedItem: Transferable {
         })
     }
 
+    /// Reads drops that arrive as item providers (List insertions).
+    static func load(_ providers: [NSItemProvider]) async -> [DroppedItem] {
+        var items: [DroppedItem] = []
+        for provider in providers {
+            let item: DroppedItem? = await withCheckedContinuation { done in
+                _ = provider.loadTransferable(type: DroppedItem.self) { done.resume(returning: try? $0.get()) }
+            }
+            if let item { items.append(item) }
+        }
+        return items
+    }
+
     /// Drag payload for a set of sounds.
     static func payload(_ ids: [UInt64]) -> String {
         prefix + ids.map(String.init).joined(separator: ",")
@@ -55,6 +67,27 @@ extension Store {
         if !urls.isEmpty { add(urls, to: playlist) }
         if let playlist, !ids.isEmpty { addToPlaylist(playlist, ids) }
         return !urls.isEmpty || (playlist != nil && !ids.isEmpty)
+    }
+
+    /// Handle a drop onto the Playlists section or ＋ New Playlist: every Finder
+    /// folder becomes a playlist named after it, and anything else (files,
+    /// sounds dragged from the list) goes into one new playlist.
+    @discardableResult
+    func acceptAsNewPlaylists(_ items: [DroppedItem]) -> Bool {
+        var rest: [DroppedItem] = []
+        var folders: [URL] = []
+        for item in items {
+            if case .file(let url) = item, (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
+                folders.append(url)
+            } else {
+                rest.append(item)
+            }
+        }
+        for folder in folders { createPlaylist(fromFolder: folder) }
+        guard !rest.isEmpty else { return !folders.isEmpty }
+        createPlaylist()
+        guard let id = state.activePlaylist else { return !folders.isEmpty }
+        return accept(rest, into: id) || !folders.isEmpty
     }
 }
 
@@ -95,6 +128,13 @@ struct Sidebar: View {
                             }
                         }
                 }
+                // Dropping between or below the playlists (the list shows an
+                // insertion line): each Finder folder becomes a playlist named
+                // after it; other files or sounds make one new playlist.
+                // Dropping onto a playlist row still adds to that playlist.
+                .onInsert(of: [.fileURL, .plainText]) { _, providers in
+                    Task { store.acceptAsNewPlaylists(await DroppedItem.load(providers)) }
+                }
                 if store.state.playlists.isEmpty {
                     Text("Drop audio files on ＋ New Playlist, or right-click sounds › Add to Playlist")
                         .font(.caption)
@@ -117,10 +157,8 @@ struct Sidebar: View {
             .buttonStyle(.borderless)
             .background(dropTarget == UInt64.max ? Color.accentColor.opacity(0.2) : .clear)
             .dropDestination(for: DroppedItem.self) { items, _ in
-                // Dropping here makes a new playlist from the dropped sounds/files.
-                store.createPlaylist()
-                guard let id = store.state.activePlaylist else { return false }
-                return store.accept(items, into: id)
+                // Dropping here makes new playlists: one per folder, one for the rest.
+                store.acceptAsNewPlaylists(items)
             } isTargeted: { dropTarget = $0 ? UInt64.max : nil }
             .help("New playlist — or drop sounds or files here to make one")
         }
