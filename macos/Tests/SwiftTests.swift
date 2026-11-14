@@ -259,14 +259,18 @@ enum SwiftTests {
 
         test("link downloads: yt-dlp output and errors") {
             expect(MediaDownloader.parse("SP-TITLE Never Gonna Give You Up").title == "Never Gonna Give You Up", "title")
-            expect(MediaDownloader.parse("SP-PROGRESS  42.5%").progress == 0.425, "progress")
-            expect(MediaDownloader.parse("SP-PROGRESS 100.0%").progress == 1, "done")
+            expect(MediaDownloader.parse("SP-PROGRESS  42.5% NA/NA").progress == 0.425, "progress")
+            expect(MediaDownloader.parse("SP-PROGRESS 100.0% NA/NA").progress == 1, "done")
+            expect(MediaDownloader.parse("SP-PROGRESS   0.4% 1/5").progress == 0.2, "fragments win over a jumpy estimate")
+            expect(MediaDownloader.parse("SP-PROGRESS N/A NA/NA").progress == nil, "unknown progress")
             expect(MediaDownloader.parse("[download] Destination: x").title == nil, "other lines ignored")
             expect(MediaDownloader.errorMessage("WARNING: x\nERROR: [youtube] abc123: Video unavailable\n") == "Video unavailable",
                    "last error without prefixes")
             expect(MediaDownloader.errorMessage("ERROR: Unsupported URL: https://x") == "Unsupported URL: https://x", "plain error")
             let args = MediaDownloader.arguments(for: "https://youtu.be/x", into: URL(fileURLWithPath: "/tmp/w"))
             expect(args.contains("--no-playlist") && args.last == "https://youtu.be/x", "one item, link last")
+            expect(args.contains("--progress"), "progress stays on although --print makes yt-dlp quiet")
+            expect(MediaDownloader.formats.contains("audio_channels<=?2"), "stereo only: the decoder can't play 5.1 AAC")
             expect(args[args.firstIndex(of: "--")! + 1] == "https://youtu.be/x", "a link starting with - can't become an option")
         }
 

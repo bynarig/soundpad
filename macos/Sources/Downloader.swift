@@ -243,15 +243,26 @@ final class MediaDownloader {
         }
     }
 
-    /// yt-dlp options: one item, audio only in a format Soundpad plays without
-    /// converting (YouTube has M4A/AAC, SoundCloud MP3 or AAC), plus the
-    /// thumbnail as cover art.
+    /// Audio-only formats Soundpad plays without converting: stereo (or mono)
+    /// AAC-LC or MP3. YouTube always has AAC-LC stereo (format 140), but some
+    /// videos also offer 5.1 or HE-AAC tracks with a higher bitrate, which
+    /// "bestaudio" would pick and the decoder can't play.
+    nonisolated static let formats = [
+        "bestaudio[acodec^=mp4a.40.2][audio_channels<=?2]",
+        "bestaudio[acodec=aac][audio_channels<=?2]",
+        "bestaudio[ext=mp3]",
+        "bestaudio[acodec=mp3]",
+    ].joined(separator: "/")
+
+    /// yt-dlp options: one item, audio only (`formats`), plus the thumbnail
+    /// as cover art.
     nonisolated static func arguments(for target: String, into dir: URL) -> [String] {
         [
             "--no-playlist", "--playlist-items", "1",
-            "-f", "bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio[acodec^=mp4a]/bestaudio[acodec=mp3]",
+            "-f", formats,
             "--write-thumbnail", "--no-mtime", "--no-overwrites", "--no-warnings",
-            "--newline", "--progress-template", "download:SP-PROGRESS %(progress._percent_str)s",
+            // --print turns on quiet mode, which hides progress unless asked for.
+            "--progress", "--newline", "--progress-template", "download:SP-PROGRESS %(progress._percent_str)s %(progress.fragment_index)s/%(progress.fragment_count)s",
             "--no-simulate", "--print", "before_dl:SP-TITLE %(title)s",
             "-P", dir.path, "-o", "audio.%(ext)s", "-o", "thumbnail:cover.%(ext)s",
             "--", target,
@@ -265,9 +276,16 @@ final class MediaDownloader {
             return (t.isEmpty ? nil : t, nil)
         }
         if line.hasPrefix("SP-PROGRESS ") {
-            let n = line.dropFirst("SP-PROGRESS ".count).trimmingCharacters(in: .whitespaces)
-                .replacingOccurrences(of: "%", with: "")
-            return (nil, Double(n).map { min(max($0 / 100, 0), 1) })
+            // "  42.5% NA/NA" for a plain download; "10.0% 1/5" for a stream in
+            // fragments (SoundCloud), where the percentage is a jumpy estimate
+            // but the fragment count is exact.
+            let parts = line.dropFirst("SP-PROGRESS ".count).split(separator: " ")
+            if let frag = parts.last?.split(separator: "/"), frag.count == 2,
+               let i = Double(frag[0]), let n = Double(frag[1]), n > 0 {
+                return (nil, min(max(i / n, 0), 1))
+            }
+            let percent = parts.first.map { $0.replacingOccurrences(of: "%", with: "") }
+            return (nil, percent.flatMap(Double.init).map { min(max($0 / 100, 0), 1) })
         }
         return (nil, nil)
     }
