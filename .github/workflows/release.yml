@@ -87,6 +87,14 @@ jobs:
             printf '%s' "$UPDATE_KEY" > "$DIR/update_signing_key"
             printf '%s' "$KEYCHAIN_B64" | base64 --decode > "$DIR/codesign.keychain-db"
             printf '%s' "$KEYCHAIN_PASSWORD" > "$DIR/codesign.keychain-password"
+            # On the runner codesign only finds identities in keychains on the
+            # search list, so add ours (keeping the existing ones) and unlock it.
+            KC="$DIR/codesign.keychain-db"
+            read -ra EXISTING <<< "$(security list-keychains -d user | tr -d '"')"
+            security list-keychains -d user -s "$KC" "${EXISTING[@]}"
+            security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KC"
+            security set-keychain-settings "$KC"   # no auto-lock during the build
+            security find-identity -p codesigning "$KC"
           fi
           echo "SOUNDPAD_CONFIG_DIR=$DIR" >> "$GITHUB_ENV"
           echo "SOUNDPAD_SIGNING_KEY=$DIR/update_signing_key" >> "$GITHUB_ENV"
