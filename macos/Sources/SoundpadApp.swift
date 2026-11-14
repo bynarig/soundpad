@@ -30,6 +30,7 @@ struct SoundpadApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = Store.shared
     @FocusedValue(\.addSoundsAction) private var addSounds
+    @FocusedValue(\.deleteFromLibraryAction) private var deleteFromLibrary
     @AppStorage("viewStyle") private var viewStyle: ViewStyle = .list
 
     var body: some Scene {
@@ -52,6 +53,20 @@ struct SoundpadApp: App {
                 Button("Add Sounds…") { addSounds?() }
                     .keyboardShortcut("o")
                     .disabled(addSounds == nil)
+            }
+            // Edit ▸ Delete from Library… ⌘⌫ (asks first). Enabled while sounds are selected.
+            CommandGroup(after: .pasteboard) {
+                Divider()
+                Button("Delete from Library…") {
+                    // ⌘⌫ in a text field (search, rename) keeps deleting to the start of the line.
+                    if let editor = NSApp.keyWindow?.firstResponder as? NSTextView, editor.isEditable {
+                        editor.deleteToBeginningOfLine(nil)
+                    } else {
+                        deleteFromLibrary?()
+                    }
+                }
+                .keyboardShortcut(.delete, modifiers: .command)
+                .disabled(deleteFromLibrary == nil)
             }
             // View ▸ as Icons ⌘1 / as List ⌘2, like Finder.
             CommandGroup(before: .toolbar) {

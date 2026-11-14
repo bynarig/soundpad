@@ -183,5 +183,10 @@
   "is_missing": "“%@” is missing. Was it moved or deleted?",
   "restart_to_update": "Restart to Update",
   "update_ready": "Version %@ is ready to install.",
-  "auto_update_desc": "Soundpad checks when it starts and downloads new versions in the background. You choose when to restart."
+  "auto_update_desc": "Soundpad checks when it starts and downloads new versions in the background. You choose when to restart.",
+  "delete": "Delete",
+  "delete_from_library_ellipsis": "Delete from Library…",
+  "delete_confirm_one": "Delete “%@” from Soundpad?",
+  "delete_confirm_n": "Delete %lld sounds from Soundpad?",
+  "delete_confirm_msg": "Sounds are removed from your library and all playlists, along with their hotkeys. The audio files stay on your Mac."
 }

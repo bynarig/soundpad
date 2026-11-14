@@ -183,5 +183,10 @@
   "is_missing": "»%@« manjka. Je bila premaknjena ali izbrisana?",
   "restart_to_update": "Znova zaženi za posodobitev",
   "update_ready": "Različica %@ je pripravljena za namestitev.",
-  "auto_update_desc": "Soundpad preveri ob zagonu in nove različice prenese v ozadju. Vi izberete, kdaj ga znova zaženete."
+  "auto_update_desc": "Soundpad preveri ob zagonu in nove različice prenese v ozadju. Vi izberete, kdaj ga znova zaženete.",
+  "delete": "Izbriši",
+  "delete_from_library_ellipsis": "Izbriši iz knjižnice…",
+  "delete_confirm_one": "Izbrišem “%@” iz Soundpada?",
+  "delete_confirm_n": "Izbrišem zvoke (%lld) iz Soundpada?",
+  "delete_confirm_msg": "Zvoki bodo skupaj z bližnjicami odstranjeni iz knjižnice in vseh seznamov predvajanja. Zvočne datoteke ostanejo v vašem Macu."
 }

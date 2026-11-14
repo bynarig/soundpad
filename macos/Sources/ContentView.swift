@@ -185,6 +185,8 @@ struct SoundList: View {
     @State private var renaming: Sound?
     @State private var showImporter = false
     @State private var dropTargeted = false
+    /// Sounds waiting for the "Delete from Soundpad?" confirmation (⌘⌫).
+    @State private var confirmingDelete: Set<UInt64>?
     @AppStorage("sortOrder") private var sort: SoundSort = .manual
     @AppStorage("sortReversed") private var reversed = false
     @AppStorage("showFilters") private var showFilters = true
@@ -247,7 +249,27 @@ struct SoundList: View {
             .sheet(item: $recording) { HotkeyRecorder(target: $0) }
             .sheet(item: $renaming) { RenameSheet(sound: $0) }
             .focusedSceneValue(\.addSoundsAction) { showImporter = true }
+            .focusedSceneValue(\.deleteFromLibraryAction, selection.isEmpty ? nil : { confirmingDelete = selection })
+            .alert(deleteTitle, isPresented: Binding(get: { confirmingDelete != nil },
+                                                     set: { if !$0 { confirmingDelete = nil } }),
+                   presenting: confirmingDelete) { ids in
+                Button("Delete", role: .destructive) {
+                    store.remove(ids)
+                    selection.subtract(ids)
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: { _ in
+                Text("Sounds are removed from your library and all playlists, along with their hotkeys. The audio files stay on your Mac.")
+            }
             .onChange(of: store.state.activePlaylist) { selection = [] }
+    }
+
+    private var deleteTitle: String {
+        guard let ids = confirmingDelete else { return "" }
+        if ids.count == 1, let id = ids.first, let s = store.sound(id) {
+            return String(localized: "Delete “\(s.name)” from Soundpad?")
+        }
+        return String(localized: "Delete \(ids.count) sounds from Soundpad?")
     }
 
     private var subtitle: String {
@@ -882,11 +904,16 @@ struct RenameSheet: View {
     }
 }
 
-// Menu command plumbing (File ▸ Add Sounds…)
+// Menu command plumbing (File ▸ Add Sounds…, Edit ▸ Delete from Library…)
+struct DeleteFromLibraryActionKey: FocusedValueKey { typealias Value = () -> Void }
 struct AddSoundsActionKey: FocusedValueKey { typealias Value = () -> Void }
 extension FocusedValues {
     var addSoundsAction: (() -> Void)? {
         get { self[AddSoundsActionKey.self] }
         set { self[AddSoundsActionKey.self] = newValue }
+    }
+    var deleteFromLibraryAction: (() -> Void)? {
+        get { self[DeleteFromLibraryActionKey.self] }
+        set { self[DeleteFromLibraryActionKey.self] = newValue }
     }
 }

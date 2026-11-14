@@ -183,5 +183,10 @@
   "is_missing": "Thiếu “%@”. Tệp đã bị di chuyển hay xóa?",
   "restart_to_update": "Khởi động lại để cập nhật",
   "update_ready": "Phiên bản %@ đã sẵn sàng để cài đặt.",
-  "auto_update_desc": "Soundpad kiểm tra khi khởi động và tải phiên bản mới trong nền. Bạn chọn khi nào khởi động lại."
+  "auto_update_desc": "Soundpad kiểm tra khi khởi động và tải phiên bản mới trong nền. Bạn chọn khi nào khởi động lại.",
+  "delete": "Xóa",
+  "delete_from_library_ellipsis": "Xóa khỏi thư viện…",
+  "delete_confirm_one": "Xóa “%@” khỏi Soundpad?",
+  "delete_confirm_n": "Xóa %lld âm thanh khỏi Soundpad?",
+  "delete_confirm_msg": "Âm thanh sẽ bị gỡ khỏi thư viện và mọi danh sách phát, cùng với phím tắt. Các tệp âm thanh vẫn ở trên máy Mac của bạn."
 }

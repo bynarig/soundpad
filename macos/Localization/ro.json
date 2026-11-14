@@ -183,5 +183,10 @@
   "is_missing": "„%@” lipsește. A fost mutat sau șters?",
   "restart_to_update": "Repornește pentru actualizare",
   "update_ready": "Versiunea %@ este gata de instalare.",
-  "auto_update_desc": "Soundpad verifică la pornire și descarcă versiunile noi în fundal. Tu alegi când repornești."
+  "auto_update_desc": "Soundpad verifică la pornire și descarcă versiunile noi în fundal. Tu alegi când repornești.",
+  "delete": "Ștergeți",
+  "delete_from_library_ellipsis": "Ștergeți din bibliotecă…",
+  "delete_confirm_one": "Ștergeți „%@” din Soundpad?",
+  "delete_confirm_n": "Ștergeți %lld sunete din Soundpad?",
+  "delete_confirm_msg": "Sunetele sunt eliminate din bibliotecă și din toate playlisturile, împreună cu scurtăturile. Fișierele audio rămân pe Mac."
 }

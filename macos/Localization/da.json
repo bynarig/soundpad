@@ -183,5 +183,10 @@
   "is_missing": "“%@” mangler. Er den flyttet eller slettet?",
   "restart_to_update": "Genstart for at opdatere",
   "update_ready": "Version %@ er klar til installation.",
-  "auto_update_desc": "Soundpad tjekker ved start og henter nye versioner i baggrunden. Du bestemmer, hvornår der genstartes."
+  "auto_update_desc": "Soundpad tjekker ved start og henter nye versioner i baggrunden. Du bestemmer, hvornår der genstartes.",
+  "delete": "Slet",
+  "delete_from_library_ellipsis": "Slet fra biblioteket…",
+  "delete_confirm_one": "Vil du slette “%@” fra Soundpad?",
+  "delete_confirm_n": "Vil du slette %lld lyde fra Soundpad?",
+  "delete_confirm_msg": "Lydene fjernes fra dit bibliotek og alle playlister sammen med deres genveje. Lydfilerne bliver på din Mac."
 }

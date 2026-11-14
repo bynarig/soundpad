@@ -183,5 +183,10 @@
   "is_missing": "“%@”が見つかりません。移動または削除されましたか?",
   "restart_to_update": "再起動してアップデート",
   "update_ready": "バージョン%@をインストールする準備ができました。",
-  "auto_update_desc": "Soundpadは起動時に確認し、新しいバージョンをバックグラウンドでダウンロードします。再起動のタイミングはあなたが選べます。"
+  "auto_update_desc": "Soundpadは起動時に確認し、新しいバージョンをバックグラウンドでダウンロードします。再起動のタイミングはあなたが選べます。",
+  "delete": "削除",
+  "delete_from_library_ellipsis": "ライブラリから削除…",
+  "delete_confirm_one": "“%@”をSoundpadから削除しますか？",
+  "delete_confirm_n": "%lld個のサウンドをSoundpadから削除しますか？",
+  "delete_confirm_msg": "サウンドはホットキーとともにライブラリとすべてのプレイリストから削除されます。オーディオファイルはMacに残ります。"
 }

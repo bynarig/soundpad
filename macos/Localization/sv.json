@@ -183,5 +183,10 @@
   "is_missing": "”%@” saknas. Har den flyttats eller raderats?",
   "restart_to_update": "Starta om för att uppdatera",
   "update_ready": "Version %@ är redo att installeras.",
-  "auto_update_desc": "Soundpad kontrollerar vid start och hämtar nya versioner i bakgrunden. Du väljer när den ska startas om."
+  "auto_update_desc": "Soundpad kontrollerar vid start och hämtar nya versioner i bakgrunden. Du väljer när den ska startas om.",
+  "delete": "Radera",
+  "delete_from_library_ellipsis": "Radera från biblioteket…",
+  "delete_confirm_one": "Radera ”%@” från Soundpad?",
+  "delete_confirm_n": "Radera %lld ljud från Soundpad?",
+  "delete_confirm_msg": "Ljuden tas bort från biblioteket och alla spellistor, tillsammans med sina kortkommandon. Ljudfilerna finns kvar på din Mac."
 }

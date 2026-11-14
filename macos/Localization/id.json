@@ -183,5 +183,10 @@
   "is_missing": "“%@” hilang. Apakah dipindahkan atau dihapus?",
   "restart_to_update": "Mulai Ulang untuk Memperbarui",
   "update_ready": "Versi %@ siap dipasang.",
-  "auto_update_desc": "Soundpad memeriksa saat dibuka dan mengunduh versi baru di latar belakang. Anda yang menentukan kapan memulai ulang."
+  "auto_update_desc": "Soundpad memeriksa saat dibuka dan mengunduh versi baru di latar belakang. Anda yang menentukan kapan memulai ulang.",
+  "delete": "Hapus",
+  "delete_from_library_ellipsis": "Hapus dari perpustakaan…",
+  "delete_confirm_one": "Hapus “%@” dari Soundpad?",
+  "delete_confirm_n": "Hapus %lld suara dari Soundpad?",
+  "delete_confirm_msg": "Suara dihapus dari perpustakaan dan semua playlist, beserta pintasannya. File audio tetap ada di Mac Anda."
 }

@@ -183,5 +183,10 @@
   "is_missing": "‘%@’ ontbreekt. Is het verplaatst of verwijderd?",
   "restart_to_update": "Herstart om bij te werken",
   "update_ready": "Versie %@ is klaar om te installeren.",
-  "auto_update_desc": "Soundpad controleert bij het opstarten en downloadt nieuwe versies op de achtergrond. Jij kiest wanneer je herstart."
+  "auto_update_desc": "Soundpad controleert bij het opstarten en downloadt nieuwe versies op de achtergrond. Jij kiest wanneer je herstart.",
+  "delete": "Verwijder",
+  "delete_from_library_ellipsis": "Verwijder uit bibliotheek…",
+  "delete_confirm_one": "‘%@’ verwijderen uit Soundpad?",
+  "delete_confirm_n": "%lld geluiden verwijderen uit Soundpad?",
+  "delete_confirm_msg": "De geluiden worden samen met hun sneltoetsen uit je bibliotheek en alle afspeellijsten verwijderd. De audiobestanden blijven op je Mac staan."
 }

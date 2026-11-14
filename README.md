@@ -138,6 +138,7 @@ These work while the Soundpad window is active. Your own per-sound hotkeys work 
 | ⌥⌘[ / ⌥⌘] | Previous / next sound |
 | ↑ / ↓ | Select a sound |
 | ⌫ | Remove the selected sound (from the playlist, when you are in one) |
+| ⌘⌫ | Delete the selected sounds from Soundpad, after asking (the audio files stay on your Mac) |
 | ⌘O | Add sounds |
 | ⇧⌘N | New playlist |
 | ⌘1 / ⌘2 | View as icons / as list |

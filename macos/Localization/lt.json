@@ -183,5 +183,10 @@
   "is_missing": "„%@“ nėra. Ar jis perkeltas ar ištrintas?",
   "restart_to_update": "Paleisti iš naujo ir atnaujinti",
   "update_ready": "%@ versija paruošta diegti.",
-  "auto_update_desc": "Soundpad tikrina paleidžiant ir naujas versijas atsisiunčia fone. Jūs pasirenkate, kada paleisti iš naujo."
+  "auto_update_desc": "Soundpad tikrina paleidžiant ir naujas versijas atsisiunčia fone. Jūs pasirenkate, kada paleisti iš naujo.",
+  "delete": "Ištrinti",
+  "delete_from_library_ellipsis": "Ištrinti iš bibliotekos…",
+  "delete_confirm_one": "Ištrinti „%@“ iš Soundpad?",
+  "delete_confirm_n": "Ištrinti garsus (%lld) iš Soundpad?",
+  "delete_confirm_msg": "Garsai kartu su spartiaisiais klavišais pašalinami iš bibliotekos ir visų grojaraščių. Garso failai lieka jūsų kompiuteryje Mac."
 }

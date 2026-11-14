@@ -183,5 +183,10 @@
   "is_missing": "”%@” puuttuu. Onko se siirretty tai poistettu?",
   "restart_to_update": "Käynnistä uudelleen ja päivitä",
   "update_ready": "Versio %@ on valmis asennettavaksi.",
-  "auto_update_desc": "Soundpad tarkistaa käynnistyessään ja lataa uudet versiot taustalla. Sinä päätät, milloin käynnistetään uudelleen."
+  "auto_update_desc": "Soundpad tarkistaa käynnistyessään ja lataa uudet versiot taustalla. Sinä päätät, milloin käynnistetään uudelleen.",
+  "delete": "Poista",
+  "delete_from_library_ellipsis": "Poista kirjastosta…",
+  "delete_confirm_one": "Poistetaanko ”%@” Soundpadista?",
+  "delete_confirm_n": "Poistetaanko %lld ääntä Soundpadista?",
+  "delete_confirm_msg": "Äänet poistetaan kirjastosta ja kaikista soittolistoista pikanäppäimineen. Äänitiedostot jäävät Maciisi."
 }

@@ -183,5 +183,10 @@
   "is_missing": "„%@“ chybí. Byl přesunut nebo smazán?",
   "restart_to_update": "Restartovat a aktualizovat",
   "update_ready": "Verze %@ je připravena k instalaci.",
-  "auto_update_desc": "Soundpad kontroluje aktualizace při spuštění a nové verze stahuje na pozadí. Kdy restartovat, rozhodnete vy."
+  "auto_update_desc": "Soundpad kontroluje aktualizace při spuštění a nové verze stahuje na pozadí. Kdy restartovat, rozhodnete vy.",
+  "delete": "Smazat",
+  "delete_from_library_ellipsis": "Smazat z knihovny…",
+  "delete_confirm_one": "Smazat „%@“ z aplikace Soundpad?",
+  "delete_confirm_n": "Smazat zvuky (%lld) z aplikace Soundpad?",
+  "delete_confirm_msg": "Zvuky se odstraní z knihovny a ze všech playlistů i se zkratkami. Zvukové soubory zůstanou na vašem Macu."
 }

@@ -183,5 +183,10 @@
   "is_missing": "„%@“ fehlt. Wurde die Datei verschoben oder gelöscht?",
   "restart_to_update": "Neu starten zum Aktualisieren",
   "update_ready": "Version %@ ist bereit zur Installation.",
-  "auto_update_desc": "Soundpad prüft beim Start und lädt neue Versionen im Hintergrund. Du entscheidest, wann neu gestartet wird."
+  "auto_update_desc": "Soundpad prüft beim Start und lädt neue Versionen im Hintergrund. Du entscheidest, wann neu gestartet wird.",
+  "delete": "Löschen",
+  "delete_from_library_ellipsis": "Aus Mediathek löschen…",
+  "delete_confirm_one": "„%@“ aus Soundpad löschen?",
+  "delete_confirm_n": "%lld Sounds aus Soundpad löschen?",
+  "delete_confirm_msg": "Die Sounds werden samt Tastenkürzeln aus der Mediathek und allen Playlists entfernt. Die Audiodateien bleiben auf deinem Mac."
 }

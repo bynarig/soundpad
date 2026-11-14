@@ -183,5 +183,10 @@
   "is_missing": "“%@” eksik. Taşındı ya da silindi mi?",
   "restart_to_update": "Güncellemek için Yeniden Başlat",
   "update_ready": "%@ sürümü yüklenmeye hazır.",
-  "auto_update_desc": "Soundpad açılışta denetler ve yeni sürümleri arka planda indirir. Ne zaman yeniden başlatacağınızı siz seçersiniz."
+  "auto_update_desc": "Soundpad açılışta denetler ve yeni sürümleri arka planda indirir. Ne zaman yeniden başlatacağınızı siz seçersiniz.",
+  "delete": "Sil",
+  "delete_from_library_ellipsis": "Arşivden sil…",
+  "delete_confirm_one": "“%@” Soundpad'den silinsin mi?",
+  "delete_confirm_n": "%lld ses Soundpad'den silinsin mi?",
+  "delete_confirm_msg": "Sesler kısayollarıyla birlikte arşivden ve tüm çalma listelerinden kaldırılır. Ses dosyaları Mac'inizde kalır."
 }

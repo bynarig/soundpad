@@ -183,5 +183,10 @@
   "is_missing": "“%@” manca. È stato spostato o eliminato?",
   "restart_to_update": "Riavvia per aggiornare",
   "update_ready": "La versione %@ è pronta per l’installazione.",
-  "auto_update_desc": "Soundpad controlla all’avvio e scarica le nuove versioni in background. Sei tu a scegliere quando riavviare."
+  "auto_update_desc": "Soundpad controlla all’avvio e scarica le nuove versioni in background. Sei tu a scegliere quando riavviare.",
+  "delete": "Elimina",
+  "delete_from_library_ellipsis": "Elimina dalla libreria…",
+  "delete_confirm_one": "Eliminare “%@” da Soundpad?",
+  "delete_confirm_n": "Eliminare %lld suoni da Soundpad?",
+  "delete_confirm_msg": "I suoni vengono rimossi dalla libreria e da tutte le playlist, insieme alle scorciatoie. I file audio restano sul Mac."
 }

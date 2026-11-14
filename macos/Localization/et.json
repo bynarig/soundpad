@@ -183,5 +183,10 @@
   "is_missing": "„%@” puudub. Kas see teisaldati või kustutati?",
   "restart_to_update": "Taaskäivita värskendamiseks",
   "update_ready": "Versioon %@ on paigaldamiseks valmis.",
-  "auto_update_desc": "Soundpad kontrollib käivitumisel ja laadib uued versioonid taustal alla. Sina otsustad, millal taaskäivitada."
+  "auto_update_desc": "Soundpad kontrollib käivitumisel ja laadib uued versioonid taustal alla. Sina otsustad, millal taaskäivitada.",
+  "delete": "Kustuta",
+  "delete_from_library_ellipsis": "Kustuta teegist…",
+  "delete_confirm_one": "Kas kustutada „%@” Soundpadist?",
+  "delete_confirm_n": "Kas kustutada Soundpadist %lld heli?",
+  "delete_confirm_msg": "Helid eemaldatakse teegist ja kõigist esitusloenditest koos kiirklahvidega. Helifailid jäävad sinu Maci."
 }

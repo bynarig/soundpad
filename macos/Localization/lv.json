@@ -183,5 +183,10 @@
   "is_missing": "“%@” trūkst. Vai tas tika pārvietots vai izdzēsts?",
   "restart_to_update": "Restartēt, lai atjauninātu",
   "update_ready": "Versija %@ ir gatava instalēšanai.",
-  "auto_update_desc": "Soundpad pārbauda palaišanas laikā un lejupielādē jaunās versijas fonā. Jūs izvēlaties, kad restartēt."
+  "auto_update_desc": "Soundpad pārbauda palaišanas laikā un lejupielādē jaunās versijas fonā. Jūs izvēlaties, kad restartēt.",
+  "delete": "Dzēst",
+  "delete_from_library_ellipsis": "Dzēst no bibliotēkas…",
+  "delete_confirm_one": "Vai dzēst “%@” no Soundpad?",
+  "delete_confirm_n": "Vai dzēst skaņas (%lld) no Soundpad?",
+  "delete_confirm_msg": "Skaņas kopā ar īsinājumtaustiņiem tiek noņemtas no bibliotēkas un visiem atskaņošanas sarakstiem. Audio faili paliek jūsu Mac datorā."
 }

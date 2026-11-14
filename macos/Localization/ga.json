@@ -183,5 +183,10 @@
   "is_missing": "Tá “%@” ar iarraidh. Ar bogadh nó ar scriosadh é?",
   "restart_to_update": "Atosaigh chun nuashonrú",
   "update_ready": "Tá leagan %@ réidh le suiteáil.",
-  "auto_update_desc": "Seiceálann Soundpad nuair a thosaíonn sé agus íoslódálann sé leaganacha nua sa chúlra. Is tusa a roghnaíonn cathain atosú."
+  "auto_update_desc": "Seiceálann Soundpad nuair a thosaíonn sé agus íoslódálann sé leaganacha nua sa chúlra. Is tusa a roghnaíonn cathain atosú.",
+  "delete": "Scrios",
+  "delete_from_library_ellipsis": "Scrios ón leabharlann…",
+  "delete_confirm_one": "An scriosfar “%@” as Soundpad?",
+  "delete_confirm_n": "An scriosfar %lld fuaim as Soundpad?",
+  "delete_confirm_msg": "Bainfear na fuaimeanna den leabharlann agus de gach seinmliosta, mar aon lena n-aicearraí. Fanfaidh na comhaid fuaime ar do Mac."
 }

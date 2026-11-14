@@ -183,5 +183,10 @@
   "is_missing": "Brak „%@”. Czy plik został przeniesiony lub usunięty?",
   "restart_to_update": "Uruchom ponownie, aby uaktualnić",
   "update_ready": "Wersja %@ jest gotowa do instalacji.",
-  "auto_update_desc": "Soundpad sprawdza przy uruchomieniu i pobiera nowe wersje w tle. Ty decydujesz, kiedy uruchomić ponownie."
+  "auto_update_desc": "Soundpad sprawdza przy uruchomieniu i pobiera nowe wersje w tle. Ty decydujesz, kiedy uruchomić ponownie.",
+  "delete": "Usuń",
+  "delete_from_library_ellipsis": "Usuń z biblioteki…",
+  "delete_confirm_one": "Usunąć „%@” z Soundpada?",
+  "delete_confirm_n": "Usunąć dźwięki (%lld) z Soundpada?",
+  "delete_confirm_msg": "Dźwięki zostaną usunięte z biblioteki i wszystkich playlist razem ze skrótami. Pliki audio pozostaną na Twoim Macu."
 }

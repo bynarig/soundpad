@@ -183,5 +183,10 @@
   "is_missing": "“%@” está faltando. Foi movido ou apagado?",
   "restart_to_update": "Reiniciar para Atualizar",
   "update_ready": "A versão %@ está pronta para instalar.",
-  "auto_update_desc": "O Soundpad verifica ao abrir e baixa novas versões em segundo plano. Você escolhe quando reiniciar."
+  "auto_update_desc": "O Soundpad verifica ao abrir e baixa novas versões em segundo plano. Você escolhe quando reiniciar.",
+  "delete": "Apagar",
+  "delete_from_library_ellipsis": "Apagar da biblioteca…",
+  "delete_confirm_one": "Apagar “%@” do Soundpad?",
+  "delete_confirm_n": "Apagar %lld sons do Soundpad?",
+  "delete_confirm_msg": "Os sons são removidos da biblioteca e de todas as playlists, junto com os atalhos. Os arquivos de áudio continuam no seu Mac."
 }
