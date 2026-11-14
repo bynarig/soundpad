@@ -12,6 +12,19 @@ hear the sounds *and* your voice.
 
 Requires macOS 26 or later. Works on both Apple silicon and Intel Macs.
 
+![Soundpad in icon view: sounds as album covers with their hotkeys, playlists in the sidebar and the player bar playing a track](docs/screenshots/icons-1950.webp)
+
+<table>
+  <tr>
+    <td width="62%"><img src="docs/screenshots/list-1950.webp" alt="List view with sorting and filters"></td>
+    <td width="38%"><img src="docs/screenshots/settings-1040.webp" alt="Settings: speakers, virtual microphone, mic mix and playback"></td>
+  </tr>
+  <tr>
+    <td align="center">List view with sorting and filters</td>
+    <td align="center">Settings</td>
+  </tr>
+</table>
+
 ---
 
 ## What it can do

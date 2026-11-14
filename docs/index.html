@@ -59,7 +59,7 @@
  "url": "https://bynarig.github.io/soundpad/",
  "downloadUrl": "https://github.com/bynarig/soundpad/releases/latest",
  "image": "https://bynarig.github.io/soundpad/og-image.png",
- "screenshot": "https://bynarig.github.io/soundpad/og-image.png",
+ "screenshot": "https://bynarig.github.io/soundpad/screenshots/icons-1950.webp",
  "offers": {
   "@type": "Offer",
   "price": "0",
@@ -236,14 +236,23 @@
   .btn svg { width: 16px; height: 16px; }
   .meta { margin-top: 14px; font-size: 13px; color: var(--muted); }
   .meta a { color: var(--muted); }
+  .meta span, .meta a { white-space: nowrap; }
   .meta.scan { margin-top: 4px; }
 
-  .keys { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 48px 0 0; color: var(--muted); font-size: 14px; flex-wrap: wrap; }
+  .keys { display: flex; justify-content: center; align-items: center; gap: 14px 26px; margin: 48px 0 0; color: var(--muted); font-size: 14px; flex-wrap: wrap; }
+  .combo { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
   kbd {
     font: 600 14px/1 ui-monospace, "SF Mono", Menlo, monospace;
     background: var(--key); border: 1px solid var(--line); border-bottom-width: 2px;
     border-radius: 6px; padding: 6px 9px; color: var(--fg);
   }
+
+  /* Screenshots: the main one is wider than the text column. */
+  .shot { margin: 56px auto 0; width: min(960px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
+  .shot img, .gallery img { display: block; width: 100%; height: auto; filter: drop-shadow(0 12px 32px rgba(0,0,0,.22)); }
+  .gallery { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; align-items: start; }
+  figure { margin: 0; }
+  figcaption { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
 
   section { padding: 56px 0; border-top: 1px solid var(--line); }
   h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin: 0 0 28px; }
@@ -279,8 +288,14 @@
 
   @media (max-width: 560px) {
     .features { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; gap: 32px; }
+    .gallery figure:last-child { width: 100%; max-width: 340px; justify-self: center; }
+    .shot { margin-top: 40px; }
     .hero { padding: 48px 0; }
-    header.top nav a { margin-left: 14px; }
+    header.top { padding: 8px 0; }
+    header.top nav a { margin-left: 4px; padding: 12px 6px; display: inline-block; }
+    header.top .brand { padding: 10px 0; }
+    .meta.scan a { display: inline-block; padding: 8px 0; }
   }
 </style>
 </head>
@@ -305,14 +320,19 @@
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7.5 8 11.5 12 7.5M3 14h10"/></svg>
         <span id="download-label">Download for Mac</span>
       </a>
-      <div class="meta">macOS 26 or later · Apple silicon &amp; Intel · <a href="https://github.com/bynarig/soundpad">Open source</a></div>
+      <div class="meta"><span>macOS 26 or later</span> · <span>Apple silicon &amp; Intel</span> · <a href="https://github.com/bynarig/soundpad">Open source</a></div>
       <div class="meta scan"><a id="scan" href="https://github.com/bynarig/soundpad/releases/latest">Virus-scanned before every release</a></div>
 
       <div class="keys" aria-hidden="true">
-        <kbd>⌥</kbd><kbd>1</kbd><span>→ airhorn</span>
-        <span style="width:16px"></span>
-        <kbd>⌃</kbd><kbd>⇧</kbd><kbd>A</kbd><span>→ applause</span>
+        <span class="combo"><kbd>⌥</kbd><kbd>1</kbd><span>→ airhorn</span></span>
+        <span class="combo"><kbd>⌃</kbd><kbd>⇧</kbd><kbd>A</kbd><span>→ applause</span></span>
       </div>
+
+      <figure class="shot">
+        <img src="screenshots/icons-975.webp" srcset="screenshots/icons-975.webp 975w, screenshots/icons-1950.webp 1950w"
+             sizes="(max-width: 992px) calc(100vw - 32px), 960px" width="975" height="640" decoding="async"
+             alt="Soundpad window in icon view: sounds shown as album covers with their hotkeys, a playlist sidebar and the player bar playing a track">
+      </figure>
     </div>
 
     <section id="features">
@@ -330,6 +350,24 @@
         <div><h3>40 languages</h3><p>Follows your Mac's language automatically.</p></div>
         <div><h3>Updates in the background</h3><p>New versions download by themselves. You choose when to restart.</p></div>
         <div><h3>Private</h3><p>No accounts, no ads, no tracking. Free and open source.</p></div>
+      </div>
+    </section>
+
+    <section id="screenshots">
+      <h2>Screenshots</h2>
+      <div class="gallery">
+        <figure>
+          <img src="screenshots/list-975.webp" srcset="screenshots/list-975.webp 975w, screenshots/list-1950.webp 1950w"
+               sizes="(max-width: 560px) calc(100vw - 40px), 420px" width="975" height="640" loading="lazy" decoding="async"
+               alt="Soundpad in list view with sort and filter controls, hotkeys and lengths">
+          <figcaption>List view with sorting and filters</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/settings-520.webp" srcset="screenshots/settings-520.webp 520w, screenshots/settings-1040.webp 1040w"
+               sizes="(max-width: 560px) 340px, 270px" width="520" height="531" loading="lazy" decoding="async"
+               alt="Soundpad Settings: speakers, virtual microphone, mic mix and playback options">
+          <figcaption>Settings</figcaption>
+        </figure>
       </div>
     </section>
 
