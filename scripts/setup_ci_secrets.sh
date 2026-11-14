@@ -30,7 +30,7 @@ EXPECTED=$(python3 -c "import json;print(json.load(open('macos/Updates.json'))['
 ACTUAL=$(swift scripts/update_tool.swift public-key "$KEY")
 [[ "$EXPECTED" == "$ACTUAL" ]] || { echo "update_signing_key doesn't match publicKey in macos/Updates.json" >&2; exit 1; }
 
-echo "Storing release signing secrets in $REPO…"
+echo "Storing release signing secrets in ${REPO}…"
 gh secret set SOUNDPAD_UPDATE_SIGNING_KEY --repo "$REPO" < "$KEY"
 base64 -i "$KC" | gh secret set SOUNDPAD_CODESIGN_KEYCHAIN --repo "$REPO"
 gh secret set SOUNDPAD_CODESIGN_KEYCHAIN_PASSWORD --repo "$REPO" < "$PASS"
