@@ -365,6 +365,11 @@ struct SoundList: View {
                 .onMove(perform: canReorder ? move : nil)
             }
             .listStyle(.inset)
+            // Rows added while the list is on screen (e.g. a finished download)
+            // sometimes never get measured and keep the table's default height,
+            // overlapping their neighbours. Making that default the real row
+            // height keeps them right either way.
+            .environment(\.defaultMinListRowHeight, SoundRow.height)
             .contextMenu(forSelectionType: UInt64.self) { ids in
                 contextMenu(ids)
             } primaryAction: { ids in
@@ -412,10 +417,7 @@ struct SoundList: View {
         }
         if downloadsEnabled {
             ToolbarItem(placement: .primaryAction) {
-                Button { showDownload.toggle() } label: {
-                    Label("Download from a Link", systemImage: MediaDownloader.shared.isBusy
-                          ? "arrow.down.circle.dotted" : "arrow.down.circle")
-                }
+                Button { showDownload.toggle() } label: { DownloadButtonLabel() }
                 .help("Download from a Link")
                 .popover(isPresented: $showDownload, arrowEdge: .bottom) { DownloadPopover() }
             }
@@ -676,6 +678,15 @@ struct FilterBar: View {
     }
 }
 
+/// Its own view so download progress, which ticks many times a second,
+/// redraws only this icon, not the whole sound list.
+struct DownloadButtonLabel: View {
+    var body: some View {
+        Label("Download from a Link", systemImage: MediaDownloader.shared.isBusy
+              ? "arrow.down.circle.dotted" : "arrow.down.circle")
+    }
+}
+
 // MARK: - Row
 
 /// Alternating row shading for real rows only. The built-in
@@ -691,6 +702,9 @@ struct RowStripe: View {
 }
 
 struct SoundRow: View {
+    /// Height of a row that isn't playing, list insets included.
+    static let height: CGFloat = 38
+
     @Environment(Store.self) private var store
     let sound: Sound
     let number: Int
